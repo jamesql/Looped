@@ -11,6 +11,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
     try { data = JSON.parse(payload.toString()); }
     catch (e) { data = null; console.log(e); console.log(payload) }
 
+    // invalid packet, close connection
     if (data === null) return client.close();
 
     switch (data.op) {

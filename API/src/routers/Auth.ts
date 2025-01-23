@@ -1,4 +1,5 @@
 import express, {Router, Request, Response} from "express";
+const { body, validationResult } = require('express-validator');
 import Prisma from "../db/prisma";
 import { generateAccessToken, generateRefreshToken, validateRefreshToken } from "../Util/Token";
 import {v4} from "uuid";
@@ -7,7 +8,22 @@ const router: Router = express.Router();
 const _prisma = Prisma.getInstance();
 
 // register user
-router.post("/signup", async (req: Request, res: Response) => {
+router.post("/signup", [
+    // body validation
+    body("firstName").notEmpty().withMessage("First name required"),
+    body("lastName").notEmpty().withMessage("Last name required"),
+    body("username").isLength({min: 6}).withMessage("Username must be at least 6 characters."),
+    body("email").isEmail().withMessage("Invalid email"),
+    body("password").isLength({min: 6}).withMessage("Password must be at least 6 characters.")
+], async (req: Request, res: Response) => {
+
+    // validate results
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({errors: errors.array()});
+        return;
+    } 
+
     const {firstName, lastName, username, email, password} = req.body;
 
 
