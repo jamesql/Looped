@@ -9,5 +9,5 @@ app.get('/', (req: Request, res: Response) => {
 
 // port should change later, from env file
 app.listen(80, () => {
-
+    console.log(`[${Util.ProgramName}] API Server Started.`);
 });
