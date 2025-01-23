@@ -12,11 +12,13 @@ The goal of the platform is to create a secure, interactive space for networking
 
 | Codebase             |      Description      |
 | :------------------- | :-------------------: |
-| [API](api)           |    Main Looped API    |
-| [Database](database) |     Database Install Instructions      |
-| [React](react)   |       React/Express server       |
-| [Redis](redis)       |        Redis Install Instructions         |
-| [Socket](socket)     |      WebSocket Server      |
+| [API](API)           |    Main Looped API    |
+| [Database](Database) |     Database Install Instructions      |
+| [React](React)   |       React/Express server       |
+| [Redis](Redis)       |        Redis Install Instructions         |
+| [Socket](Socket)     |      WebSocket Server      |
+| [Assets](Assets)     |      Application Assets/Design Files      |
+
 
 ## Main Workflow
 
