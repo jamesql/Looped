@@ -9,11 +9,18 @@
   "author": "JameSQL",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^6.2.1",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.8",
+    "body-parser": "^1.20.3",
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
+    "jsonwebtoken": "^9.0.2",
     "prisma": "^6.2.1",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/uuid": "^10.0.0"
   }
 }

@@ -1,3 +1,6 @@
+import { Channel } from "diagnostics_channel";
+import { Server } from "http";
+
 export {};
 
 // Global tyoes
@@ -6,6 +9,24 @@ declare global {
             const ProgramName = "Looped - Socket";
         }
 
+        namespace LoopedSession {
+
+            // We need channel ids users are subscribed to in memory 
+            // in our session so when redis contacts the websocket we can relay that info 
+            // efficiently
+            // just for example
+            // made need to move to seperate file in future
+
+            interface Session {
+                userId: String,
+                socketId: String,
+                serverIds: Set<String>,
+                roleIds: Set<String>,
+                channelIds: Set<String>,
+                lastActive: Number 
+            }
+
+        }
 
         namespace Socket {
             type Server = import("ws").Server;
@@ -18,6 +39,7 @@ declare global {
             interface SocketClient extends WebSocket {
                 type: "client";
                 authenticated: boolean;
+                session: LoopedSession.Session;
 
                 props: {
                     sequence: number;

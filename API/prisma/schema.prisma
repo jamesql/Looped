@@ -37,13 +37,15 @@ model User {
   email String @unique @db.VarChar(255)
   password String @db.VarChar(255)
 
-  avatarUrl String
+  avatarUrl String?
 
   //messages Message[]
   OwnedServers Server[]
   serverMemberships ServerMember[]
 
   Message Message[]
+
+  RefreshToken RefreshToken[]
 }
 
 model Server {
@@ -111,4 +113,13 @@ model RolePermissions {
   canConnect Boolean
 
   @@id([roleid, channelid])
+}
+
+model RefreshToken {
+  id String @id
+  userid String 
+  token String @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user User @relation(fields: [userid], references: [id])
 }

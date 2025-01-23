@@ -6,5 +6,8 @@
         "module": "commonjs",  // You can change to "ESNext" if using ESM
         "target": "ES6",
         "types": ["node"]
-      }
+      },
+      "include": [
+        "src/Util/@types/global.d.ts"
+      ]
 }

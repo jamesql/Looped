@@ -20,6 +20,7 @@ export const getRedisInstance = (): Redis => {
         redisClient.on('error', (err) => {
             console.error(`[${Util.ProgramName} - Redis] Error: ${err}`)
         });
+
     }
 
     // return redisclient
