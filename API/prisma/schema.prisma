@@ -12,3 +12,103 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum ChannelType {
+  TEXT
+  VOICE
+}
+
+enum ChannelPermissionType {
+  READ
+  WRITE
+  MANAGE
+  CONNECT
+}
+
+model User {
+  id String @id @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  firstName String @db.VarChar(255)
+  lastName String @db.VarChar(255)
+  username String @unique @db.VarChar(255)
+
+  email String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+
+  avatarUrl String
+
+  //messages Message[]
+  OwnedServers Server[]
+  serverMemberships ServerMember[]
+
+  Message Message[]
+}
+
+model Server {
+  id String @id @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  description String?
+  ownerId String 
+  owner User @relation(fields: [ownerId], references: [id])
+
+  //channels Channel[]
+  members ServerMember[]
+
+  Channel Channel[]
+}
+
+model ServerMember {
+  userId String
+  serverId String
+  user     User    @relation(fields: [userId], references: [id])
+  server   Server  @relation(fields: [serverId], references: [id])
+
+  @@id([userId, serverId])
+}
+
+model Channel {
+  id String @id
+  name String
+  type ChannelType
+  serverid String
+  server Server @relation(fields: [serverid], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  channelMessages Message[]
+
+  RolePermissions RolePermissions[]
+}
+
+model Message {
+  id String @id
+  content String
+  senderid String
+  sender User @relation(fields: [senderid], references: [id])
+  channelid String
+  channel Channel @relation(fields: [channelid], references: [id])
+}
+
+model Role {
+  id String @id
+
+  RolePermissions RolePermissions[]
+}
+
+model RolePermissions {
+  roleid String
+  channelid String
+  role Role @relation(fields: [roleid], references: [id])
+  channel Channel @relation(fields: [channelid], references: [id])
+  canRead Boolean
+  canSend Boolean
+  canManage Boolean
+  canConnect Boolean
+
+  @@id([roleid, channelid])
+}
