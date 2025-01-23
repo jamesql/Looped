@@ -1,7 +1,5 @@
 export {};
 
-export {};
-
 // Global tyoes
 declare global {
         namespace Util {
