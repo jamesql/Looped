@@ -1,3 +1,5 @@
+/// <reference path="../utils/@types/global.d.ts" />
+
 import * as http from "http";
 import * as ws from "ws";
 

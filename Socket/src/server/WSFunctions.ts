@@ -1,3 +1,5 @@
+/// <reference path="../utils/@types/global.d.ts" />
+
 import { WebSocket } from "ws";
 
 // define the function sendAsync which is added onto the WebSocket object

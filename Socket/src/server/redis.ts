@@ -1,3 +1,5 @@
+/// <reference path="../utils/@types/global.d.ts" />
+
 // Singleton redis client class
 import {Redis} from "ioredis";
 
@@ -14,11 +16,11 @@ export const getRedisInstance = (): Redis => {
 
         // redis test events
         redisClient.on('connect', () => {
-            console.log(`[${Util.ProgramName} - Redis] Connected Succesfully (${redisClient.status})`);
+            console.log(`[$wss] Redis Connected Succesfully (${redisClient.status})`);
         });
 
         redisClient.on('error', (err) => {
-            console.error(`[${Util.ProgramName} - Redis] Error: ${err}`)
+            console.error(`[$wss] Redis Error: ${err}`)
         });
 
     }

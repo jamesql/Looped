@@ -5,9 +5,6 @@ export {};
 
 // Global tyoes
 declare global {
-        namespace Util {
-            const ProgramName = "Looped - Socket";
-        }
 
         namespace LoopedSession {
 

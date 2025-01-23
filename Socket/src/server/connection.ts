@@ -1,3 +1,5 @@
+/// <reference path="../utils/@types/global.d.ts" />
+
 import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { HEARTBEAT_INTERVAL, OPCodes } from "./WSValues";
@@ -5,7 +7,7 @@ import { HEARTBEAT_INTERVAL, OPCodes } from "./WSValues";
 // Incoming connection handler
 export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, rq: IncomingMessage) => {
     // Log incoming connection
-    console.log(`[${Util.ProgramName}] [Client>>Server] Incoming Connection from ${rq.socket.address}`);
+    console.log(`[$wss] [Client>>Server] Incoming Connection from ${rq.socket.address}`);
 
     // Authenticate access token
     // 
