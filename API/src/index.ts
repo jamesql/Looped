@@ -7,7 +7,7 @@ const app: Express = express();
 const jsonParser = bodyParser.json();
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 
 app.get('/', (req: Request, res: Response) => {
     res.send("Hello, World!");
