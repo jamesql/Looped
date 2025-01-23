@@ -1,0 +1,23 @@
+{
+  "name": "looped-socket",
+  "version": "0.0.1",
+  "description": "Base web socket server for chatting and webrtc for looped platform.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "typescript"
+  ],
+  "author": "JameSQL",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.7"
+  },
+  "dependencies": {
+    "@types/ws": "^8.5.13",
+    "http": "^0.0.1-security",
+    "ioredis": "^5.4.2",
+    "ws": "^8.18.0"
+  }
+}
