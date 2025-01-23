@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "skipLibCheck": true,  // Optional but often useful for avoiding other issues
+        "allowSyntheticDefaultImports": true,  // Optional, helps with default imports in other cases
+        "module": "commonjs",  // You can change to "ESNext" if using ESM
+        "target": "ES6",
+        "types": ["node"]
+      }
+}

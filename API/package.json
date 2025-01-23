@@ -1,0 +1,19 @@
+{
+  "name": "looped-api",
+  "version": "0.0.1",
+  "description": "REST-API for Looped Platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "JameSQL",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.8",
+    "express": "^4.21.2",
+    "ioredis": "^5.4.2",
+    "prisma": "^6.2.1",
+    "ts-node": "^10.9.2"
+  }
+}
