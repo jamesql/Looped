@@ -7,10 +7,7 @@ import { HEARTBEAT_INTERVAL, OPCodes } from "./WSValues";
 // Incoming connection handler
 export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, rq: IncomingMessage) => {
     // Log incoming connection
-    console.log(`[$wss] [Client>>Server] Incoming Connection from ${rq.socket.address}`);
-
-    // Authenticate access token
-    // 
+    console.log(`[$wss] [Client>>Server] Incoming Connection from ${rq.socket.address()["address"]}`);
 
     // props
     client.props = {
