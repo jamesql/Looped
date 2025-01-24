@@ -19,7 +19,7 @@ export const OPCodes = {
     RECONNECT: 13,
     UPDATE_VOICE_STATE: 14,
     
-    ERROR: 999
+    ERROR: 9999
 } as const;
 
 export const HEARTBEAT_INTERVAL = 6e4 as const;
