@@ -6,8 +6,12 @@ import { HEARTBEAT_INTERVAL, OPCodes } from "./WSValues";
 
 // Incoming connection handler
 export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, rq: IncomingMessage) => {
+    
+    // set client address
+    client.address = rq.socket.address()["address"];
+
     // Log incoming connection
-    console.log(`[$wss] [Client>>Server] Incoming Connection from ${rq.socket.address()["address"]}`);
+    console.log(`[$wss] [Client>>Server] Incoming Connection from ${client.address}`);
 
     // props
     client.props = {

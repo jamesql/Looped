@@ -27,6 +27,7 @@ declare global {
                 type: "client";
                 authenticated: boolean;
                 session: LoopedSession.Session;
+                address: String
 
                 props: {
                     sequence: number;

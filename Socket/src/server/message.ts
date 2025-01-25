@@ -20,7 +20,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
     // invalid packet, close connection
     if (data === null) return client.close();
 
-    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.session.userId}`);
+    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${req.socket.address}`);
 
     switch (data.op) {
 
@@ -63,6 +63,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
             }; 
 
             client.sendAsync(payload);
+            client.authenticated = true;
             break;
 
         case OPCodes.ERROR:
