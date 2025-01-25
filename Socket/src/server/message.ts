@@ -4,7 +4,7 @@ import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { OPCodes } from "./WSValues";
 import { validateAccessToken } from "../utils/Token";
-import { getRedisInstance } from "./redis";
+import { getRedisInstance, getUserSession } from "./redis";
 import Redis from "ioredis";
 
 const _redis: Redis = getRedisInstance();
@@ -50,6 +50,9 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
             console.log(`[$wss] User ${decode["userId"]} authenticated! (${client.props.username})`);
 
             // fill session object and send it to user
+
+            let _session = await getUserSession(decode["userId"]);
+            console.log(_session);
             // send ready opcode
 
             let payload = {
@@ -61,7 +64,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
 
             client.sendAsync(payload);
 
-            Redis
+            
 
             break;
 

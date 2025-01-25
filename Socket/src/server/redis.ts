@@ -49,7 +49,6 @@ export const setUserSession = async (
     const rc: Redis = await getRedisInstance();
 
     let sessionData = await rc?.hgetall(key);
-    console.log(sessionData);
   
     // If session data exists, parse the fields and return the session object
     if (sessionData && Object.keys(sessionData).length > 0) {
