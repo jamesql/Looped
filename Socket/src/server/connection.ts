@@ -13,7 +13,6 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, rq:
     client.props = {
         sequence: 0,
         lastHeartbeat: Date.now(),
-        username: ""
     }
 
     // bind message handler

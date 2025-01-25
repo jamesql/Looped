@@ -31,7 +31,6 @@ declare global {
                 props: {
                     sequence: number;
                     lastHeartbeat: number;
-                    username: String
                 };
 
                 sendAsync(data: any): Promise<void>;

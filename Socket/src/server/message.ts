@@ -20,7 +20,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
     // invalid packet, close connection
     if (data === null) return client.close();
 
-    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.props.username}`);
+    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.session.userId}`);
 
     switch (data.op) {
 
@@ -47,7 +47,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
                 break;
             }
 
-            console.log(`[$wss] User ${decode["userId"]} authenticated! (${client.props.username})`);
+            console.log(`[$wss] User ${decode["userId"]} authenticated!`);
 
             // fill session object and send it to user
 
