@@ -4,82 +4,94 @@ import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { OPCodes } from "./WSValues";
 import { validateAccessToken } from "../utils/Token";
-import { getRedisInstance, getUserSession, subscribeToChannelEvents, subscribeToServerEvents } from "./redis";
+import {
+  getRedisInstance,
+  getUserSession,
+  subscribeToChannelEvents,
+  subscribeToServerEvents,
+} from "./redis";
 import Redis from "ioredis";
 
 const _redis: Redis = getRedisInstance();
 
 // Client message handler
-export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req: IncomingMessage, payload: ws.RawData) => {
-    let data;
+export default async (
+  ws: Socket.SocketServer,
+  client: Socket.SocketClient,
+  req: IncomingMessage,
+  payload: ws.RawData
+) => {
+  let data;
 
-    // make sure payload is valid
-    try { data = JSON.parse(payload.toString()); }
-    catch (e) { data = null; console.log(e); console.log(payload) }
+  // make sure payload is valid
+  try {
+    data = JSON.parse(payload.toString());
+  } catch (e) {
+    data = null;
+    console.log(e);
+    console.log(payload);
+  }
 
-    // invalid packet, close connection
-    if (data === null) return client.close();
+  // invalid packet, close connection
+  if (data === null) return client.close();
 
-    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.address}`);
+  console.log(
+    `[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.address}`
+  );
 
-    switch (data.op) {
+  switch (data.op) {
+    case OPCodes.AUTH:
+      const { d } = data;
+      const token = d.access_token;
 
-        case OPCodes.AUTH:
-            const { d } = data;
-            const token = d.access_token;
+      if (!token) {
+        client.close(1008, "Unauthorized.");
+        break;
+      }
 
+      let decode = await validateAccessToken(token);
+      if (decode === null) {
+        client.close(1008, "Unauthorized.");
+        break;
+      }
 
-            if (!token) {
-                client.close(1008, "Unauthorized.");
-                break;
-            }
+      let isExpired = Date.now() / 1000 > decode["exp"];
 
-            let decode = await validateAccessToken(token);
-            if (decode === null) {
-                client.close(1008, "Unauthorized.");
-                break;
-            }
+      if (isExpired) {
+        client.close(1008, "Unauthorized.");
+        break;
+      }
 
-            let isExpired = (Date.now()/1000) > decode["exp"];
+      console.log(`[$wss] User ${decode["userId"]} authenticated!`);
 
-            if (isExpired) {
-                client.close(1008, "Unauthorized.");
-                break;
-            }
+      // fill session object and send it to user
 
-            console.log(`[$wss] User ${decode["userId"]} authenticated!`);
+      let _session = await getUserSession(decode["userId"]);
+      client.session = _session;
+      // send ready opcode
 
-            // fill session object and send it to user
+      // subscribe to redis events
+      subscribeToServerEvents(client);
+      subscribeToChannelEvents(client);
 
-            let _session = await getUserSession(decode["userId"]);
-            client.session = _session;
-            // send ready opcode
+      // send session to client
+      let payload = {
+        op: OPCodes.READY,
+        d: {
+          _session: client.session,
+        },
+      };
 
-            // subscribe to redis events
-            subscribeToServerEvents(client);
-            subscribeToChannelEvents(client);
+      client.sendAsync(payload);
 
+      // set client to authenticated
+      client.authenticated = true;
+      break;
 
-            // send session to client
-            let payload = {
-                op: OPCodes.READY,
-                d: {
-                    _session: client.session,
-                }
-            }; 
+    case OPCodes.ERROR:
+      break;
 
-            client.sendAsync(payload);
-
-            // set client to authenticated
-            client.authenticated = true;
-            break;
-
-        case OPCodes.ERROR:
-            break;
-
-        default:
-            client.close();
-
-    };
-
-});
+    default:
+      client.close();
+  }
+};

@@ -13,5 +13,4 @@ export async function startServer(s: http.Server): Promise<ws.WebSocketServer> {
     x.on("connection", require("./connection").default.bind(null, s));
 
     return x;
-    
 }
