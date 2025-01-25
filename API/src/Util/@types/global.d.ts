@@ -11,4 +11,13 @@ declare global {
         type ValidationError = String;
 
     }
+
+    namespace LoopedSession {
+        interface Session {
+            userId: String,
+            serverIds: Set<String>,
+            roleIds: Set<String>,
+            channelIds: Set<String>,
+        }
+    }
 }

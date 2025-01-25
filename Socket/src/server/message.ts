@@ -4,6 +4,10 @@ import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { OPCodes } from "./WSValues";
 import { validateAccessToken } from "../utils/Token";
+import { getRedisInstance } from "./redis";
+import Redis from "ioredis";
+
+const _redis: Redis = getRedisInstance();
 
 // Client message handler
 export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req: IncomingMessage, payload: ws.RawData) => {
@@ -47,6 +51,17 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
 
             // fill session object and send it to user
             // send ready opcode
+
+            let payload = {
+                op: OPCodes.READY,
+                d: {
+                    
+                }
+            }; 
+
+            client.sendAsync(payload);
+
+            Redis
 
             break;
 

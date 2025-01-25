@@ -16,11 +16,9 @@ declare global {
 
             interface Session {
                 userId: String,
-                socketId: String,
                 serverIds: Set<String>,
                 roleIds: Set<String>,
                 channelIds: Set<String>,
-                lastActive: Number 
             }
 
         }
