@@ -4,7 +4,7 @@ import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { OPCodes } from "./WSValues";
 import { validateAccessToken } from "../utils/Token";
-import { getRedisInstance, getUserSession } from "./redis";
+import { getRedisInstance, getUserSession, subscribeToChannelEvents, subscribeToServerEvents } from "./redis";
 import Redis from "ioredis";
 
 const _redis: Redis = getRedisInstance();
@@ -20,7 +20,7 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
     // invalid packet, close connection
     if (data === null) return client.close();
 
-    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${req.socket.address}`);
+    console.log(`[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.address}`);
 
     switch (data.op) {
 
@@ -55,6 +55,12 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
             client.session = _session;
             // send ready opcode
 
+            // subscribe to redis events
+            subscribeToServerEvents(client);
+            subscribeToChannelEvents(client);
+
+
+            // send session to client
             let payload = {
                 op: OPCodes.READY,
                 d: {
@@ -63,6 +69,8 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
             }; 
 
             client.sendAsync(payload);
+
+            // set client to authenticated
             client.authenticated = true;
             break;
 

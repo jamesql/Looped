@@ -6,6 +6,9 @@ import { Redis } from "ioredis";
 // redisclient global
 let redisClient: Redis | null = null;
 
+// make new client for subscribing to channels
+let redisSubscriber: Redis | null = null;
+
 export const getRedisInstance = (): Redis => {
   if (!redisClient) {
     // establish new connection
@@ -27,6 +30,28 @@ export const getRedisInstance = (): Redis => {
   // return redisclient
   return redisClient;
 };
+
+export const getSubscriberInstance = (): Redis => {
+    if (!redisSubscriber) {
+      // establish new connection
+      redisSubscriber = new Redis({
+        host: "localhost",
+        port: 6379,
+      });
+  
+      // redis test events
+      redisSubscriber.on("connect", () => {
+        console.log(`[$wss] Redis Subscriber Connected Succesfully (${redisSubscriber.status})`);
+      });
+  
+      redisSubscriber.on("error", (err) => {
+        console.error(`[$wss] Redis Subscriber Error: ${err}`);
+      });
+    }
+  
+    // return redisclient
+    return redisSubscriber;
+  };
 
 export const setUserSession = async (
     _session: LoopedSession.Session
@@ -62,4 +87,75 @@ export const setUserSession = async (
   
     return null; // Return null if no session data exists for the user
   };
+
+  export const subscribeToServerEvents = async (client: Socket.SocketClient) => {
+    let sub = await getSubscriberInstance();
+    let servers = client.session.serverIds;
+
+    servers.forEach((serverId) => {
+        let channelName = `server-events:${serverId}`
+        sub.subscribe(channelName, (err, count) => {
+            if (err) console.error(err);
+            else console.log(`[$wss] Redis subscribed: ${channelName} (${client.session.userId})`)
+        });
+
+        sub.on("message", async (channel, m) => {
+            if (channel !== channelName) return;
+            if (client.readyState !== WebSocket.OPEN) return;
+
+            let data = JSON.parse(m);
+            
+            let opcode = data["op"];
+            let d = data["d"];
+
+            let payload = {
+                op: opcode,
+                d: d
+            };
+
+            await client.sendAsync(payload);
+        });
+    });
+
+  }
+
+  export const subscribeToChannelEvents = async (client: Socket.SocketClient) => {
+    let sub = await getSubscriberInstance();
+    let serverChannels = client.session.channelIds;
+
+    serverChannels.forEach(i => {
+        let channels = i.channelIds;
+
+        channels.forEach(c => {
+            let channelName = `channel-event:${i.serverId}:${c}`;
+
+            sub.subscribe(channelName, (err, count) => {
+                if (err) console.error(err);
+                else console.log(`[$wss] Redis subscribed: ${channelName} (${client.session.userId})`)
+            });
+
+            sub.on("message", async (channel, m) => {
+                if (channel !== channelName) return;
+                if (client.readyState !== WebSocket.OPEN) return;
+    
+                let data = JSON.parse(m);
+                
+                let opcode = data["op"];
+                let d = data["d"];
+    
+                let payload = {
+                    op: opcode,
+                    d: d
+                };
+    
+                await client.sendAsync(payload);
+            });
+
+        });
+
+    });
+
+  }
+
+
   
