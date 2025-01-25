@@ -15,9 +15,9 @@ declare global {
     namespace LoopedSession {
         interface Session {
             userId: String,
-            serverIds: Set<String>,
-            roleIds: Set<String>,
-            channelIds: Set<String>,
+            serverIds: string[],
+            roleIds: { serverId: string, roleIds: string[]}[],
+            channelIds: { serverId: string, channelIds: string[]}[],
         }
     }
 }

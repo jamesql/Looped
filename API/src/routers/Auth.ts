@@ -7,6 +7,7 @@ import {
   validateRefreshToken,
 } from "../Util/Token";
 import { v4 } from "uuid";
+import { getUserSession, setUserSession } from "../Util/redis";
 
 const router: Router = express.Router();
 const _prisma = Prisma.getInstance();
@@ -27,7 +28,6 @@ router.post(
       .withMessage("Password must be at least 6 characters."),
   ],
   async (req: Request, res: Response) => {
-
     // validate body
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -63,7 +63,6 @@ router.post(
     body("password").notEmpty().withMessage("Password required."),
   ],
   async (req: Request, res: Response) => {
-
     // validate body
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -80,20 +79,20 @@ router.post(
       },
       include: {
         serverMemberships: {
-            include: {
-                server: {
-                    include: {
-                        Channel: true,
-                    }
-                },
-                Role: {
-                    include: {
-                        RolePermissions: true
-                    }
-                }
-            }
-        }
-      }
+          include: {
+            server: {
+              include: {
+                Channel: true,
+              },
+            },
+            Role: {
+              include: {
+                RolePermissions: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     // or password is incorrect (bcrypt)
@@ -103,19 +102,51 @@ router.post(
     }
 
     // get user servers, channels, roles
-    let servers = user.serverMemberships.map(x => x.server);
-    let serverIds = servers.map(x => x.id);
-    let channels = servers.map(s => s.Channel);
-    let channelIds = channels.map((c, i) => { serverId: serverIds[i]; channelIds: c.map(c => c.id); })
-    let roles = user.serverMemberships.map(s => s.Role);
+    let servers = user.serverMemberships.map((x) => x.server);
+    let serverIds = servers.map((x) => x.id);
+    let channels = servers.map((s) => s.Channel);
+    let channelIds = channels.map((c, i) => {
+      return { serverId: serverIds[i], channelIds: c.map((c) => c.id) };
+    });
+    let roles = user.serverMemberships.map((s, i) => {
+      return { serverId: serverIds[i], roleIds: s.Role.map((r) => r.id) };
+    });
 
     // send to ws
     // subscribe to all events on ws
     // redis.on()
 
+    let _session: LoopedSession.Session = {
+      userId: user.id,
+      serverIds: serverIds,
+      roleIds: roles,
+      channelIds: channelIds,
+    };
+
+    console.log(_session);
+
+    await setUserSession(_session);
+
+    let x = await getUserSession(user.id);
+    console.log(x);
+
+    // only give new refresh token if expired. Always give accessToken
+
+    let tokenRes = await _prisma.refreshToken.findFirst({
+      where: {
+        userid: user.id,
+      },
+      orderBy: {
+        expiresAt: "asc",
+      },
+    });
 
     const accessToken = await generateAccessToken(user.id);
-    const refreshToken = await generateRefreshToken(user.id);
+    const refreshToken =
+      tokenRes === null ||
+      Date.parse(tokenRes.expiresAt.toString()) < Date.now()
+        ? await generateRefreshToken(user.id)
+        : tokenRes.token;
 
     res.json({ accessToken, refreshToken });
   }
@@ -125,7 +156,6 @@ router.post(
   "/refresh-token",
   [header("Authorization").notEmpty().withMessage("No Token Provided.")],
   async (req: Request, res: Response) => {
-
     // validate header
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

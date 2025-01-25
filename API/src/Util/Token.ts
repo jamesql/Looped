@@ -18,6 +18,7 @@ export async function generateRefreshToken(userId: string)  {
 
   const s = v4();
 
+  // change to database function later
   // Store refresh token in the database
   await _prisma.refreshToken.create({
     data: {

@@ -6,22 +6,14 @@ export {};
 // Global tyoes
 declare global {
 
-        namespace LoopedSession {
-
-            // We need channel ids users are subscribed to in memory 
-            // in our session so when redis contacts the websocket we can relay that info 
-            // efficiently
-            // just for example
-            // made need to move to seperate file in future
-
-            interface Session {
-                userId: String,
-                serverIds: Set<String>,
-                roleIds: Set<String>,
-                channelIds: Set<String>,
-            }
-
+    namespace LoopedSession {
+        interface Session {
+            userId: String,
+            serverIds: string[],
+            roleIds: { serverId: string, roleIds: string[]}[],
+            channelIds: { serverId: string, channelIds: string[]}[],
         }
+    }
 
         namespace Socket {
             type Server = import("ws").Server;

@@ -30,22 +30,25 @@ export const getRedisInstance = (): Redis => {
 export const setUserSession = async (
     _session: LoopedSession.Session
   ): Promise<void> => {
+    const rc: Redis = await getRedisInstance();
     const key = `user:${_session.userId}:session`;
   
-    await redisClient?.hmset(key, {
+    await rc?.hmset(key, {
       channels: JSON.stringify(_session.channelIds),
       roles: JSON.stringify(_session.roleIds),
       servers: JSON.stringify(_session.serverIds),
     });
   
     // TTL for session
-    //await redisClient.expire(key, )
+    //await rc.expire(key, )
   };
   
   export const getUserSession = async (userId: String): Promise<LoopedSession.Session | null> => {
     const key = `user:${userId}:session`;
-  
-    let sessionData = await redisClient?.hgetall(key);
+    const rc: Redis = await getRedisInstance();
+
+    let sessionData = await rc?.hgetall(key);
+    console.log(sessionData);
   
     // If session data exists, parse the fields and return the session object
     if (sessionData && Object.keys(sessionData).length > 0) {
