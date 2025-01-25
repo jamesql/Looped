@@ -62,15 +62,18 @@ model Server {
   members ServerMember[]
 
   Channel Channel[]
+
+  Role Role[]
 }
 
 model ServerMember {
+  id String @id
   userId String
   serverId String
   user     User    @relation(fields: [userId], references: [id])
   server   Server  @relation(fields: [serverId], references: [id])
 
-  @@id([userId, serverId])
+  Role Role[] @relation(name: "ServerMemberRoles")
 }
 
 model Channel {
@@ -98,8 +101,12 @@ model Message {
 
 model Role {
   id String @id
+  serverid String
+  server Server @relation(fields: [serverid], references: [id])
 
   RolePermissions RolePermissions[]
+
+  ServerMember ServerMember[] @relation(name: "ServerMemberRoles")
 }
 
 model RolePermissions {

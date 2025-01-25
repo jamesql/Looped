@@ -78,6 +78,22 @@ router.post(
       where: {
         username: username,
       },
+      include: {
+        serverMemberships: {
+            include: {
+                server: {
+                    include: {
+                        Channel: true,
+                    }
+                },
+                Role: {
+                    include: {
+                        RolePermissions: true
+                    }
+                }
+            }
+        }
+      }
     });
 
     // or password is incorrect (bcrypt)
@@ -85,6 +101,18 @@ router.post(
       res.status(401).send("Invalid credentials.");
       return;
     }
+
+    // get user servers, channels, roles
+    let servers = user.serverMemberships.map(x => x.server);
+    let serverIds = servers.map(x => x.id);
+    let channels = servers.map(s => s.Channel);
+    let channelIds = channels.map((c, i) => { serverId: serverIds[i]; channelIds: c.map(c => c.id); })
+    let roles = user.serverMemberships.map(s => s.Role);
+
+    // send to ws
+    // subscribe to all events on ws
+    // redis.on()
+
 
     const accessToken = await generateAccessToken(user.id);
     const refreshToken = await generateRefreshToken(user.id);
