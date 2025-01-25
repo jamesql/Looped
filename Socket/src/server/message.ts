@@ -52,20 +52,17 @@ export default (async (ws: Socket.SocketServer, client: Socket.SocketClient, req
             // fill session object and send it to user
 
             let _session = await getUserSession(decode["userId"]);
-            console.log(_session);
+            client.session = _session;
             // send ready opcode
 
             let payload = {
                 op: OPCodes.READY,
                 d: {
-                    
+                    _session: client.session,
                 }
             }; 
 
             client.sendAsync(payload);
-
-            
-
             break;
 
         case OPCodes.ERROR:
