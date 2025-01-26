@@ -55,7 +55,7 @@ export default function Application() {
 
         if (server) {
             setSelectedServerData(server);
-            setIsServerOwner(server.owner.id === userId);  // Update isServerOwner based on selected server
+            setIsServerOwner(server.ownerId === userId);  // Update isServerOwner based on selected server
         }
     };
     
@@ -86,6 +86,9 @@ export default function Application() {
             const newServer = await APIClient.createServer(newServerName, token);
             setServerData([...serverData, newServer]);  // Add the new server to the state
             setCreatingServer(false);  // Close the create server modal
+            setSelectedServer(newServer.id);
+            setIsServerOwner(newServer.ownerId === userId);
+    
         } catch (error) {
             console.error('Error creating server:', error);
         }
