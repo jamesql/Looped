@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WebSocketService from '../ws/WebSocketService';
 import { OPCodes } from '../ws/WSValues';
-import { onHello } from '../ws/WSHandlers';
+import { onHello, onReady } from '../ws/WSHandlers';
 
 export const WebSocketComponent = () => {
     const [wsServer, setWsService] = useState(null);
@@ -16,6 +16,9 @@ export const WebSocketComponent = () => {
         switch (data.op)  {
             case OPCodes.HELLO:
                 onHello(self, d);
+                break;
+            case OPCodes.READY:
+                onReady(self, d);
                 break;
         }
     };

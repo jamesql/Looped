@@ -1,10 +1,12 @@
 import ws from "ws";
+import { Session } from "./WSValues";
 
 export default class WebSocketService {
     private msgHandler: Function;
     private socket: WebSocket;
     static instance: WebSocketService;
-    private static sequence: number = 1;
+    private sequence: number = 1;
+    private session: Session;
 
     constructor(url: string, onMessageHandler: Function) {
         this.msgHandler = onMessageHandler;
@@ -27,19 +29,19 @@ export default class WebSocketService {
 
     }
 
-    onOpen = () => {
+    onOpen = (): void => {
         console.log("WebSocket connection started.");
     };
 
-    onClose = () => {
+    onClose = (): void => {
         console.log("WebSocket connection closed.");
     };
 
-    onError = (error) => {
+    onError = (error): void => {
         console.error("WebSocket connection error.", error);
     };
 
-    sendAsync = async(d: any) => {
+    sendAsync = async(d: any): Promise<void> => {
         if (this.socket.readyState !== WebSocket.OPEN) return;
         console.log(`[$socketClient] [Client>>Server] Sent OP Code >${d.op}< to Server.`);
 
@@ -47,17 +49,25 @@ export default class WebSocketService {
             this.socket.send(
                 JSON.stringify({
                     ...d,
-                    s:d.s??++WebSocketService.sequence,
+                    s:d.s??++this.sequence,
                 })
             );
-        });
+        });                        
     }
 
-    closeConnection = () => {
+    closeConnection = (): void => {
         if (this.socket.readyState === WebSocket.OPEN) {
           this.socket.close();
         }
       };
+
+    setSession = (_s: Session): void => {
+        this.session = _s;
+    };
+
+    getSession = (): Session => {
+        return this.session;
+    };
 
 
 }

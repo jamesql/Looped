@@ -30,4 +30,11 @@ export const OPCodes = {
   export const HEARTBEAT_INTERVAL = 6e4 as const;
   
   export interface User {}
+
+  export interface Session {
+    userId: String;
+    serverIds: string[];
+    roleIds: { serverId: string; roleIds: string[] }[];
+    channelIds: { serverId: string; channelIds: string[] }[];
+  }
   

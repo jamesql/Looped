@@ -15,3 +15,8 @@ export const onHello = async(client: WebSocketService, payload: any) => {
     }
     await client.sendAsync(d);
 };
+
+export const onReady = async(client: WebSocketService, payload: any) => {
+    await client.setSession(payload._session);
+    console.log(client.getSession())
+};
