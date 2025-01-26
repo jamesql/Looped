@@ -41,5 +41,9 @@ export async function validateRefreshToken(token: String) {
 }
 
 export async function validateAccessToken(token: String) {
+  try {
   return jwt.verify(token, ACCESS_TOKEN_SECRET);
+  } catch (e) {
+    return undefined;
+  }
 }
