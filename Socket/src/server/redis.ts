@@ -92,6 +92,37 @@ export const getUserSession = async (
   return null; // Return null if no session data exists for the user
 };
 
+export const subscribeToUserEvents = async (client: Socket.SocketClient) => {
+    let sub = await getSubscriberInstance();
+    let channelName = `user-events:${client.session.userId}`;
+
+    // User Events
+    sub.subscribe(channelName, (err, count) => {
+        if (err) console.error(err);
+        else         
+        console.log(
+            `[$wss] Redis subscribed: ${channelName} (${client.session.userId})`
+          );
+    });
+
+    sub.on("message", async (channel, m) => {
+        if (channel !== channelName) return;
+        if (client.readyState !== WebSocket.OPEN) return;
+
+        let data = JSON.parse(m);
+
+        let opcode = data["op"];
+        let d = data["d"];
+  
+        let payload = {
+          op: opcode,
+          d: d,
+        };
+
+        await client.sendAsync(payload);
+    });
+};
+
 export const subscribeToServerEvents = async (client: Socket.SocketClient) => {
   let sub = await getSubscriberInstance();
   let servers = client.session.serverIds;

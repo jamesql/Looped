@@ -9,6 +9,7 @@ import {
   getUserSession,
   subscribeToChannelEvents,
   subscribeToServerEvents,
+  subscribeToUserEvents,
 } from "./redis";
 import Redis from "ioredis";
 
@@ -71,6 +72,8 @@ export default async (
       // send ready opcode
 
       // subscribe to redis events
+      // change to single method todo:
+      subscribeToUserEvents(client);
       subscribeToServerEvents(client);
       subscribeToChannelEvents(client);
 

@@ -84,7 +84,7 @@ router.post("/create-server", [
         }
     }
 
-    await publishToChannel(`user:${user.id}:server-join:${server.id}`, payload);
+    await publishToChannel(`user-events:${user.id}`, payload);
 
     res.status(400).send(payload.d);
     return;
