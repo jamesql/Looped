@@ -33,6 +33,7 @@ export default function Login() {
         if (res.ok) {
           Cookie.set('accessToken', data.accessToken, {expires: 1});
           Cookie.set('refreshToken', data.refreshToken, {expires: 3});
+          Cookie.set('userId', data.userId, {expires: 7});
           window.location.href = "/application";
 
         } else setError(data.message || "Login failed.");
