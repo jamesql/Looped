@@ -1,20 +1,65 @@
+import { useState } from 'react';
+import Cookie from 'js-cookie';
+
+interface loginState {
+  username: string,
+  password: string
+}
 
 export default function Login() {
+  const [loginDetails, setLoginDetails] = useState({username: "", password: ""});
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: any) => {
+      e.preventDefault();
+
+      let { username, password } = loginDetails;
+
+      if (!username || !password) {
+        setError("Please enter both username and password!");
+        return;
+      }
+
+      // API Request
+      try {
+        const res = await fetch("http://localhost/auth/login", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }, body: JSON.stringify(loginDetails)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          Cookie.set('accessToken', data.accessToken, {expires: 1});
+          Cookie.set('refreshToken', data.refreshToken, {expires: 3});
+          window.location.href = "/application";
+
+        } else setError(data.message || "Login failed.");
+
+      } catch (err) {
+        setError("An issue occured. Please try again later.");
+        console.log(error);
+      }
+  }
+
     return (
         <div className="min-h-screen bg-gray-50 flex justify-center items-center">
         <div className="bg-white p-8 rounded-lg shadow-lg w-80">
           <h2 className="text-2xl font-semibold text-center text-blue-600 mb-4">Login</h2>
           {/* Form can be added here */}
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Username"
               className="w-full p-3 mb-4 border border-gray-300 rounded-md"
+              onChange={(e) => setLoginDetails({username: e.target.value, password: loginDetails.password})}
             />
             <input
               type="password"
               placeholder="Password"
               className="w-full p-3 mb-4 border border-gray-300 rounded-md"
+              onChange={(e) => setLoginDetails({username: loginDetails.username, password: e.target.value})}
             />
             <button
               type="submit"

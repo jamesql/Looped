@@ -76,9 +76,6 @@ export const validateChannel = async (channelId: string, serverId: string, res: 
   return channel;
 };
 
-// todo: make validations for server user and channel probably role
-// stop reusing code
-
 router.post(
   "/create-server",
   [
