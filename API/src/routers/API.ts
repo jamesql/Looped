@@ -230,7 +230,7 @@ router.post(
 
     await publishToChannel(`user-events:${user.id}`, payload);
     await updateUserState(user.id);
-    res.status(200).send(payload.d);
+    res.status(200).send(server);
     return;
   }
 );
