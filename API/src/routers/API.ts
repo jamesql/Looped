@@ -37,6 +37,45 @@ export const validateToken = async (
   return { valid: true, userId: decoded["userId"] };
 };
 
+export const validateUser = async (userId: string, res: Response) => {
+  const user = await _prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    res.status(401).send("User not found.");
+    return null;
+  }
+
+  return user;
+};
+
+export const validateServer = async (serverId: string, res: Response) => {
+  const server = await _prisma.server.findUnique({
+    where: { id: serverId },
+  });
+
+  if (!server) {
+    res.status(401).send("Server not found.");
+    return null;
+  }
+
+  return server;
+};
+
+export const validateChannel = async (channelId: string, serverId: string, res: Response) => {
+  const channel = await _prisma.channel.findUnique({
+    where: { id: channelId },
+  });
+
+  if (!channel || channel.serverid !== serverId) {
+    res.status(401).send("Channel not found.");
+    return null;
+  }
+
+  return channel;
+};
+
 // todo: make validations for server user and channel probably role
 // stop reusing code
 
@@ -59,16 +98,8 @@ router.post(
     let validation: Auth.TokenValidation = await validateToken(token, res);
     if (!validation.valid || validation.userId === null) return;
 
-    let user = await _prisma.user.findUnique({
-      where: {
-        id: validation.userId,
-      },
-    });
-
-    if (user === null) {
-      res.status(401).send("User not found.");
-      return;
-    }
+    let user = await validateUser(validation.userId, res);
+    if (!user) return;
 
     // create server in database
     let server = await _prisma.server.create({
@@ -123,29 +154,13 @@ router.post(
     let validation: Auth.TokenValidation = await validateToken(token, res);
     if (!validation.valid || validation.userId === null) return;
 
-    let user = await _prisma.user.findUnique({
-      where: {
-        id: validation.userId,
-      },
-    });
+    let user = await validateUser(validation.userId, res);
+    if (!user) return;
 
-    if (user === null) {
-      res.status(401).send("User not found.");
-      return;
-    }
+    let server = await validateServer(serverId, res);
+    if (!server) return;
 
-    let server = await _prisma.server.findUnique({
-      where: {
-        id: serverId,
-      },
-    });
-
-    if (server === null) {
-      res.status(401).send("Server not found.");
-      return;
-    }
-
-    // make sure user is not banned/already in server
+    // make sure user is not banned
     // todo:
 
     let mQuery = await _prisma.serverMember.findFirst({
@@ -222,29 +237,12 @@ router.post(
     let validation: Auth.TokenValidation = await validateToken(token, res);
     if (!validation.valid || validation.userId === null) return;
 
-    let user = await _prisma.user.findUnique({
-      where: {
-        id: validation.userId,
-      },
-    });
-
-    // make sure user exists
-    if (user === null) {
-      res.status(401).send("User does not exist");
-      return;
-    }
+    let user = await validateUser(validation.userId, res);
+    if (!user) return;
 
     // make sure server exists
-    let server = await _prisma.server.findUnique({
-      where: {
-        id: serverId,
-      },
-    });
-
-    if (server === null) {
-      res.status(401).send("Server does not exist");
-      return;
-    }
+    let server = await validateServer(serverId, res);
+    if (!server) return;
 
     // also add moderator permission later (todo)
     if (server.ownerId !== user.id) {
@@ -302,44 +300,16 @@ router.post(
     let validation: Auth.TokenValidation = await validateToken(token, res);
     if (!validation.valid || validation.userId === null) return;
 
-    let user = await _prisma.user.findUnique({
-      where: {
-        id: validation.userId,
-      },
-    });
-
-    // make sure user exists
-    if (user === null) {
-      res.status(401).send("User does not exist");
-      return;
-    }
+    let user = await validateUser(validation.userId, res);
+    if (!user) return;
 
     // make sure server exists
-    let server = await _prisma.server.findUnique({
-      where: {
-        id: serverId,
-      }
-    });
-
-    if (server === null) {
-      res.status(401).send("Server does not exist");
-      return;
-    }
+    let server = await validateServer(serverId, res);
+    if (!server) return;
 
     // make sure channel exists
-    let channel = await _prisma.channel.findUnique({
-      where:{
-        id: channelId
-      }, 
-      include: {
-        RolePermissions: true
-      }
-    });
-
-    if (channel === null) {
-      res.status(401).send("Channel does not exist");
-      return;
-    }
+    let channel = await validateChannel(channelId, serverId, res);
+    if (!channel) return;
 
     // add role permissions later
     // todo:
