@@ -76,6 +76,112 @@ export const validateChannel = async (channelId: string, serverId: string, res: 
   return channel;
 };
 
+// make type for this
+export const getServerData = async (userId) => {
+  const serverData = await _prisma.server.findMany({
+    where: {
+      members: {
+        some: {
+          userId, // Ensure the user is a member of the server
+        },
+      },
+    },
+    include: {
+      owner: true, // Include server owner
+      members: {
+        include: {
+          user: true, // Get user details for each member
+          Role: {
+            include: {
+              RolePermissions: true, // Include the role's permissions for each channel
+            },
+          },
+        },
+      },
+      Channel: {
+        include: {
+          RolePermissions: {
+            include: {
+              role: true, // Include the role tied to the permission
+            },
+          },
+        },
+      },
+      Role: {
+        include: {
+          RolePermissions: true, // Include role permissions for each channel
+        },
+      },
+    },
+  });
+
+  // Restructure the data into a neat object
+   const serverStructure = serverData.map((server) => {
+    return {
+      id: server.id,
+      name: server.name,
+      description: server.description,
+      owner: server.owner, // Server owner details
+      members: server.members.map((member) => ({
+        user: member.user, // User info for the member
+        roles: member.Role.map((role) => ({
+          id: role.id,
+          name: role.serverid, // Assuming `serverid` is the role name here; adjust accordingly
+          permissions: role.RolePermissions.map((permission) => ({
+            channelId: permission.channelid,
+            canRead: permission.canRead,
+            canSend: permission.canSend,
+            canManage: permission.canManage,
+            canConnect: permission.canConnect,
+          })),
+        })),
+      })),
+      channels: server.Channel.map((channel) => ({
+        id: channel.id,
+        name: channel.name,
+        type: channel.type,
+        rolePermissions: channel.RolePermissions.map((rolePermission) => ({
+          roleId: rolePermission.roleid,
+          permissions: {
+            canRead: rolePermission.canRead,
+            canSend: rolePermission.canSend,
+            canManage: rolePermission.canManage,
+            canConnect: rolePermission.canConnect,
+          },
+        })),
+      })),
+    };
+  });
+
+  return serverStructure;
+};
+
+
+router.get("/get-server-data", [
+  header("Authorization").notEmpty().withMessage("No Token Provided."),
+  body("userId").notEmpty().withMessage("No userId provided.")
+], async(req: Request, res: Response) => {
+    // validate header
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+    let token = req.header("Authorization") || "INVALID TOKEN";
+    let { userId } = req.body;
+
+    let validation: Auth.TokenValidation = await validateToken(token, res);
+    if (!validation.valid || validation.userId === null) return;
+
+    let user = await validateUser(validation.userId, res);
+    if (!user) return;
+
+    let serverData = await getServerData(user.id);
+    
+    res.status(200).send(serverData);
+
+});
+
 router.post(
   "/create-server",
   [
