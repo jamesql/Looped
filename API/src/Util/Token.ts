@@ -37,7 +37,11 @@ export async function generateRefreshToken(userId: string) {
 }
 
 export async function validateRefreshToken(token: String) {
-  return jwt.verify(token, REFRESH_TOKEN_SECRET);
+  try {
+    return jwt.verify(token, REFRESH_TOKEN_SECRET);
+    } catch (e) {
+      return undefined;
+    }
 }
 
 export async function validateAccessToken(token: String) {
