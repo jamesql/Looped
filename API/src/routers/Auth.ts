@@ -7,7 +7,7 @@ import {
   validateRefreshToken,
 } from "../Util/Token";
 import { v4 } from "uuid";
-import { getUserSession, setUserSession } from "../Util/redis";
+import { getUserSession, setUserSession, updateUserState } from "../Util/redis";
 
 const router: Router = express.Router();
 const _prisma = Prisma.getInstance();
@@ -77,22 +77,6 @@ router.post(
       where: {
         username: username,
       },
-      include: {
-        serverMemberships: {
-          include: {
-            server: {
-              include: {
-                Channel: true,
-              },
-            },
-            Role: {
-              include: {
-                RolePermissions: true,
-              },
-            },
-          },
-        },
-      },
     });
 
     // or password is incorrect (bcrypt)
@@ -101,32 +85,7 @@ router.post(
       return;
     }
 
-    // get user servers, channels, roles
-    let servers = user.serverMemberships.map((x) => x.server);
-    let serverIds = servers.map((x) => x.id);
-    let channels = servers.map((s) => s.Channel);
-    let channelIds = channels.map((c, i) => {
-      return { serverId: serverIds[i], channelIds: c.map((c) => c.id) };
-    });
-    let roles = user.serverMemberships.map((s, i) => {
-      return { serverId: serverIds[i], roleIds: s.Role.map((r) => r.id) };
-    });
-
-    // send to ws
-    // subscribe to all events on ws
-    // redis.on()
-
-    let _session: LoopedSession.Session = {
-      userId: user.id,
-      serverIds: serverIds,
-      roleIds: roles,
-      channelIds: channelIds,
-    };
-
-    await setUserSession(_session);
-
-    let x = await getUserSession(user.id);
-    // only give new refresh token if expired. Always give accessToken
+    await updateUserState(user.id);
 
     let tokenRes = await _prisma.refreshToken.findFirst({
       where: {

@@ -2,6 +2,7 @@
 
 // Singleton redis client class
 import { Redis } from "ioredis";
+import { OPCodes } from "./WSValues";
 
 // redisclient global
 let redisClient: Redis | null = null;
@@ -92,104 +93,63 @@ export const getUserSession = async (
   return null; // Return null if no session data exists for the user
 };
 
+export const refreshSubscriptions = async (client: Socket.SocketClient) => {
+  await subscribeToUserEvents(client);
+  await subscribeToChannelEvents(client);
+  await subscribeToServerEvents(client);
+};
+
+export const subscribeToChannel = async (
+  client: Socket.SocketClient,
+  channelName: string
+) => {
+  let sub = client.subscriber;
+  sub.subscribe(channelName, (err, count) => {
+    if (err) console.error(err);
+    else {
+      client.activeSubscriptions.add(channelName);
+      console.log(
+        `[$wss] Redis subscribed: ${channelName} (${client.session.userId})`
+      );
+    }
+  });
+};
+
 export const subscribeToUserEvents = async (client: Socket.SocketClient) => {
-    let sub = await getSubscriberInstance();
-    let channelName = `user-events:${client.session.userId}`;
+  let sub = client.subscriber;
+  let channelName = `user-events:${client.session.userId}`;
 
-    // User Events
-    sub.subscribe(channelName, (err, count) => {
-        if (err) console.error(err);
-        else         
-        console.log(
-            `[$wss] Redis subscribed: ${channelName} (${client.session.userId})`
-          );
-    });
+  if (client.activeSubscriptions.has(channelName)) return;
 
-    sub.on("message", async (channel, m) => {
-        if (channel !== channelName) return;
-        if (client.readyState !== WebSocket.OPEN) return;
+  // User Events
+  await subscribeToChannel(client, channelName);
 
-        let data = JSON.parse(m);
-
-        let opcode = data["op"];
-        let d = data["d"];
-  
-        let payload = {
-          op: opcode,
-          d: d,
-        };
-
-        await client.sendAsync(payload);
-    });
 };
 
 export const subscribeToServerEvents = async (client: Socket.SocketClient) => {
-  let sub = await getSubscriberInstance();
+  let sub = client.subscriber;
   let servers = client.session.serverIds;
 
-  servers.forEach((serverId) => {
+  servers.forEach(async (serverId) => {
     let channelName = `server-events:${serverId}`;
-    sub.subscribe(channelName, (err, count) => {
-      if (err) console.error(err);
-      else
-        console.log(
-          `[$wss] Redis subscribed: ${channelName} (${client.session.userId})`
-        );
-    });
-
-    sub.on("message", async (channel, m) => {
-      if (channel !== channelName) return;
-      if (client.readyState !== WebSocket.OPEN) return;
-
-      let data = JSON.parse(m);
-
-      let opcode = data["op"];
-      let d = data["d"];
-
-      let payload = {
-        op: opcode,
-        d: d,
-      };
-
-      await client.sendAsync(payload);
-    });
+    if (client.activeSubscriptions.has(channelName)) return;
+    await subscribeToChannel(client, channelName);
   });
 };
 
 export const subscribeToChannelEvents = async (client: Socket.SocketClient) => {
-  let sub = await getSubscriberInstance();
+  let sub = client.subscriber;
   let serverChannels = client.session.channelIds;
 
   serverChannels.forEach((i) => {
     let channels = i.channelIds;
 
-    channels.forEach((c) => {
+    channels.forEach(async (c) => {
       let channelName = `channel-event:${i.serverId}:${c}`;
 
-      sub.subscribe(channelName, (err, count) => {
-        if (err) console.error(err);
-        else
-          console.log(
-            `[$wss] Redis subscribed: ${channelName} (${client.session.userId})`
-          );
-      });
+      if (client.activeSubscriptions.has(channelName)) return;
 
-      sub.on("message", async (channel, m) => {
-        if (channel !== channelName) return;
-        if (client.readyState !== WebSocket.OPEN) return;
-
-        let data = JSON.parse(m);
-
-        let opcode = data["op"];
-        let d = data["d"];
-
-        let payload = {
-          op: opcode,
-          d: d,
-        };
-
-        await client.sendAsync(payload);
-      });
+      await subscribeToChannel(client, channelName);
     });
   });
 };

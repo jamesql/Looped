@@ -5,7 +5,7 @@ const { body, validationResult, header } = require("express-validator");
 import { v4 } from "uuid";
 import { validateAccessToken } from "../Util/Token";
 import Prisma from "../db/prisma";
-import { publishToChannel } from "../Util/redis";
+import { publishToChannel, updateUserState } from "../Util/redis";
 import { OPCodes } from "../Util/OPCodes";
 
 const router: Router = express.Router();
@@ -85,8 +85,8 @@ router.post("/create-server", [
     }
 
     await publishToChannel(`user-events:${user.id}`, payload);
-
-    res.status(400).send(payload.d);
+    await updateUserState(user.id);
+    res.status(200).send(payload.d);
     return;
  });
 

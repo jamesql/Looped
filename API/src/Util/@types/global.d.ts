@@ -23,4 +23,5 @@ declare global {
       channelIds: { serverId: string; channelIds: string[] }[];
     }
   }
+  
 }

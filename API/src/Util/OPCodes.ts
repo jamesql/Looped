@@ -16,5 +16,6 @@ export const OPCodes = {
     RECONNECT: 13,
     UPDATE_VOICE_STATE: 14,
   
+    NILOP: -1,
     ERROR: 9999,
   } as const;

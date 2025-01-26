@@ -1,9 +1,12 @@
 /// <reference path="./@types/global.d.ts" />
 // Singleton redis client class
 import { Redis } from "ioredis";
+import Prisma from "../db/prisma";
+import { OPCodes } from "./OPCodes";
 
 // redisclient global
 let redisClient: Redis | null = null;
+const _prisma = Prisma.getInstance();
 
 export const getRedisInstance = (): Redis => {
   if (!redisClient) {
@@ -67,16 +70,73 @@ export const getUserSession = async (
 };
 
 export const publishToChannel = async (channelName: string, message: any) => {
-    try {
-        const rc: Redis = await getRedisInstance();
-        // Ensure the message is serialized as a string (if it's an object)
-        const messageStr = JSON.stringify(message);
-    
-        // Publish the message to the Redis channel
-        await rc.publish(channelName, messageStr);
-    
-        console.log(`[$api] Redis Message published to ${channelName}:`, messageStr);
-      } catch (error) {
-        console.error(`[$api] Error publishing to ${channelName}:`, error);
-      }
+  try {
+    const rc: Redis = await getRedisInstance();
+    // Ensure the message is serialized as a string (if it's an object)
+    const messageStr = JSON.stringify(message);
+
+    // Publish the message to the Redis channel
+    await rc.publish(channelName, messageStr);
+
+    console.log(
+      `[$api] Redis Message published to ${channelName}:`,
+      messageStr
+    );
+  } catch (error) {
+    console.error(`[$api] Error publishing to ${channelName}:`, error);
+  }
+};
+
+// this needs a type for the user query
+export const updateUserState = async (userId: string) => {
+  // get user from prisma
+  let user = await _prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      serverMemberships: {
+        include: {
+          server: {
+            include: {
+              Channel: true,
+            },
+          },
+          Role: {
+            include: {
+              RolePermissions: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (user === null) return;
+
+  let servers = user.serverMemberships.map((x) => x.server);
+  let serverIds = servers.map((x) => x.id);
+  let channels = servers.map((s) => s.Channel);
+  let channelIds = channels.map((c, i) => {
+    return { serverId: serverIds[i], channelIds: c.map((c) => c.id) };
+  });
+  let roles = user.serverMemberships.map((s, i) => {
+    return { serverId: serverIds[i], roleIds: s.Role.map((r) => r.id) };
+  });
+
+  // send to ws
+  // subscribe to all events on ws
+  // redis.on()
+
+  let _session: LoopedSession.Session = {
+    userId: user.id,
+    serverIds: serverIds,
+    roleIds: roles,
+    channelIds: channelIds,
+  };
+
+  await setUserSession(_session);
+  await publishToChannel(`user-events:${user.id}`, {
+    op: OPCodes.NILOP,
+  })
 };

@@ -1,5 +1,6 @@
 import { Channel } from "diagnostics_channel";
 import { Server } from "http";
+import Redis from "ioredis";
 
 export {};
 
@@ -27,6 +28,8 @@ declare global {
       authenticated: boolean;
       session: LoopedSession.Session;
       address: String;
+      activeSubscriptions: Set<string>;
+      subscriber: Redis;
 
       props: {
         sequence: number;
