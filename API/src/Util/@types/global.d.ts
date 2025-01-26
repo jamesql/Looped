@@ -7,6 +7,11 @@ declare global {
       refresh_token: String;
     }
 
+    interface TokenValidation {
+        valid: boolean,
+        userId: string | null
+    }
+
     type ValidationError = String;
   }
 

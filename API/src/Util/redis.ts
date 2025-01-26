@@ -65,3 +65,18 @@ export const getUserSession = async (
 
   return null; // Return null if no session data exists for the user
 };
+
+export const publishToChannel = async (channelName: string, message: any) => {
+    try {
+        const rc: Redis = await getRedisInstance();
+        // Ensure the message is serialized as a string (if it's an object)
+        const messageStr = JSON.stringify(message);
+    
+        // Publish the message to the Redis channel
+        await rc.publish(channelName, messageStr);
+    
+        console.log(`[$api] Redis Message published to ${channelName}:`, messageStr);
+      } catch (error) {
+        console.error(`[$api] Error publishing to ${channelName}:`, error);
+      }
+};
