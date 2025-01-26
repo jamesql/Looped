@@ -19,7 +19,7 @@ export const validateToken = async (
 
   if (!decoded) {
     res.status(401).send("Invalid credentials.");
-    return {valid: false, userId: null}; 
+    return { valid: false, userId: null };
   }
 
   if (decoded["userId"] === undefined) {
@@ -36,6 +36,9 @@ export const validateToken = async (
 
   return { valid: true, userId: decoded["userId"] };
 };
+
+// todo: make validations for server user and channel probably role
+// stop reusing code
 
 router.post(
   "/create-server",
@@ -196,86 +199,174 @@ router.post("/modify-server", (req: Request, res: Response) => {});
 
 router.post("/delete-server", (req: Request, res: Response) => {});
 
-router.post("/create-channel",   [
-  header("Authorization").notEmpty().withMessage("No Token Provided."),
-  body("serverId").notEmpty().withMessage("No server id provided."),
-  body("channelName").notEmpty().withMessage("No channel name provided."),
-  body("channelType").isIn(["TEXT", "VOICE"]).withMessage("Channel types TEXT/VOICE.")
-], async (req: Request, res: Response) => {
-      // validate header
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({ errors: errors.array() });
-        return;
-      }
-      let token = req.header("Authorization") || "INVALID TOKEN";
-      let { serverId, channelName, channelType } = req.body;
-  
-      let validation: Auth.TokenValidation = await validateToken(token, res);
-      if (!validation.valid || validation.userId === null) return;
+router.post(
+  "/create-channel",
+  [
+    header("Authorization").notEmpty().withMessage("No Token Provided."),
+    body("serverId").notEmpty().withMessage("No server id provided."),
+    body("channelName").notEmpty().withMessage("No channel name provided."),
+    body("channelType")
+      .isIn(["TEXT", "VOICE"])
+      .withMessage("Channel types TEXT/VOICE."),
+  ],
+  async (req: Request, res: Response) => {
+    // validate header
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+    let token = req.header("Authorization") || "INVALID TOKEN";
+    let { serverId, channelName, channelType } = req.body;
 
-      let user = await _prisma.user.findUnique({
-        where: {
-          id: validation.userId
-        }
-      });
+    let validation: Auth.TokenValidation = await validateToken(token, res);
+    if (!validation.valid || validation.userId === null) return;
 
-      // make sure user exists
-      if (user === null) {
-        res.status(401).send("User does not exist");
-        return;
-      }
+    let user = await _prisma.user.findUnique({
+      where: {
+        id: validation.userId,
+      },
+    });
 
-      // make sure server exists
-      let server = await _prisma.server.findUnique({
-        where: {
-          id: serverId
-        }
-      });
+    // make sure user exists
+    if (user === null) {
+      res.status(401).send("User does not exist");
+      return;
+    }
 
-      if (server === null) {
-        res.status(401).send("Server does not exist");
-        return;
-      }
+    // make sure server exists
+    let server = await _prisma.server.findUnique({
+      where: {
+        id: serverId,
+      },
+    });
 
-      // also add moderator permission later (todo)
-      if (server.ownerId !== user.id) {
-        res.status(401).send("No permission.");
-        return;
-      }
+    if (server === null) {
+      res.status(401).send("Server does not exist");
+      return;
+    }
 
-      let channel = await _prisma.channel.create({
-        data: {
-          id: v4(),
-          name: channelName,
-          type: channelType,
-          serverid: serverId
-        }
-      });
-      
-      let payload = {
-        op: OPCodes.CHANNEL_CREATE,
-        d: {
-          id: channel.id,
-          name: channel.name,
-          type: channel.type,
-          serverid: channel.serverid
-        }
-      }
+    // also add moderator permission later (todo)
+    if (server.ownerId !== user.id) {
+      res.status(401).send("No permission.");
+      return;
+    }
 
-      await publishToChannel(`server-events:${channel.serverid}`, payload);
-      await updateUserState(user.id);
-      res.status(200).send(payload.d);
+    let channel = await _prisma.channel.create({
+      data: {
+        id: v4(),
+        name: channelName,
+        type: channelType,
+        serverid: serverId,
+      },
+    });
 
+    let payload = {
+      op: OPCodes.CHANNEL_CREATE,
+      d: {
+        id: channel.id,
+        name: channel.name,
+        type: channel.type,
+        serverid: channel.serverid,
+      },
+    };
 
-});
+    await publishToChannel(`server-events:${channel.serverid}`, payload);
+    await updateUserState(user.id);
+    res.status(200).send(payload.d);
+  }
+);
 
 router.post("/modify-channel", (req: Request, res: Response) => {});
 
 router.post("/delete-channel", (req: Request, res: Response) => {});
 
-// 2
-router.post("/message", (req: Request, res: Response) => {});
+router.post(
+  "/message",
+  [
+    header("Authorization").notEmpty().withMessage("No Token Provided."),
+    body("serverId").notEmpty().withMessage("No serverId provided."),
+    body("channelId").notEmpty().withMessage("No channelId provided."),
+    body("content").notEmpty().withMessage("No message content."),
+  ],
+  async (req: Request, res: Response) => {
+    // validate header
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+    let token = req.header("Authorization") || "INVALID TOKEN";
+    let { serverId, channelId, content } = req.body;
+
+    let validation: Auth.TokenValidation = await validateToken(token, res);
+    if (!validation.valid || validation.userId === null) return;
+
+    let user = await _prisma.user.findUnique({
+      where: {
+        id: validation.userId,
+      },
+    });
+
+    // make sure user exists
+    if (user === null) {
+      res.status(401).send("User does not exist");
+      return;
+    }
+
+    // make sure server exists
+    let server = await _prisma.server.findUnique({
+      where: {
+        id: serverId,
+      }
+    });
+
+    if (server === null) {
+      res.status(401).send("Server does not exist");
+      return;
+    }
+
+    // make sure channel exists
+    let channel = await _prisma.channel.findUnique({
+      where:{
+        id: channelId
+      }, 
+      include: {
+        RolePermissions: true
+      }
+    });
+
+    if (channel === null) {
+      res.status(401).send("Channel does not exist");
+      return;
+    }
+
+    // add role permissions later
+    // todo:
+    
+    let msg = await _prisma.message.create({
+      data: {
+        id: v4(),
+        content: content,
+        senderid: user.id,
+        channelid: channel.id
+      }
+    });
+
+    let payload = {
+      op: OPCodes.MESSAGE_CREATE,
+      d: {
+        id: msg.id,
+        content: content,
+        senderid: user.id,
+        channelid: channel.id
+      }
+    }
+
+    await publishToChannel(`channel-events:${server.id}:${channel.id}`, payload);
+    res.status(200).send(payload.d);
+  }
+);
 
 router.post("/modify-message", (req: Request, res: Response) => {});
 

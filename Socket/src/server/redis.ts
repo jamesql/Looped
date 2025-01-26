@@ -145,7 +145,7 @@ export const subscribeToChannelEvents = async (client: Socket.SocketClient) => {
     let channels = i.channelIds;
 
     channels.forEach(async (c) => {
-      let channelName = `channel-event:${i.serverId}:${c}`;
+      let channelName = `channel-events:${i.serverId}:${c}`;
 
       if (client.activeSubscriptions.has(channelName)) return;
 
