@@ -126,7 +126,7 @@ export const getServerData = async (userId) => {
         user: member.user, // User info for the member
         roles: member.Role.map((role) => ({
           id: role.id,
-          name: role.serverid, // Assuming `serverid` is the role name here; adjust accordingly
+          name: "ROLE NAME NEEDS TO BE IMPLEMENTED", // todo:
           permissions: role.RolePermissions.map((permission) => ({
             channelId: permission.channelid,
             canRead: permission.canRead,
