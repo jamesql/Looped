@@ -9,6 +9,10 @@ export default function Login() {
 
   const handleSubmit = async (e: any) => {
       e.preventDefault();
+      Cookie.remove("accessToken");
+      Cookie.remove("refreshToken");
+      Cookie.remove("userId");
+
 
       if (!username || !password) {
         setError("Please enter both username and password!");

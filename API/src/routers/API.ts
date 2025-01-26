@@ -159,17 +159,15 @@ export const getServerData = async (userId) => {
 
 router.get("/get-server-data", [
   header("Authorization").notEmpty().withMessage("No Token Provided."),
-  body("userId").notEmpty().withMessage("No userId provided.")
 ], async(req: Request, res: Response) => {
     // validate header
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log(errors);
       res.status(400).json({ errors: errors.array() });
       return;
     }
     let token = req.header("Authorization") || "INVALID TOKEN";
-    let { userId } = req.body;
-
     let validation: Auth.TokenValidation = await validateToken(token, res);
     if (!validation.valid || validation.userId === null) return;
 

@@ -53,7 +53,9 @@ router.post(
     const accessToken = await generateAccessToken(user.id);
     const refreshToken = await generateRefreshToken(user.id);
 
-    res.json({ accessToken, refreshToken });
+    await updateUserState(user.id);
+
+    res.json({ accessToken, refreshToken, userId: user.id });
   }
 );
 
@@ -104,7 +106,7 @@ router.post(
         ? await generateRefreshToken(user.id)
         : tokenRes.token;
 
-    res.json({ accessToken, refreshToken });
+    res.json({ accessToken, refreshToken, userId: user.id });
   }
 );
 
