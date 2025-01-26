@@ -1,19 +1,14 @@
 import { useState } from 'react';
 import Cookie from 'js-cookie';
 
-interface loginState {
-  username: string,
-  password: string
-}
 
 export default function Login() {
-  const [loginDetails, setLoginDetails] = useState({username: "", password: ""});
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: any) => {
       e.preventDefault();
-
-      let { username, password } = loginDetails;
 
       if (!username || !password) {
         setError("Please enter both username and password!");
@@ -26,9 +21,10 @@ export default function Login() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
-          }, body: JSON.stringify(loginDetails)
+          }, body: JSON.stringify({username, password})
         });
         const data = await res.json();
+        console.log(data);
 
         if (res.ok) {
           Cookie.set('accessToken', data.accessToken, {expires: 1});
@@ -53,13 +49,13 @@ export default function Login() {
               type="text"
               placeholder="Username"
               className="w-full p-3 mb-4 border border-gray-300 rounded-md"
-              onChange={(e) => setLoginDetails({username: e.target.value, password: loginDetails.password})}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <input
               type="password"
               placeholder="Password"
               className="w-full p-3 mb-4 border border-gray-300 rounded-md"
-              onChange={(e) => setLoginDetails({username: loginDetails.username, password: e.target.value})}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <button
               type="submit"
