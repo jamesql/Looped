@@ -123,13 +123,9 @@ router.post(
       channelIds: channelIds,
     };
 
-    console.log(_session);
-
     await setUserSession(_session);
 
     let x = await getUserSession(user.id);
-    console.log(x);
-
     // only give new refresh token if expired. Always give accessToken
 
     let tokenRes = await _prisma.refreshToken.findFirst({

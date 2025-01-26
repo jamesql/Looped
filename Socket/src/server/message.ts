@@ -69,6 +69,7 @@ export default async (
 
       let _session = await getUserSession(decode["userId"]);
       client.session = _session;
+      console.log(_session);
       // send ready opcode
 
       // subscribe to redis events
