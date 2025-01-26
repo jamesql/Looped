@@ -1,6 +1,3 @@
-// seperate data file so we can compile these values seperate than our
-// global.d.ts
-
 // Client and server OPCodes
 export const OPCodes = {
   HELLO: 0,
