@@ -163,7 +163,6 @@ router.get("/get-server-data", [
     // validate header
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log(errors);
       res.status(400).json({ errors: errors.array() });
       return;
     }
