@@ -38,6 +38,7 @@ router.post(
     const { firstName, lastName, username, email, password } = req.body;
 
     // include bcrypt for password later
+    // also validate username, email is not taken
     const user = await _prisma.user.create({
       data: {
         id: v4(),

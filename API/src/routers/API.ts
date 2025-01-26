@@ -191,12 +191,14 @@ router.post("/modify-server", (req: Request, res: Response) => {});
 
 router.post("/delete-server", (req: Request, res: Response) => {});
 
+// 1
 router.post("/create-channel", (req: Request, res: Response) => {});
 
 router.post("/modify-channel", (req: Request, res: Response) => {});
 
 router.post("/delete-channel", (req: Request, res: Response) => {});
 
+// 2
 router.post("/message", (req: Request, res: Response) => {});
 
 router.post("/modify-message", (req: Request, res: Response) => {});
