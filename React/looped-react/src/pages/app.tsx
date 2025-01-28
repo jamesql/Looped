@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Cookie from "js-cookie";
 import APIClient from "./api/APIClient";
 import { WebSocketComponent } from "./components/_ws";
-import { Server, Channel } from "./ws/WSValues";
+import { Server, Channel, Message } from "./ws/WSValues";
 
 export default function App() {
   const [token, setToken] = useState(null);
@@ -11,7 +11,10 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [selectedServer, setSelectedServer] = useState(null);
   const [selectedChannel, setSelectedChannel] = useState(null);
+  const [messageContent, setMessageContent] = useState("");
   const [selectedServerData, setSelectedServerData] = useState(null);
+  const [selectedChannelData, setSelectedChannelData] = useState(null);
+  const [selectedChannelMessages, setSelectedChannelMessages] = useState<Message[]>([]);
   const [isServerOwner, setIsServerOwner] = useState(false);
   const [creatingServer, setCreatingServer] = useState(false);
   const [creatingChannel, setCreatingChannel] = useState(false);
@@ -20,6 +23,10 @@ export default function App() {
     name: "",
     type: "TEXT",
   });
+
+// ref
+const selectedChannelRef = useRef(null);
+
 
   // get token
   useEffect(() => {
@@ -49,10 +56,8 @@ export default function App() {
   useEffect(() => {
     if (!selectedServer) return;
 
-    setSelectedServerData(
-        serverData.find((s) => s.id === selectedServer)
-    );
-
+    const selectedServerD = serverData.find((s) => s.id === selectedServer)
+    setSelectedServerData(selectedServerD);
   }, [serverData]);
 
   const handleHello = async () => {};
@@ -65,7 +70,7 @@ export default function App() {
       return newState;
     });
     setIsServerOwner(newServer.ownerId === userId);
-  
+
     // Automatically select the newly created server
     handleServerSelect(newServer.id);
   };
@@ -85,13 +90,20 @@ export default function App() {
   // Handle channel selection
   const handleChannelSelect = (channelId) => {
     setSelectedChannel(channelId);
+
+    const channel = selectedServerData.Channel.find((c) => c.id === channelId);
+
+    setSelectedChannelData(channel);
+    setSelectedChannelMessages(channel ? channel.channelMessages : []);
+
+    selectedChannelRef.current = channelId;
   };
 
   // Handle new channel
   const handleCreateChannel = (newChannel: Channel) => {
-    console.log('Received new channel:', newChannel);
-    setServerData(prevState => 
-      prevState.map(server => {
+    console.log("Received new channel:", newChannel);
+    setServerData((prevState) =>
+      prevState.map((server) => {
         if (server.id === newChannel.serverid) {
           return {
             ...server,
@@ -103,6 +115,43 @@ export default function App() {
     );
   };
 
+// handle new message
+const handleMessageCreate = (message: Message) => {
+    setServerData((prevState) => {
+        // Create a new state to ensure immutability
+        return prevState.map((s) => {
+            // Find the channel and update it if the message matches
+            const updatedChannels = s.Channel.map((c) => {
+                if (c.id === message.channelid) {
+                    // Ensure you're returning a new object for the updated channel
+                    return {
+                        ...c,
+                        channelMessages: c.channelMessages
+                            ? [...c.channelMessages, message]
+                            : [message],
+                    };
+                }
+                return c;
+            });
+
+            // Return the updated server with modified channels
+            return {
+                ...s,
+                Channel: updatedChannels,
+            };
+        });
+    });
+
+    if (selectedChannelRef.current === message.channelid) {
+        setSelectedChannelMessages((prevMessages) => [
+          ...prevMessages,
+          message,
+        ]);
+      }
+};
+
+  
+  
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -112,10 +161,13 @@ export default function App() {
         onReadyCallback={handleReady}
         onServerCreateCallback={handleCreateServer}
         onCreateChannelCallback={handleCreateChannel}
+        onCreateMessageCallback={handleMessageCreate}
       />
       {/* WebSocket component */}
       <h1>Welcome to Looped.</h1>
       <h2>User ID: {userId}</h2>
+      {selectedServerData && (<h3>Selected Server: {selectedServerData.name}</h3>)}
+      {selectedChannelData && (<h4>Selected Channel: {selectedChannelData.name}</h4>)}
 
       {/* Server selection dropdown */}
       <div>
@@ -150,6 +202,34 @@ export default function App() {
               </option>
             ))}
           </select>
+        </div>
+      )}
+
+      {selectedChannel && selectedChannelData && selectedChannelMessages && (
+        <div style={{ maxHeight: '600px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px' }}>
+        {selectedChannelMessages.map((message) => (
+          <div key={message.id} style={{ marginBottom: '10px' }}>
+            <p>
+            <strong>{selectedServerData.members.find((m) => m.userId === message.senderid).user.username}:</strong>
+            {message.content}
+            </p>
+          </div>
+        ))}
+      </div>
+      )}
+
+      {/* Message input */}
+      {selectedChannel &&(
+        <div>
+          <label htmlFor="messageInput">Message:</label>
+          <textarea
+            id="messageInput"
+            rows={4}
+            placeholder="Type your message"
+            value={messageContent}
+            onChange={(e) => setMessageContent(e.target.value)}
+          />
+          <button onClick={() => APIClient.sendMessage(selectedServer, selectedChannel, messageContent, token)}>Send Message</button>
         </div>
       )}
 

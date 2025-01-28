@@ -8,6 +8,7 @@ interface WebSocketCallbacks {
     onReadyCallback: Function;
     onServerCreateCallback: Function;
     onCreateChannelCallback: Function;
+    onCreateMessageCallback: Function;
 };
 
 export const WebSocketComponent = (props: WebSocketCallbacks) => {
@@ -34,6 +35,9 @@ export const WebSocketComponent = (props: WebSocketCallbacks) => {
                 break;
             case OPCodes.CHANNEL_CREATE:
                 props.onCreateChannelCallback(d);
+                break;
+            case OPCodes.MESSAGE_CREATE:
+                props.onCreateMessageCallback(d);
                 break;
             
         }

@@ -91,7 +91,17 @@ const getServerData = async (userId: string) => {
           channelMessages: true
         }
       },
-      members: true,
+      members: {
+        include: {
+          user: {
+            select: {
+              username: true,
+              firstName: true,
+              lastName: true
+            }
+          }
+        }
+      }
     }
   });
 };  
@@ -365,12 +375,7 @@ router.post(
 
     let payload = {
       op: OPCodes.MESSAGE_CREATE,
-      d: {
-        id: msg.id,
-        content: content,
-        senderid: user.id,
-        channelid: channel.id
-      }
+      d: msg
     }
 
     await publishToChannel(`channel-events:${server.id}:${channel.id}`, payload);
