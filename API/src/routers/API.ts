@@ -76,85 +76,25 @@ export const validateChannel = async (channelId: string, serverId: string, res: 
   return channel;
 };
 
-// make type for this
-export const getServerData = async (userId) => {
-  const serverData = await _prisma.server.findMany({
+const getServerData = async (userId: string) => {
+  return await _prisma.server.findMany({
     where: {
       members: {
         some: {
-          userId, // Ensure the user is a member of the server
-        },
-      },
+          userId
+        }
+      }
     },
     include: {
-      owner: true, // Include server owner
-      members: {
-        include: {
-          user: true, // Get user details for each member
-          Role: {
-            include: {
-              RolePermissions: true, // Include the role's permissions for each channel
-            },
-          },
-        },
-      },
       Channel: {
         include: {
-          RolePermissions: {
-            include: {
-              role: true, // Include the role tied to the permission
-            },
-          },
-        },
+          channelMessages: true
+        }
       },
-      Role: {
-        include: {
-          RolePermissions: true, // Include role permissions for each channel
-        },
-      },
-    },
+      members: true,
+    }
   });
-
-  // Restructure the data into a neat object
-   const serverStructure = serverData.map((server) => {
-    return {
-      id: server.id,
-      name: server.name,
-      description: server.description,
-      owner: server.owner, // Server owner details
-      members: server.members.map((member) => ({
-        user: member.user, // User info for the member
-        roles: member.Role.map((role) => ({
-          id: role.id,
-          name: "ROLE NAME NEEDS TO BE IMPLEMENTED", // todo:
-          permissions: role.RolePermissions.map((permission) => ({
-            channelId: permission.channelid,
-            canRead: permission.canRead,
-            canSend: permission.canSend,
-            canManage: permission.canManage,
-            canConnect: permission.canConnect,
-          })),
-        })),
-      })),
-      channels: server.Channel.map((channel) => ({
-        id: channel.id,
-        name: channel.name,
-        type: channel.type,
-        rolePermissions: channel.RolePermissions.map((rolePermission) => ({
-          roleId: rolePermission.roleid,
-          permissions: {
-            canRead: rolePermission.canRead,
-            canSend: rolePermission.canSend,
-            canManage: rolePermission.canManage,
-            canConnect: rolePermission.canConnect,
-          },
-        })),
-      })),
-    };
-  });
-
-  return serverStructure;
-};
+};  
 
 
 router.get("/get-server-data", [
@@ -174,6 +114,7 @@ router.get("/get-server-data", [
     if (!user) return;
 
     let serverData = await getServerData(user.id);
+    console.log(serverData);
     
     res.status(200).send(serverData);
 
@@ -208,7 +149,15 @@ router.post(
         name: name,
         ownerId: user.id,
       },
+      include: {
+        Channel: true,
+        Role: {
+          include: { RolePermissions: true }
+        }
+      }
     });
+
+    console.log(server);
 
     // add user to server
     let member = await _prisma.serverMember.create({
@@ -221,11 +170,7 @@ router.post(
 
     let payload = {
       op: OPCodes.SERVER_CREATE,
-      d: {
-        id: server.id,
-        name: server.name,
-        ownerId: user.id,
-      },
+      d: server,
     };
 
     await publishToChannel(`user-events:${user.id}`, payload);
@@ -361,12 +306,7 @@ router.post(
 
     let payload = {
       op: OPCodes.CHANNEL_CREATE,
-      d: {
-        id: channel.id,
-        name: channel.name,
-        type: channel.type,
-        serverid: channel.serverid,
-      },
+      d: channel,
     };
 
     await publishToChannel(`server-events:${channel.serverid}`, payload);

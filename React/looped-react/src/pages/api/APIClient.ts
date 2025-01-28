@@ -26,13 +26,11 @@ class ApiClient {
 
   // Helper method to add Authorization header for all requests
   private addAuthHeader(token: string) {
-    console.log(token);
     this.axiosInstance.defaults.headers['Authorization'] = token;
   }
 
   // Example: Get server data for a user
   public async getServerData(token: string): Promise<any> {
-    console.log(token);
     await this.addAuthHeader(token);  // Add Authorization header
     try {
       const response: AxiosResponse = await this.axiosInstance.get('/get-server-data', {});

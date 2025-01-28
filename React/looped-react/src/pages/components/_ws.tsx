@@ -6,6 +6,8 @@ import { onHello, onReady } from '../ws/WSHandlers';
 interface WebSocketCallbacks {
     onHelloCallback: Function;
     onReadyCallback: Function;
+    onServerCreateCallback: Function;
+    onCreateChannelCallback: Function;
 };
 
 export const WebSocketComponent = (props: WebSocketCallbacks) => {
@@ -27,6 +29,13 @@ export const WebSocketComponent = (props: WebSocketCallbacks) => {
                 onReady(self, d);
                 props.onReadyCallback();
                 break;
+            case OPCodes.SERVER_CREATE: 
+                props.onServerCreateCallback(d);
+                break;
+            case OPCodes.CHANNEL_CREATE:
+                props.onCreateChannelCallback(d);
+                break;
+            
         }
     };
 

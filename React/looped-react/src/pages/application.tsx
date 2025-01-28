@@ -135,6 +135,8 @@ export default function Application() {
             <WebSocketComponent 
             onHelloCallback={handleHello} 
             onReadyCallback={handleReady} 
+            onServerCreateCallback={undefined}
+            onCreateChannelCallback={undefined}
             /> {/* WebSocket component */}
 
             {/* Server selection dropdown */}
