@@ -3,7 +3,12 @@ import WebSocketService from '../ws/WebSocketService';
 import { OPCodes } from '../ws/WSValues';
 import { onHello, onReady } from '../ws/WSHandlers';
 
-export const WebSocketComponent = () => {
+interface WebSocketCallbacks {
+    onHelloCallback: Function;
+    onReadyCallback: Function;
+};
+
+export const WebSocketComponent = (props: WebSocketCallbacks) => {
     const [wsServer, setWsService] = useState(null);
 
 
@@ -16,9 +21,11 @@ export const WebSocketComponent = () => {
         switch (data.op)  {
             case OPCodes.HELLO:
                 onHello(self, d);
+                props.onHelloCallback();
                 break;
             case OPCodes.READY:
                 onReady(self, d);
+                props.onReadyCallback();
                 break;
         }
     };

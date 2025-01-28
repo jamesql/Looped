@@ -117,6 +117,14 @@ export default function Application() {
         }
     };
 
+    const handleHello = async () => {
+
+    };
+
+    const handleReady = async () => {
+
+    };
+
     if (loading)
     return <div>Loading...</div>; 
 
@@ -124,7 +132,10 @@ export default function Application() {
         <div>
             <h1>Welcome to Looped.</h1>
             <h2>User ID: {userId}</h2>
-            <WebSocketComponent /> {/* WebSocket component */}
+            <WebSocketComponent 
+            onHelloCallback={handleHello} 
+            onReadyCallback={handleReady} 
+            /> {/* WebSocket component */}
 
             {/* Server selection dropdown */}
             <div>
