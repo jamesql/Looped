@@ -37,4 +37,59 @@ export const OPCodes = {
     roleIds: { serverId: string; roleIds: string[] }[];
     channelIds: { serverId: string; channelIds: string[] }[];
   }
+
+  export type CHANNEL_TYPE = "TEXT" | "VOICE"
+
+  export interface User {
+    id: string,
+    firstName: string,
+    lastName: string,
+    username: string,
+    email: string,
+    avatarUrl?: string,
+    roles: Role[]
+  }
+
+  export interface Client extends User {
+    servers: Server[]
+  }
+
+  export interface Message {
+    id: string,
+    content: string,
+    senderid: string,
+    channelid: string
+  }
+
+  export interface Channel {
+    id: string,
+    name: string,
+    serverid: string,
+    channelType: CHANNEL_TYPE,
+    messages?: Message[]
+  }
+
+  export interface RolePermissions {
+    roleid: string,
+    channelid: string,
+    canRead: boolean,
+    canSend: boolean,
+    canManage: boolean,
+    canConnect: boolean
+  }
+
+  export interface Role {
+    id: string,
+    serverid: string,
+    RolePermissions: RolePermissions[]
+  }
+
+  export interface Server {
+    id: string, 
+    name: string, 
+    description: string, 
+    ownerId: string,
+    members: User[],
+    channels: Channel[]
+  }
   

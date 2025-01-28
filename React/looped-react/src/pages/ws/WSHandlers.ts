@@ -5,7 +5,7 @@ import { OPCodes } from './WSValues';
 // change todo: add payload structures
 export const onHello = async(client: WebSocketService, payload: any) => {
 
-    let token = await Cookie.get("accessToken");
+    let token = Cookie.get("accessToken");
 
     let d = {
         op: OPCodes.AUTH,

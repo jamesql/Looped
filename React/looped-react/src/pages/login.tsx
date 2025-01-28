@@ -34,7 +34,7 @@ export default function Login() {
           Cookie.set('accessToken', data.accessToken, {expires: 1});
           Cookie.set('refreshToken', data.refreshToken, {expires: 3});
           Cookie.set('userId', data.userId, {expires: 7});
-          window.location.href = "/application";
+          window.location.href = "/app";
 
         } else setError(data.message || "Login failed.");
 
