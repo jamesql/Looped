@@ -153,33 +153,53 @@ router.post(
     if (!user) return;
 
     // create server in database
+    const sId: string = v4();
     let server = await _prisma.server.create({
       data: {
         id: v4(),
         name: name,
         ownerId: user.id,
+        members: {
+          create: {
+            id: v4(),
+            userId: user.id,
+          }
+        }
       },
       include: {
         Channel: true,
         Role: {
           include: { RolePermissions: true }
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                username: true
+              }
+            }
+          }
         }
       }
     });
 
-    // add user to server
+    /**  add user to server
     let member = await _prisma.serverMember.create({
       data: {
         id: v4(),
         userId: user.id,
         serverId: server.id,
       },
-    });
+    });*/
 
     let payload = {
       op: OPCodes.SERVER_CREATE,
       d: server,
     };
+
+    console.log(payload);
 
     await publishToChannel(`user-events:${user.id}`, payload);
     await updateUserState(user.id);
