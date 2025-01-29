@@ -9,6 +9,7 @@ interface WebSocketCallbacks {
     onServerCreateCallback: Function;
     onCreateChannelCallback: Function;
     onCreateMessageCallback: Function;
+    onServerMemberAddCallback: Function;
 };
 
 export const WebSocketComponent = (props: WebSocketCallbacks) => {
@@ -38,6 +39,9 @@ export const WebSocketComponent = (props: WebSocketCallbacks) => {
                 break;
             case OPCodes.MESSAGE_CREATE:
                 props.onCreateMessageCallback(d);
+                break;
+            case OPCodes.SERVER_MEMBER_ADD:
+                props.onServerMemberAddCallback(d.user);
                 break;
             
         }

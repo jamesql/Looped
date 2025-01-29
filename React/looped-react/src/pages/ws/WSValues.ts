@@ -92,4 +92,15 @@ export const OPCodes = {
     members: User[],
     channels: Channel[]
   }
+
+  export interface ServerMember {
+    id: string,
+    userId: string,
+    serverId: string,
+    user: {
+      firstName: string,
+      lastName: string,
+      username: string
+    }
+  }
   

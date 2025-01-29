@@ -138,6 +138,7 @@ export default function Application() {
             onServerCreateCallback={undefined}
             onCreateChannelCallback={undefined}
             onCreateMessageCallback={undefined}
+            onServerMemberAddCallback={undefined}
             /> {/* WebSocket component */}
 
             {/* Server selection dropdown */}

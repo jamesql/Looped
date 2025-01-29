@@ -167,8 +167,6 @@ router.post(
       }
     });
 
-    console.log(server);
-
     // add user to server
     let member = await _prisma.serverMember.create({
       data: {
@@ -210,18 +208,17 @@ router.post(
     if (!validation.valid || validation.userId === null) return;
 
     let user = await validateUser(validation.userId, res);
-    if (!user) return;
+    if (!user) return;  
 
-    let server = await validateServer(serverId, res);
-    if (!server) return;
-
+    let sValid = await validateServer(serverId, res);
+    if (!sValid) return;
     // make sure user is not banned
     // todo:
 
     let mQuery = await _prisma.serverMember.findFirst({
       where: {
         userId: user.id,
-        serverId: server.id,
+        serverId: sValid.id,
       },
     });
 
@@ -235,29 +232,63 @@ router.post(
       data: {
         id: v4(),
         userId: user.id,
-        serverId: server.id,
+        serverId: sValid.id,
       },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            username: true
+          }
+        }
+      }
+    });
+
+    // change to a validation, we should not call the db twice to find the same server
+    // however i dont want to mess with the validation method because im too tired
+    // to check if it will break stuff
+    let server = await _prisma.server.findUnique({
+      where: {
+        id: serverId
+      },
+      include: {
+        Channel: {
+          include: {
+            channelMessages: true
+          }
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                username: true
+              }
+            }
+          }
+        }
+      }
     });
 
     let scPayload = {
       op: OPCodes.SERVER_CREATE,
-      d: {
-        id: server.id,
-        name: server.name,
-        ownerId: user.id,
-      },
+      d: server,
     };
 
     let mjPayload = {
       op: OPCodes.SERVER_MEMBER_ADD,
       d: {
-        id: server.id,
-        user: user,
+        user: member,
+        message: {
+          // empty for now, we need to add a defaultChannel in servers before we can have join messages
+        }
       },
     };
 
     await publishToChannel(`user-events:${user.id}`, scPayload);
-    await publishToChannel(`server-events:${server.id}`, mjPayload);
+    await publishToChannel(`server-events:${server?.id}`, mjPayload);
     await updateUserState(user.id);
     res.status(200).send(scPayload.d);
   }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Cookie from "js-cookie";
 import APIClient from "./api/APIClient";
 import { WebSocketComponent } from "./components/_ws";
-import { Server, Channel, Message } from "./ws/WSValues";
+import { Server, Channel, Message, User, ServerMember } from "./ws/WSValues";
 
 export default function App() {
   const [token, setToken] = useState(null);
@@ -14,19 +14,22 @@ export default function App() {
   const [messageContent, setMessageContent] = useState("");
   const [selectedServerData, setSelectedServerData] = useState(null);
   const [selectedChannelData, setSelectedChannelData] = useState(null);
-  const [selectedChannelMessages, setSelectedChannelMessages] = useState<Message[]>([]);
+  const [selectedChannelMessages, setSelectedChannelMessages] = useState<
+    Message[]
+  >([]);
   const [isServerOwner, setIsServerOwner] = useState(false);
   const [creatingServer, setCreatingServer] = useState(false);
   const [creatingChannel, setCreatingChannel] = useState(false);
+  const [joiningServer, setJoiningServer] = useState(false);
+  const [joinServerName, setJoinServerName] = useState(null);
   const [newServerName, setNewServerName] = useState("");
   const [newChannelData, setNewChannelData] = useState({
     name: "",
     type: "TEXT",
   });
 
-// ref
-const selectedChannelRef = useRef(null);
-
+  // ref
+  const selectedChannelRef = useRef(null);
 
   // get token
   useEffect(() => {
@@ -56,7 +59,7 @@ const selectedChannelRef = useRef(null);
   useEffect(() => {
     if (!selectedServer) return;
 
-    const selectedServerD = serverData.find((s) => s.id === selectedServer)
+    const selectedServerD = serverData.find((s) => s.id === selectedServer);
     setSelectedServerData(selectedServerD);
   }, [serverData]);
 
@@ -101,7 +104,6 @@ const selectedChannelRef = useRef(null);
 
   // Handle new channel
   const handleCreateChannel = (newChannel: Channel) => {
-    console.log("Received new channel:", newChannel);
     setServerData((prevState) =>
       prevState.map((server) => {
         if (server.id === newChannel.serverid) {
@@ -115,43 +117,57 @@ const selectedChannelRef = useRef(null);
     );
   };
 
-// handle new message
-const handleMessageCreate = (message: Message) => {
+  const handleServerMemberAdd = (sMember: ServerMember) => {
+    if (sMember.userId === userId) return;
+  
+    console.log("server member added");
+    
     setServerData((prevState) => {
-        // Create a new state to ensure immutability
-        return prevState.map((s) => {
-            // Find the channel and update it if the message matches
-            const updatedChannels = s.Channel.map((c) => {
-                if (c.id === message.channelid) {
-                    // Ensure you're returning a new object for the updated channel
-                    return {
-                        ...c,
-                        channelMessages: c.channelMessages
-                            ? [...c.channelMessages, message]
-                            : [message],
-                    };
-                }
-                return c;
-            });
+      const updatedState = prevState.map((server) => {
+        if (server.id === sMember.serverId) {
+          return {
+            ...server,
+            members: [...server.members, sMember],
+          };
+        }
+        return server;
+      });  
+      return updatedState;
+    });
+  };
 
-            // Return the updated server with modified channels
+  // handle new message
+  const handleMessageCreate = (message: Message) => {
+    setServerData((prevState) => {
+      // Create a new state to ensure immutability
+      return prevState.map((s) => {
+        // Find the channel and update it if the message matches
+        const updatedChannels = s.Channel.map((c) => {
+          if (c.id === message.channelid) {
+            // Ensure you're returning a new object for the updated channel
             return {
-                ...s,
-                Channel: updatedChannels,
+              ...c,
+              channelMessages: c.channelMessages
+                ? [...c.channelMessages, message]
+                : [message],
             };
+          }
+          return c;
         });
+
+        // Return the updated server with modified channels
+        return {
+          ...s,
+          Channel: updatedChannels,
+        };
+      });
     });
 
     if (selectedChannelRef.current === message.channelid) {
-        setSelectedChannelMessages((prevMessages) => [
-          ...prevMessages,
-          message,
-        ]);
-      }
-};
+      setSelectedChannelMessages((prevMessages) => [...prevMessages, message]);
+    }
+  };
 
-  
-  
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -162,13 +178,17 @@ const handleMessageCreate = (message: Message) => {
         onServerCreateCallback={handleCreateServer}
         onCreateChannelCallback={handleCreateChannel}
         onCreateMessageCallback={handleMessageCreate}
+        onServerMemberAddCallback={handleServerMemberAdd}
       />
       {/* WebSocket component */}
       <h1>Welcome to Looped.</h1>
       <h2>User ID: {userId}</h2>
-      {selectedServerData && (<h3>Selected Server: {selectedServerData.name}</h3>)}
-      {selectedChannelData && (<h4>Selected Channel: {selectedChannelData.name}</h4>)}
-
+      {selectedServerData && (
+        <h3>Selected Server: {selectedServerData.name}</h3>
+      )}
+      {selectedChannelData && (
+        <h4>Selected Channel: {selectedChannelData.name}</h4>
+      )}
       {/* Server selection dropdown */}
       <div>
         <label htmlFor="serverSelect">Select Server:</label>
@@ -185,7 +205,6 @@ const handleMessageCreate = (message: Message) => {
           ))}
         </select>
       </div>
-
       {/* Channel selection dropdown */}
       {selectedServer && selectedServerData && (
         <div>
@@ -193,7 +212,7 @@ const handleMessageCreate = (message: Message) => {
           <select
             id="channelSelect"
             onChange={(e) => handleChannelSelect(e.target.value)}
-            value={selectedChannel || ""}
+            value={selectedChannel}
           >
             <option value="">Select a channel</option>
             {selectedServerData.Channel.map((channel) => (
@@ -204,22 +223,34 @@ const handleMessageCreate = (message: Message) => {
           </select>
         </div>
       )}
-
       {selectedChannel && selectedChannelData && selectedChannelMessages && (
-        <div style={{ maxHeight: '600px', overflowY: 'scroll', border: '1px solid #ccc', padding: '10px' }}>
-        {selectedChannelMessages.map((message) => (
-          <div key={message.id} style={{ marginBottom: '10px' }}>
-            <p>
-            <strong>{selectedServerData.members.find((m) => m.userId === message.senderid).user.username}:</strong>
-            {message.content}
-            </p>
-          </div>
-        ))}
-      </div>
+        <div
+          style={{
+            maxHeight: "600px",
+            overflowY: "scroll",
+            border: "1px solid #ccc",
+            padding: "10px",
+          }}
+        >
+          {selectedChannelMessages.map((message) => (
+            <div key={message.id} style={{ marginBottom: "10px" }}>
+              <p>
+                <strong>
+                  {
+                    selectedServerData.members.find(
+                      (m) => m.userId === message.senderid
+                    ).user.username
+                  }
+                  :
+                </strong>
+                {message.content}
+              </p>
+            </div>
+          ))}
+        </div>
       )}
-
       {/* Message input */}
-      {selectedChannel &&(
+      {selectedChannel && (
         <div>
           <label htmlFor="messageInput">Message:</label>
           <textarea
@@ -229,17 +260,26 @@ const handleMessageCreate = (message: Message) => {
             value={messageContent}
             onChange={(e) => setMessageContent(e.target.value)}
           />
-          <button onClick={() => APIClient.sendMessage(selectedServer, selectedChannel, messageContent, token)}>Send Message</button>
+          <button
+            onClick={() =>
+              APIClient.sendMessage(
+                selectedServer,
+                selectedChannel,
+                messageContent,
+                token
+              )
+            }
+          >
+            Send Message
+          </button>
         </div>
       )}
-
       {/* Create Server Button (Available to all users) */}
       {!creatingServer && (
         <div>
           <button onClick={() => setCreatingServer(true)}>Create Server</button>
         </div>
       )}
-
       {/* Create Server Modal (Available to all users) */}
       {creatingServer && (
         <div>
@@ -260,7 +300,6 @@ const handleMessageCreate = (message: Message) => {
           <button onClick={() => setCreatingServer(false)}>Cancel</button>
         </div>
       )}
-
       {/* Create Channel Button (Only for the server owner) */}
       {isServerOwner && !creatingChannel && (
         <div>
@@ -269,7 +308,6 @@ const handleMessageCreate = (message: Message) => {
           </button>
         </div>
       )}
-
       {/* Create Channel Modal (Only for the server owner) */}
       {creatingChannel && isServerOwner && (
         <div>
@@ -306,6 +344,32 @@ const handleMessageCreate = (message: Message) => {
           <button onClick={() => setCreatingChannel(false)}>Cancel</button>
         </div>
       )}
+      {!joiningServer && (
+        <div>
+          <button onClick={() => setJoiningServer(true)}>Join Server</button>
+        </div>
+      )}
+      {joiningServer && (
+        <div>
+          <input
+            type="text"
+            placeholder="Enter server join code"
+            value={joinServerName}
+            onChange={(e) => setJoinServerName(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              APIClient.joinServer(joinServerName, token);
+              setJoiningServer(false);
+            }}
+          >
+            Join Server
+          </button>
+          <button onClick={() => setJoinServerName(false)}>Cancel</button>
+        </div>
+      )}
+      /* Change to invite code later on */
+      <h1>DEBUG OUTPUT</h1>
       {JSON.stringify(serverData)}
     </div>
   );
