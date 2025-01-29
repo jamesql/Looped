@@ -7,6 +7,7 @@ import { validateAccessToken } from "../utils/Token";
 import {
   getRedisInstance,
   getUserSession,
+  refreshSubscriptions,
   subscribeToChannelEvents,
   subscribeToServerEvents,
   subscribeToUserEvents,
@@ -89,6 +90,14 @@ export default async (
 
       // set client to authenticated
       client.authenticated = true;
+      break;
+
+    case OPCodes.CHANNEL_CREATE: 
+      subscribeToChannelEvents(client);
+      break;
+
+    case OPCodes.SERVER_CREATE:
+      subscribeToServerEvents(client);
       break;
 
     case OPCodes.ERROR:

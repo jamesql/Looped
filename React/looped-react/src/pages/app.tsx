@@ -164,7 +164,10 @@ export default function App() {
     });
 
     if (selectedChannelRef.current === message.channelid) {
-      setSelectedChannelMessages((prevMessages) => [...prevMessages, message]);
+      setSelectedChannelMessages((prevMessages) => {
+        if (!prevMessages) return [message];
+        return [...prevMessages, message];
+    });
     }
   };
 
