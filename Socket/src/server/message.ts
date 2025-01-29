@@ -8,6 +8,7 @@ import {
   getRedisInstance,
   getUserSession,
   refreshSubscriptions,
+  subscribeToChannel,
   subscribeToChannelEvents,
   subscribeToServerEvents,
   subscribeToUserEvents,
@@ -42,6 +43,7 @@ export default async (
   );
 
   switch (data.op) {
+
     case OPCodes.AUTH:
       const { d } = data;
       const token = d.access_token;
@@ -93,7 +95,6 @@ export default async (
       break;
 
     case OPCodes.CHANNEL_CREATE: 
-      subscribeToChannelEvents(client);
       break;
 
     case OPCodes.SERVER_CREATE:

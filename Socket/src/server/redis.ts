@@ -94,6 +94,8 @@ export const getUserSession = async (
 };
 
 export const refreshSubscriptions = async (client: Socket.SocketClient) => {
+  client.session = await getUserSession(client.session.userId);
+
   await subscribeToUserEvents(client);
   await subscribeToChannelEvents(client);
   await subscribeToServerEvents(client);

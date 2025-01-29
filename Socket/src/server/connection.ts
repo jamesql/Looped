@@ -4,7 +4,7 @@ import { IncomingMessage } from "http";
 import * as ws from "ws";
 import { HEARTBEAT_INTERVAL, OPCodes } from "./WSValues";
 import Redis from "ioredis";
-import { getUserSession, refreshSubscriptions } from "./redis";
+import { getUserSession, refreshSubscriptions, subscribeToChannel } from "./redis";
 
 // Incoming connection handler
 export default async (
@@ -61,6 +61,12 @@ export default async (
       client.session = await getUserSession(client.session.userId);
       await refreshSubscriptions(client);
       return;
+    }
+
+    switch (opcode) {
+      case OPCodes.CHANNEL_CREATE:
+        subscribeToChannel(client, `channel-events:${d.serverid}:${d.id}`);
+        break;
     }
 
     await client.sendAsync(payload);
