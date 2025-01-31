@@ -5,7 +5,7 @@ import WebSocketService from "./ws/WebSocketService";
 import Cookie from 'js-cookie';
 
 
-export default function Application() {
+export default function debugApp() {
     const [token, setToken] = useState(null);
     const [userId, setUserId] = useState(null);
     const [serverData, setServerData] = useState([]);

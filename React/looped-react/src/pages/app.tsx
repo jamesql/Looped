@@ -187,7 +187,7 @@ export default function App() {
       <h1>Welcome to Looped.</h1>
       <h2>User ID: {userId}</h2>
       {selectedServerData && (
-        <h3>Selected Server: {selectedServerData.name}</h3>
+        <div><h3>Selected Server: {selectedServerData.name}</h3><h5>{JSON.stringify(selectedServerData)}</h5></div>
       )}
       {selectedChannelData && (
         <h4>Selected Channel: {selectedChannelData.name}</h4>
