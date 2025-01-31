@@ -8,7 +8,7 @@ const selectedServerData = {
     id: "TEST-ID",
     createdAt: "",
     updatedAt: "",
-    name: "Test Server",
+    name: "Meta Recruitment",
     descripton: null,
     ownerId: "Owner ID",
     Channel: [
