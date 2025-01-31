@@ -21,6 +21,9 @@
             └── global.d.ts // Global types
 ```
 
-## Inital Setup
+## Install Instructions
+```npm install``` - Install deps
+```ts-node ./src``` - Start WebSocket Server
+Server is hosted on ```localhost:443``` - tbc
 
-```npm install```
+
