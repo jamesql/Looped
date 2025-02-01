@@ -7,6 +7,7 @@ import {
 } from "./components/_context";
 import styles from "../styles/channelBox.module.css"
 import { Noto_Sans } from "next/font/google";
+import { ServerBox } from "./components/looped-gui/_serverBox";
 
 const notoSans = Noto_Sans({
   variable: "--font-noto-sans",
@@ -79,7 +80,7 @@ export default function ComponentTest() {
   if (loading) return <></>;
 
   return (
-    <div className={notoSans.className}>
+    <div className={[notoSans.className, styles.application].join(' ')}>
     <ChannelBox
       selectedServer={states.selectedServer}
       selectedServerData={states.selectedServerData}
@@ -87,6 +88,7 @@ export default function ComponentTest() {
       selectedChannelData={states.selectedChannelData}
       setActiveChannel={setActiveChannel}
     />
-\    </div>
+    <ServerBox />
+    </div>
   );
 }
