@@ -11,11 +11,10 @@ const notoSans = Noto_Sans({
 
 export default function Application() {
 
-    return (<body className={[styles.removeMargin, notoSans.className].join(' ')}>
+    return (
         <AppContextComponent>
             <ComponentTest />
         </AppContextComponent>
-        </body>
     );
 
 };

@@ -1,3 +1,12 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow:hidden;
+}
+
+/* -- Channel Box CSS -- */
+
 .channelBox {
     position: relative;  /* Changed from absolute to relative */
     width: 25%;
@@ -16,7 +25,7 @@
   }
   
 
-/*  */
+/* -- Server Info Box (top-left) CSS */
 
 .serverInfoBox {
 position: relative;
@@ -86,4 +95,25 @@ padding:0;
 .serverSettings button {
     background: transparent;
     all: unset;
+}
+
+
+/* -- Channels CSS -- */
+
+.channelList {
+    display: flex;
+    flex-direction: column;
+}
+
+.channelList button {
+    all:unset;
+    pointer-events: all;
+}
+
+.channelList button:hover {
+
+}
+
+.channelList button:active {
+    transform: scale(0.98);
 }
