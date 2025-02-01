@@ -103,17 +103,28 @@ padding:0;
 .channelList {
     display: flex;
     flex-direction: column;
+    margin-top: 1.5%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 .channelList button {
     all:unset;
     pointer-events: all;
+    color: #ECEFF4;
+    border-radius: 20px;
+    font-size: 1rem;
+    padding: 1%;
 }
 
 .channelList button:hover {
-
+    background-color: #2C3E50;
 }
 
 .channelList button:active {
     transform: scale(0.98);
+}
+
+.channelActiveButton {
+    background-color: #00A8E8 !important;
 }
