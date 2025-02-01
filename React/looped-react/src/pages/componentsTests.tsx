@@ -22,6 +22,7 @@ const selectedServerData = {
   name: "Meta Recruitment",
   descripton: null,
   ownerId: "Owner ID",
+  icon: "/meta_logo.png",
   Channel: [
     {
       id: "Test Channel Id 1",
@@ -55,6 +56,172 @@ const selectedServerData = {
   ],
 };
 
+const server2 = {
+    id: "tiktok",
+    createdAt: "",
+    updatedAt: "",
+    name: "TikTok Recruitment",
+    descripton: null,
+    ownerId: "Owner ID",
+    icon: "/logo3.png",
+    Channel: [
+      {
+        id: "Test Channel Id 1",
+        name: "test-channel-1",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "Test Channel Id 2",
+        name: "test-channel-2",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+    ],
+    Role: [],
+    members: [
+      {
+        id: "Test Id",
+        userId: "Test User Id",
+        serverId: "TEST-ID",
+        user: {
+          firstName: "James",
+          lastName: "Ash",
+          username: "jamesash01",
+        },
+      },
+    ],
+  };
+
+  const server3 = {
+    id: "x",
+    createdAt: "",
+    updatedAt: "",
+    name: "X Recruitment",
+    descripton: null,
+    ownerId: "Owner ID",
+    icon: "/logo4.png",
+    Channel: [
+      {
+        id: "Test Channel Id 1",
+        name: "test-channel-1",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "Test Channel Id 2",
+        name: "test-channel-2",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+    ],
+    Role: [],
+    members: [
+      {
+        id: "Test Id",
+        userId: "Test User Id",
+        serverId: "TEST-ID",
+        user: {
+          firstName: "James",
+          lastName: "Ash",
+          username: "jamesash01",
+        },
+      },
+    ],
+  };
+
+  const server4 = {
+    id: "insta",
+    createdAt: "",
+    updatedAt: "",
+    name: "Instagram Recruitment",
+    descripton: null,
+    ownerId: "Owner ID",
+    icon: "/logo2.png",
+    Channel: [
+      {
+        id: "Test Channel Id 1",
+        name: "test-channel-1",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "Test Channel Id 2",
+        name: "test-channel-2",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+    ],
+    Role: [],
+    members: [
+      {
+        id: "Test Id",
+        userId: "Test User Id",
+        serverId: "TEST-ID",
+        user: {
+          firstName: "James",
+          lastName: "Ash",
+          username: "jamesash01",
+        },
+      },
+    ],
+  };
+
+  const server5 = {
+    id: "random server",
+    createdAt: "",
+    updatedAt: "",
+    name: "Hangout Server",
+    descripton: null,
+    ownerId: "Owner ID",
+    icon: "/logo1.png",
+    Channel: [
+      {
+        id: "Test Channel Id 1",
+        name: "test-channel-1",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "Test Channel Id 2",
+        name: "test-channel-2",
+        type: "TEXT",
+        serverid: "TEST-ID",
+        createdAt: "",
+        updatedAt: "",
+      },
+    ],
+    Role: [],
+    members: [
+      {
+        id: "Test Id",
+        userId: "Test User Id",
+        serverId: "TEST-ID",
+        user: {
+          firstName: "James",
+          lastName: "Ash",
+          username: "jamesash01",
+        },
+      },
+    ],
+  };
+
+const serverData = [selectedServerData, server2, server3, server4, server5, server5, server5, server5, server5, server5, server5];
+
 export default function ComponentTest() {
   const states: Context = useContext(AppContext);
   const [loading, setLoading] = useState(true);
@@ -64,6 +231,8 @@ export default function ComponentTest() {
     states.setSelectedServerData(selectedServerData);
     states.setSelectedChannel(selectedServerData.Channel[0].id);
     states.setSelectedChannelData(selectedServerData.Channel[0]);
+
+    states.setServerData(serverData);
 
     console.log(selectedServerData.Channel[0]);
 

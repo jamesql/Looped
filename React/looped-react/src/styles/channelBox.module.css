@@ -34,7 +34,7 @@ body {
 .serverInfoBox {
   position: relative;
   width: 100%;
-  max-height: 8%;
+  max-height: 10%;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 8px 30px rgba(0, 0, 0, 0.05);
 
   display: flex;
@@ -125,3 +125,43 @@ body {
 }
 
 /* -- Server Box -- */
+
+.serverBox {
+    display: flex;
+    flex-direction: column;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
+    margin-top: 1%;
+    width: 100%;
+}
+
+.serverSelectorContainer {
+    display: flex;
+    justify-items: center;
+    justify-content: center;
+}
+
+.serverSelector {
+    display: flex;
+    gap: 1%;
+    overflow: scroll;
+    max-width: fit-content;
+}
+
+.serverSelector button {
+    all: unset;
+}
+
+.serverSelector button:hover {
+    transform: scale(1.05);
+}
+
+.serverSelector button:active {
+    transform: scale(0.95);
+}
+
+.serverSelector img {
+    height: 80px;
+    width: 80px;
+    border-radius: 42px;
+}
