@@ -59,6 +59,11 @@ body {
   font-weight: 600;
   font-size: 1.25rem;
   line-height: 33px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  
 
   /* Soft White */
   color: #fafafa;
@@ -73,6 +78,11 @@ body {
   font-weight: 600;
   font-size: 0.75rem;
   line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+
   /* identical to box height */
 
   /* Bright Cyan */
@@ -148,8 +158,33 @@ body {
     max-width: fit-content;
 }
 
+.serverIcon {
+    height: 64px;
+    width: 64px;
+    border-radius: 42px;
+    overflow: hidden;
+    object-fit: fill;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.serverIconActive {
+    height: 64px;
+    width: 64px;
+    border-radius: 42px;
+    overflow: hidden;
+    object-fit: fill;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: #2c3e50;
+    border-style: solid;
+}
+
 .serverSelector button {
     all: unset;
+
 }
 
 .serverSelector button:hover {
@@ -161,7 +196,7 @@ body {
 }
 
 .serverSelector img {
-    height: 80px;
-    width: 80px;
-    border-radius: 42px;
+    height: 64px;
+    width: 64px;
+    transform: scale(1.05);
 }
