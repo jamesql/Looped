@@ -130,11 +130,7 @@ For detailed setup instructions, API references, and developer guides, please vi
 
 ## Contact
 For inquiries or support, reach out to us at:
-📧 Email: [your-email@example.com]  
-🌐 Website: [loopedplatform.com](https://loopedplatform.com)  
-🐦 Twitter: [@LoopedApp](https://twitter.com/LoopedApp)  
+📧 Email: [TBD@TBD.com]  
+🌐 Website: [TBD.com](https://loopedplatform.com)  
 
 ---
-
-This README provides a complete, structured, and professional overview of your project. 🚀  
-Let me know if you need any refinements!
