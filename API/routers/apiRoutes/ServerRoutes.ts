@@ -141,10 +141,56 @@ router.post("/edit", [
 
 // delete server route
 router.post("/delete", [
-
+    header("Authorization").isString().isLength({min: 1}),
+    body("serverId").isString().isLength({min: 1}),
 ], async (req: Request, res: Response) => {
-    
-});
+    const errors = validationResult(req);
 
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // validate access token
+    const token = req.header("Authorization");
+    
+    const result = await validateToken(token);
+    if (!result || !result.valid) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // get user
+    const user = await UserService.getUserById(result.userId);
+
+    // make sure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // get server
+    const server = await ServerService.getServerById(req.body.serverId);
+
+    // make sure server exists
+    if (!server) {
+        res.status(404).json({ error: "Server not found" });
+        return;
+    }
+
+    // make sure user is owner
+    if (server.ownerId !== user.id) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // delete server
+    await ServerService.deleteServer(server.id);
+
+    // return success
+    res.status(200).json({ success: true });
+    return;
+
+});
 
 module.exports = router;
