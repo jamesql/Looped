@@ -6,7 +6,7 @@ import UserService from "../../data/users";
 import ChannelService from "../../data/channels";
 import RoleService from "../../data/roles";
 import MessageService from "../../data/messages";
-import { Permissions } from "../../../Types/permissionsTypes";
+import { Member, Permissions } from "../../../Types/permissionsTypes";
 
 const tokenUtil = new TokenUtil();
 
@@ -83,7 +83,7 @@ router.post(
         const roles = await RoleService.getRolesByServerId(user.id, channel.serverId);
         const role = roles.find((role) => role.permissions.includes(channel.permissionRequired));
 
-        if (!role && channel.permissionRequired !== "MEMBER") {
+        if (!role && channel.permissionRequired !== Member) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }
