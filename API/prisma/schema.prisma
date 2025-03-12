@@ -49,13 +49,13 @@ model Server {
   ownerId String
   members User[] @relation("ServerMembers")
 
-  User User @relation("ServerOwner", fields: [id], references: [id])
+  User User @relation("ServerOwner", fields: [ownerId], references: [id])
 
   channels Channel[]
 
   Role Role[]
 
-  // these need to be unique
+
   invites String[] @default([])
 
   bannedUsers User[]

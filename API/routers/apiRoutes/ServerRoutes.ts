@@ -1,7 +1,72 @@
 import express, {Router,  Express, Request, Response } from "express";
 const { body, validationResult, header } = require("express-validator");
+import TokenUtil from "../../../Util/Token";
+import ServerService from "../../data/servers";
+import UserService from "../../data/users";
 
+const tokenUtil = new TokenUtil();
 
 const router: Router = express.Router();
+
+
+router.post("/create", [
+    header("Authorization").isString().isLength({min: 1}),
+    body("name").isString().isLength({min: 3, max: 20}),
+    body("description").isString().isLength({min: 3, max: 100}),
+], async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // validate access token
+    const token = req.header("Authorization");
+    const userId = await tokenUtil.validateAccessToken(token);
+
+    // make sure token is valid
+    if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // check if token is expired
+    const isExpired = Date.now() / 1000 > userId["exp"];
+    if (isExpired) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // get user
+    const user = await UserService.getUserById(userId["userId"]);
+
+    // make sure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // create server object
+    const server = {
+        id: undefined,
+        name: req.body.name,
+        ownerId: user.id,
+        description: req.body.description,
+        banner: "",
+        icon: "",
+        invites: [],
+        createdAt: undefined,
+        updatedAt: undefined,
+    };
+
+    // create server
+    const newServer = await ServerService.createServer(server);
+
+    // return server
+    res.status(200).json(newServer);
+    return;
+
+});
+
 
 module.exports = router;
