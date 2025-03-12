@@ -7,6 +7,7 @@ import ChannelService from "../../data/channels";
 import RoleService from "../../data/roles";
 import MessageService from "../../data/messages";
 import { Member, Permissions } from "../../../Types/permissionsTypes";
+import { validateToken } from "../../data/token";
 
 const tokenUtil = new TokenUtil();
 
@@ -95,5 +96,119 @@ router.post(
         res.status(200).json(newMessage);
         return;
     });
+
+// edit message route
+router.post(
+    "/edit",
+    [
+        header("Authorization").isString().isLength({ min: 1 }),
+        body("content").isString().isLength({ min: 1, max: 200 }),
+        body("messageId").isString().isLength({ min: 1 }),
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return;
+        }   
+
+        // validate access token
+        const token = req.header("Authorization");
+        const result = await validateToken(token);
+
+        // make sure token is valid
+        if (!result || !result.valid) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        // get user
+        const user = await UserService.getUserById(result.userId);
+
+        // make sure user exists
+        if (!user) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+
+        // get message
+        const message = await MessageService.getMessageById(req.body.messageId);
+
+        // make sure message exists
+        if (!message) {
+            res.status(404).json({ error: "Message not found" });
+            return;
+        }
+
+        // make sure user is owner
+        if (message.userId !== user.id) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        // edit message
+        const newMessage = await MessageService.updateMessage(req.body.messageId, req.body.content);
+
+        // return message
+        res.status(200).json(newMessage);
+        return;
+    });
+
+// delete message route
+router.post(
+    "/delete",
+    [
+        header("Authorization").isString().isLength({ min: 1 }),
+        body("messageId").isString().isLength({ min: 1 }),
+    ],
+    async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+            return;
+        }   
+
+        // validate access token
+        const token = req.header("Authorization");
+        const result = await validateToken(token);
+
+        // make sure token is valid
+        if (!result || !result.valid) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        // get user
+        const user = await UserService.getUserById(result.userId);
+
+        // make sure user exists
+        if (!user) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+
+        // get message
+        const message = await MessageService.getMessageById(req.body.messageId);
+
+        // make sure message exists
+        if (!message) {
+            res.status(404).json({ error: "Message not found" });
+            return;
+        }
+
+        // make sure user is owner
+        if (message.userId !== user.id) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        // delete message
+        const newMessage = await MessageService.deleteMessage(req.body.messageId);
+
+        // return message
+        res.status(200).json(newMessage);
+        return;
+    });
+
 
 module.exports = router;
