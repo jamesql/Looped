@@ -9,6 +9,7 @@
   "author": "james ash",
   "license": "MIT",
   "dependencies": {
+    "@types/ws": "^8.18.0",
     "http": "^0.0.1-security",
     "ioredis": "^5.6.0",
     "ws": "^8.18.1"
