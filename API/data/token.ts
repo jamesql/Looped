@@ -3,7 +3,7 @@ import TokenUtil from "../../Util/Token";
 const tokenUtil = new TokenUtil();
 
 // type for the return value of the validateToken function
-type ValidateTokenReturnType = {
+export type ValidateTokenReturnType = {
     valid: boolean;
     userId: string;
     exp: number;
