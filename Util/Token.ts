@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 
 class TokenUtil {
     private accessTokenSecret: string;
@@ -7,8 +7,8 @@ class TokenUtil {
     private refreshTokenExpiry: string;
 
     constructor(
-        accessTokenExpiry: string = '15m',
-        refreshTokenExpiry: string = '7d'
+        accessTokenExpiry: string = "15m",
+        refreshTokenExpiry: string = "7d"
     ) {
         this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || '';
         this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || '';
@@ -20,15 +20,15 @@ class TokenUtil {
         }
     }
 
-    generateAccessToken(payload: object): string {
-        return jwt.sign(payload, this.accessTokenSecret, { expiresIn: this.accessTokenExpiry });
+    generateAccessToken(userId: string): string {
+        return jwt.sign({userId}, this.accessTokenSecret, { expiresIn: this.accessTokenExpiry } as jwt.SignOptions);
     }
 
-    generateRefreshToken(payload: object): string {
-        return jwt.sign(payload, this.refreshTokenSecret, { expiresIn: this.refreshTokenExpiry });
+    generateRefreshToken(userId: string): string {
+        return jwt.sign({userId}, this.refreshTokenSecret, { expiresIn: this.refreshTokenExpiry } as jwt.SignOptions);
     }
 
-    validateAccessToken(token: string): object | null {
+    validateAccessToken(token: string): (string | jwt.JwtPayload) | null {
         try {
             return jwt.verify(token, this.accessTokenSecret);
         } catch (error) {
@@ -36,7 +36,7 @@ class TokenUtil {
         }
     }
 
-    validateRefreshToken(token: string): object | null {
+    validateRefreshToken(token: string): (string | jwt.JwtPayload){
         try {
             return jwt.verify(token, this.refreshTokenSecret);
         } catch (error) {
