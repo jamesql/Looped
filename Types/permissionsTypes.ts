@@ -1,0 +1,1 @@
+export type Permissions = "OWNER" | "ADMIN" | "MANAGER" | "MEMBER";
