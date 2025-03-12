@@ -19,7 +19,7 @@ const host = process.env.HOST || 'localhost';
 server.listen(port, () => {
     console.log(`[$wss] Server is listening on ${host}:${port}`);
     // generate test access token
-    console.log(new TokenUtil().generateAccessToken({ id: 1 }));
+    console.log(new TokenUtil().generateAccessToken("1"));
 });
 
 wss.on("connection", require("./modules/connection").default.bind(null, wss));
