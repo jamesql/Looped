@@ -79,6 +79,9 @@ export default async (
           break;
         }  
 
+        // debug
+        console.log(client.session);
+
         // send session to client with ready
         let payload = {
           op: OPCodes.READY,

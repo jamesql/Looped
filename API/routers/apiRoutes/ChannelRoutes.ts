@@ -91,6 +91,94 @@ router.post("/create", [
     return;
 
 });
+
+// edit channel route
+router.post("/edit", [
+    header("Authorization").isString().isLength({min: 1}),
+    body("name").isString().isLength({min: 3, max: 20}),
+    body("channelId").isString().isLength({min: 1}),
+    body("description").isString().isLength({min: 3, max: 100}),
+    body("permissionRequired").isString().isLength({min: 1}),
+], async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // validate access token
+    const token = req.header("Authorization");
+    const userId = await tokenUtil.validateAccessToken(token);
+
+    // make sure token is valid
+    if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // check if token is expired
+    const isExpired = Date.now() / 1000 > userId["exp"];
+    if (isExpired) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // get user
+    const user = await UserService.getUserById(userId["userId"]);
+
+    // make sure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // get channel
+    const channel = await ChannelService.getChannelById(req.body.channelId);
+
+    // make sure channel exists
+    if (!channel) {
+        res.status(404).json({ error: "Channel not found" });
+        return;
+    }
+
+    // get server
+    const server = await ServerService.getServerById(channel.serverId);
+
+    // make sure server exists
+    if (!server) {
+        res.status(404).json({ error: "Server not found" });
+        return;
+    }
+
+    // make sure user is either owner or admin
+    if (server.ownerId !== user.id) {
+        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const role = roles.find((role) => role.permissions.includes(Admin));
+
+        // make sure user has the admin role
+        if (!role) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+    }
+
+    // edit channel object
+    const editedChannel = {
+        name: req.body.name,
+        description: req.body.description,
+        permissionRequired: req.body.permissionRequired
+    }
+
+    // edit channel
+    const newChannel = await ChannelService.updateChannel(channel.id, editedChannel);
+
+    // send response
+    res.status(200).json(newChannel);
+    return;
+
+});
+
+
     
 
 
