@@ -22,6 +22,13 @@ class ServerService {
         });
     }
 
+    async editServer(id: string, data: Partial<Server>): Promise<Server> {
+        return await prisma.server.update({
+            where: { id },
+            data,
+        });
+    }
+
     async deleteServer(id: string): Promise<Server> {
         return await prisma.server.delete({
             where: { id },
