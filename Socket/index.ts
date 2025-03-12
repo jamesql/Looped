@@ -1,5 +1,11 @@
 /// <reference path="./@types/global.d.ts" />
 
+// include .env
+require('dotenv').config();
+
+// include util
+require("./util");
+
 import * as http from "http";
 import * as ws from "ws";
 
@@ -13,11 +19,4 @@ server.listen(port, () => {
     console.log(`Server is listening on ${host}:${port}`);
 });
 
-wss.on('connection', (socket) => {
-
-    socket.on("connection", require("./modules/connection").default.bind(null, server));
-
-    socket.on('close', () => {
-        console.log('Client disconnected');
-    });
-});
+wss.on("connection", require("./modules/connection").default.bind(null, wss));
