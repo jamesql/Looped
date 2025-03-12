@@ -196,6 +196,7 @@ router.post(
             return;
         }
 
+        // todo: check if user is server owner or has admin permissions
         // make sure user is owner
         if (message.userId !== user.id) {
             res.status(401).json({ error: "Unauthorized" });
