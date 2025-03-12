@@ -12,12 +12,12 @@ export interface User {
     avatar?: string;
     friendsRequests?: User[];
     friendRequestsSent?: User[];
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt?: Date;
+    updatedAt?: Date;
     token?: string;
     status?: string;
     bio?: string;
     location?: string;
-    birthday?: string;
+    birthday?: Date;
     roles?: Role[];
 }
