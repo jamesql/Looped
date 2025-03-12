@@ -14,10 +14,11 @@ const tokenUtil = new TokenUtil();
 export default async (
     ws: Socket.SocketServer,
     client: Socket.SocketClient,
+    req: IncomingMessage,
     payload: ws.RawData
   ) => {
     let data;
-  
+
     // make sure payload is valid
     try {
       data = JSON.parse(payload.toString());
