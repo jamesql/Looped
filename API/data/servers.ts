@@ -43,6 +43,17 @@ class ServerService {
         });
     }
 
+    async getMember(serverId: string, userId: string): Promise<Server | null> {
+        return await prisma.server.findFirst({
+            where: {
+                id: serverId,
+                members: {
+                    some: { id: userId },
+                },
+            },
+        });
+    }
+
     async removeMember(serverId: string, userId: string): Promise<Server> {
         return await prisma.server.update({
             where: { id: serverId },
