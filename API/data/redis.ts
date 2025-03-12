@@ -1,23 +1,16 @@
-import { RedisFactory } from '../../Util/Redis';
+import { RedisWrapper } from "../../Util/Redis";
 
-class Redis {
-    private static instance: Redis;
-    private redisClient: any;
+class RedisSingleton {
+    private static instance: RedisWrapper;
 
-    private constructor() {
-        this.redisClient = RedisFactory.createClient();
-    }
+    private constructor() {}
 
-    public static getInstance(): Redis {
-        if (!Redis.instance) {
-            Redis.instance = new Redis();
+    public static getInstance(): RedisWrapper {
+        if (!RedisSingleton.instance) {
+            RedisSingleton.instance = new RedisWrapper();
         }
-        return Redis.instance;
-    }
-
-    public getClient() {
-        return this.redisClient;
+        return RedisSingleton.instance;
     }
 }
 
-export default Redis;
+export const redisInstance = RedisSingleton.getInstance();
