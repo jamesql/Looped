@@ -27,23 +27,15 @@ router.post("/create", [
 
     // validate access token
     const token = req.header("Authorization");
-    const userId = await tokenUtil.validateAccessToken(token);
+    const result = await validateToken(token);
 
-    // make sure token is valid
-    if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-    }
-
-    // check if token is expired
-    const isExpired = Date.now() / 1000 > userId["exp"];
-    if (isExpired) {
+    if (!result || !result.valid) {
         res.status(401).json({ error: "Unauthorized" });
         return;
     }
 
     // get user
-    const user = await UserService.getUserById(userId["userId"]);
+    const user = await UserService.getUserById(result.userId);
 
     // make sure user exists
     if (!user) {
@@ -109,23 +101,15 @@ router.post("/edit", [
 
     // validate access token
     const token = req.header("Authorization");
-    const userId = await tokenUtil.validateAccessToken(token);
+    const result = await validateToken(token);
 
-    // make sure token is valid
-    if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-    }
-
-    // check if token is expired
-    const isExpired = Date.now() / 1000 > userId["exp"];
-    if (isExpired) {
+    if (!result || !result.valid) {
         res.status(401).json({ error: "Unauthorized" });
         return;
     }
 
     // get user
-    const user = await UserService.getUserById(userId["userId"]);
+    const user = await UserService.getUserById(result.userId);
 
     // make sure user exists
     if (!user) {
