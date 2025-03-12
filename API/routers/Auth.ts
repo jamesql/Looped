@@ -2,10 +2,12 @@ import express, { Router, Express, Request, Response } from "express";
 const { body, validationResult, header } = require("express-validator");
 import { AuthenticatedUser } from "../../Types/apiTypes";
 import { User } from "../../Types/userTypes";
+import LoopedSession from "../../Types/sessionTypes";
 import users from "../data/users";
 import { User as u } from "@prisma/client";
 import TokenUtil from "../../Util/Token";
 import { Bcrypt } from "../data/bcrypt";
+import { redisInstance } from "../data/redis";
 
 const tokenUtil = new TokenUtil(); // TokenUtil class
 const bCrypt = new Bcrypt(); // Bcrypt class
@@ -61,6 +63,15 @@ router.post(
         refreshToken: refresh_token,
       };
 
+      // set user session
+        const session: LoopedSession = {
+            user: userWithoutPassword as User,
+            servers: [],
+            channels: [],
+            roles: []
+        };
+      redisInstance.set(`user:${newUser.id}:session`, JSON.stringify(session));
+
       res.status(200).json(authenticatedUser);
       return;
   }
@@ -98,9 +109,15 @@ router.post(
       return;
     }
 
+    // get all user data
+    const userData = await users.getAllUserData(user.id);
+    
     // generate tokens
     const access_token = tokenUtil.generateAccessToken(user.id);
     const refresh_token = tokenUtil.generateRefreshToken(user.id);
+
+    // set user session
+    redisInstance.set(`user:${user.id}:session`, JSON.stringify(userData));
 
     // return authenticated user
     const { password, ...userWithoutPassword } = user;
@@ -109,6 +126,9 @@ router.post(
       accessToken: access_token,
       refreshToken: refresh_token,
     };
+
+    // debug for later, im sure it will break
+    console.log(userData);
 
     res.status(200).json(authenticatedUser);
     return;
