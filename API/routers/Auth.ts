@@ -1,7 +1,160 @@
-import express, {Router,  Express, Request, Response } from "express";
+import express, { Router, Express, Request, Response } from "express";
 const { body, validationResult, header } = require("express-validator");
+import { AuthenticatedUser } from "../../Types/apiTypes";
+import { User } from "../../Types/userTypes";
+import users from "../data/users";
+import { User as u } from "@prisma/client";
+import TokenUtil from "../../Util/Token";
+import { Bcrypt } from "../data/bcrypt";
 
+const tokenUtil = new TokenUtil(); // TokenUtil class
+const bCrypt = new Bcrypt(); // Bcrypt class
 
 const router: Router = express.Router();
+
+// signn up post route
+router.post(
+  "/signup",
+  [
+    body("username").isString().isLength({ min: 3, max: 20 }),
+    body("email").isEmail(),
+    body("password").isString().isLength({ min: 6, max: 20 }),
+    body("firstName").isString().isLength({ min: 3, max: 20 }),
+    body("lastName").isString().isLength({ min: 3, max: 20 }),
+    body("birthday").isString().isLength({ min: 10, max: 10 }),
+    body("location").isString().isLength({ min: 3, max: 20 }),
+  ],
+  async (req: Request, res: Response) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+
+      // encrypt the password with bcrypt
+      const hashedPassword = await bCrypt.hashPassword(req.body.password);
+
+      // create user
+      const user: u = {
+        id: undefined,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        password: hashedPassword,
+        birthday: req.body.birthday,
+        location: req.body.location,
+        avatar: "",
+        createdAt: undefined,
+        updatedAt: undefined,
+      };
+      const newUser = await users.createUser(user);
+
+      // generate tokens
+      const access_token = tokenUtil.generateAccessToken(newUser.id);
+      const refresh_token = tokenUtil.generateRefreshToken(newUser.id);
+
+      // return authenticated user
+      const { password, ...userWithoutPassword } = newUser;
+      const authenticatedUser: AuthenticatedUser = {
+        user: userWithoutPassword as User,
+        accessToken: access_token,
+        refreshToken: refresh_token,
+      };
+
+      res.status(200).json(authenticatedUser);
+      return;
+  }
+);
+
+// login post route
+router.post(
+  "/login",
+  [
+    body("email").isEmail(),
+    body("password").isString().isLength({ min: 6, max: 20 }),
+  ],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    // find user by email
+    const user = await users.getUserByEmail(req.body.email);
+
+    // check if user exists
+    if (!user) {
+      res.status(400).json({ error: "User not found" });
+      return;
+    }
+
+    // compare password
+    const isPasswordValid = await bCrypt.comparePassword(req.body.password, user.password);
+
+    // check if password is valid
+    if (!isPasswordValid) {
+      res.status(400).json({ error: "Invalid password" });
+      return;
+    }
+
+    // generate tokens
+    const access_token = tokenUtil.generateAccessToken(user.id);
+    const refresh_token = tokenUtil.generateRefreshToken(user.id);
+
+    // return authenticated user
+    const { password, ...userWithoutPassword } = user;
+    const authenticatedUser: AuthenticatedUser = {
+      user: userWithoutPassword as User,
+      accessToken: access_token,
+      refreshToken: refresh_token,
+    };
+
+    res.status(200).json(authenticatedUser);
+    return;
+    
+
+});
+
+// refresh token post route
+router.post(
+  "/refresh",
+  [
+    header("Authorization").isString().isLength({ min: 1 }),
+    body("refreshToken").isString().isLength({ min: 1 }),
+  ],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    // get refresh token
+    const refreshToken = req.body.refreshToken;
+
+    // validate refresh token
+    const decode = tokenUtil.validateRefreshToken(refreshToken);
+
+    // check if token is valid
+    if (!decode) {
+      res.status(400).json({ error: "Invalid token" });
+      return;
+    }
+
+    // check if token is expired
+    const isExpired = Date.now() / 1000 > decode["exp"];
+    if (isExpired) {
+      res.status(400).json({ error: "Token expired" });
+      return;
+    }
+
+    // generate new access token
+    const access_token = tokenUtil.generateAccessToken(decode["userId"]);
+
+    res.status(200).json({ accessToken: access_token });
+    return;
+  }
+);
 
 module.exports = router;
