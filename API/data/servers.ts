@@ -1,0 +1,80 @@
+import { PrismaClient, Server } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+class ServerService {
+    async createServer(data: Omit<Server, 'id' | 'createdAt' | 'updatedAt'>): Promise<Server> {
+        return await prisma.server.create({
+            data,
+        });
+    }
+
+    async getServerById(id: string): Promise<Server | null> {
+        return await prisma.server.findUnique({
+            where: { id },
+        });
+    }
+
+    async updateServer(id: string, data: Partial<Server>): Promise<Server> {
+        return await prisma.server.update({
+            where: { id },
+            data,
+        });
+    }
+
+    async deleteServer(id: string): Promise<Server> {
+        return await prisma.server.delete({
+            where: { id },
+        });
+    }
+
+    async getAllServers(): Promise<Server[]> {
+        return await prisma.server.findMany();
+    }
+
+    async addMember(serverId: string, userId: string): Promise<Server> {
+        return await prisma.server.update({
+            where: { id: serverId },
+            data: {
+                members: {
+                    connect: { id: userId },
+                },
+            },
+        });
+    }
+
+    async removeMember(serverId: string, userId: string): Promise<Server> {
+        return await prisma.server.update({
+            where: { id: serverId },
+            data: {
+                members: {
+                    disconnect: { id: userId },
+                },
+            },
+        });
+    }
+
+    async banUser(serverId: string, userId: string): Promise<Server> {
+        return await prisma.server.update({
+            where: { id: serverId },
+            data: {
+                bannedUsers: {
+                    connect: { id: userId },
+                },
+            },
+        });
+    }
+
+    async unbanUser(serverId: string, userId: string): Promise<Server> {
+        return await prisma.server.update({
+            where: { id: serverId },
+            data: {
+                bannedUsers: {
+                    disconnect: { id: userId },
+                },
+            },
+        });
+    }
+}
+
+export default new ServerService();

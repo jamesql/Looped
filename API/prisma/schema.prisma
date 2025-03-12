@@ -34,6 +34,8 @@ model User {
   Role Role[]
 
   Portfolio Portfolio[]
+
+  bannedFrom Server[]
 }
 
 model Server {
@@ -52,6 +54,11 @@ model Server {
   channels Channel[]
 
   Role Role[]
+
+  // these need to be unique
+  invites String[] @default([])
+
+  bannedUsers User[]
 }
 
 model Channel {
