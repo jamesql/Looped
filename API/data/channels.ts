@@ -33,4 +33,4 @@ class ChannelService {
     }
 }
 
-export default ChannelService;
+export default new ChannelService();

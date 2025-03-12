@@ -15,6 +15,15 @@ class RoleService {
         });
     }
 
+    async getRolesByServerId(userId: string, serverId: string): Promise<Role[]> {
+        return prisma.role.findMany({
+            where: { 
+                serverId,
+                userId,
+             },
+        });
+    }
+
     async updateRole(id: string, data: Partial<Omit<Role, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Role> {
         return prisma.role.update({
             where: { id },
