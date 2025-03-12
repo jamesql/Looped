@@ -49,8 +49,6 @@ class RedisWrapper {
     }
 }
 
-export default new RedisWrapper();
-
 class RedisFactory {
     static createClient(): RedisWrapper {
         return new RedisWrapper();
@@ -111,4 +109,4 @@ class RedisPubSub {
     }
 }
 
-export { RedisFactory, RedisPubSub };
+export { RedisFactory, RedisPubSub, RedisWrapper };
