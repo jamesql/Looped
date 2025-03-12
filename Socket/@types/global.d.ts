@@ -1,6 +1,6 @@
 import { Server } from "http";
 import LoopedSession from "../../Types/sessionTypes";
-import Redis from "ioredis";
+import { RedisPubSub } from "../../Util/Redis";
 
 export {};
 
@@ -21,7 +21,7 @@ declare global {
       session: LoopedSession;
       address: String;
       activeSubscriptions: Set<string>;
-      subscriber: Redis;
+      subscriber: RedisPubSub;
 
       props: {
         sequence: number;
