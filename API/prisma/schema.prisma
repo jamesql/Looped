@@ -69,6 +69,7 @@ model Channel {
   updatedAt DateTime @updatedAt
   serverId String
   type String
+  permissionRequired String?
 
   server Server @relation(fields: [serverId], references: [id])
 

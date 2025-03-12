@@ -80,6 +80,7 @@ router.post("/create", [
         createdAt: undefined,
         updatedAt: undefined,
         type: "TEXT",
+        permissionRequired: "MEMBER"
     }
 
     // create channel
