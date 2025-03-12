@@ -41,7 +41,7 @@ router.post(
         lastName: req.body.lastName,
         email: req.body.email,
         password: hashedPassword,
-        birthday: req.body.birthday,
+        birthday: new Date(req.body.birthday),
         location: req.body.location,
         avatar: "",
         createdAt: undefined,
