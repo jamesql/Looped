@@ -59,10 +59,12 @@ class RedisFactory {
 
 class RedisPubSub {
     private client: RedisClientType;
+    private subscribedChannels: Set<string>;
 
     constructor() {
         this.client = new Redis(process.env.REDIS_URL);
         this.client.on('error', (err) => console.error('Redis Client Error', err));
+        this.subscribedChannels = new Set<string>();
     }
 
     async publish(channel: string, message: string): Promise<void> {
@@ -70,10 +72,16 @@ class RedisPubSub {
     }
 
     async subscribe(channel: string, callback: (message: string) => void): Promise<void> {
+        if (this.subscribedChannels.has(channel)) {
+            console.error(`Already subscribed to channel: ${channel}`);
+            return;
+        }
+
         this.client.subscribe(channel, (err, count) => {
             if (err) {
                 console.error('Failed to subscribe: %s', err.message);
             } else {
+                this.subscribedChannels.add(channel);
                 console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
             }
         });
@@ -85,8 +93,17 @@ class RedisPubSub {
         });
     }
 
+    async get(key: string): Promise<string | null> {
+        return await this.client.get(key);
+    }
+
     async unsubscribe(channel: string): Promise<void> {
-        await this.client.unsubscribe(channel);
+        if (this.subscribedChannels.has(channel)) {
+            await this.client.unsubscribe(channel);
+            this.subscribedChannels.delete(channel);
+        } else {
+            console.error(`Not subscribed to channel: ${channel}`);
+        }
     }
 
     async disconnect(): Promise<void> {
