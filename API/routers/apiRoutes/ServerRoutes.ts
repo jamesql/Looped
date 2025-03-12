@@ -62,6 +62,9 @@ router.post("/create", [
     // create server
     const newServer = await ServerService.createServer(server);
 
+    // join user to server
+    await ServerService.addMember(newServer.id, user.id);
+
     // return server
     res.status(200).json(newServer);
     return;
