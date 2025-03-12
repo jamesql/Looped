@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id  String   @id @default(cuid())
+  firstName String
+  lastName String
+  email String @unique
+  password String
+  avatar String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  location String
+  birthday DateTime
+  ownedServers Server[] @relation("ServerOwner")
+  servers Server[] @relation("ServerMembers")
+
+
+  Message Message[]
+
+  Role Role[]
+
+  Portfolio Portfolio[]
+}
+
+model Server {
+  id String @id @default(cuid())
+  name String
+  description String
+  icon String
+  banner String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ownerId String
+  members User[] @relation("ServerMembers")
+
+  User User @relation("ServerOwner", fields: [id], references: [id])
+
+  channels Channel[]
+
+  Role Role[]
+}
+
+model Channel {
+  id String @id @default(cuid())
+  name String
+  description String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  serverId String
+  type String
+
+  server Server @relation(fields: [serverId], references: [id])
+
+  Message Message[]
+
+  roles Role[]
+
+}
+
+model Message {
+  id String @id @default(cuid())
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String
+  channelId String
+
+  user User @relation(fields: [userId], references: [id])
+  channel Channel @relation(fields: [channelId], references: [id])
+}
+
+model Role {
+  id String @id @default(cuid())
+  name String
+  permissions String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String
+  serverId String
+
+  Server Server @relation(fields: [serverId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  Channel Channel[]
+}
+
+model Portfolio {
+  id String @id @default(cuid())
+  name String
+  description String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String
+
+  User User @relation(fields: [userId], references: [id])
+
+  files String[]
+}
