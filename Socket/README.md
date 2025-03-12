@@ -1,29 +1,32 @@
-# Looped - Socket Server
+# WebSocket Server
 
+## Overview
+This directory contains the WebSocket server responsible for real-time messaging and notifications.
 
-## File Structure
-```
-├── README.md
-├── index.ts
-├── package-lock.json // ignore package-validation
-├── package.json // NPM Package List
-└── src // Main directory
-    ├── index.ts // ignore
-    ├── server
-    │   ├── WSValues.ts // OPCodes & Structs to also be used on client side.
-    │   ├── connection.ts // Handles inital connection of WebSocket.
-    │   ├── index.ts // Main file
-    │   ├── message.ts // Handles incoming messages from clients on WebSocket.
-    │   └── redis.ts // Redis Singleton file for API communication/scalability.
-    ├── tsconfig.json // TypeScript config
-    └── utils
-        └── @types
-            └── global.d.ts // Global types
+## Features
+- Real-time text, voice, and video communication
+- Live notifications for messages and job updates
+- Secure connection handling
+
+## Setup
+Run the WebSocket server:
+
+```bash
+npm install
+npm start
 ```
 
-## Install Instructions
-```npm install``` - Install deps
-```ts-node ./src``` - Start WebSocket Server
-Server is hosted on ```localhost:443``` - tbc
+## Configuration
+Modify `.env` for WebSocket settings:
 
+```plaintext
+SOCKET_PORT=5001
+```
 
+## Connection Example
+Frontend connection:
+
+```javascript
+const socket = new WebSocket(process.env.REACT_APP_SOCKET_URL);
+socket.onopen = () => console.log("Connected to WebSocket");
+```
