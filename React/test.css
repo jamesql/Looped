@@ -59,10 +59,10 @@ body {
 
 .server-nav {  
     display: flex;
-	width: 100%;
+	max-width: 80%;
     padding-bottom: 10rem;
-    padding-left: 5rem;
-    padding-right: 5rem;
+    overflow-x: scroll;
+    overflow-y: hidden;
 
 }
 .server-nav::-webkit-scrollbar {
@@ -79,14 +79,12 @@ body {
     padding: 1rem;
     display: flex;
     flex-direction: row;
-    min-width: 100%;
+    max-width: 100%;
     gap: 1rem;
     box-sizing: border-box;
     z-index: 2;
-    justify-content: center;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 5rem;
+
+    padding-bottom: 5rem;    
 
 }
 .server-container::-webkit-scrollbar {
