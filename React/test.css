@@ -173,8 +173,17 @@ body {
     background: var(--color-sublte-grey);
     border-radius: 5px;
     width: 15%;
-    overflow-y: auto;
-    overflow-x: hidden;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
-.members-list {}
+.members-list {
+    overflow-y: scroll;
+}
+
+.profile-card {
+    background-color: var(--color-midnight-blue);
+    margin:0;
+    padding: 0;
+}
