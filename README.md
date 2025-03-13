@@ -130,7 +130,7 @@ For detailed setup instructions, API references, and developer guides, please vi
 
 ## Contact
 For inquiries or support, reach out to us at:
-📧 Email: [TBD@TBD.com]  
-🌐 Website: [TBD.com](https://loopedplatform.com)  
+📧 Email: [help@looped.it.com]  
+🌐 Website: [looped.it.com](https://looped.it.com)  
 
 ---
