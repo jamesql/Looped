@@ -1,0 +1,121 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;600&display=swap");
+
+:root {
+	--color-blurple: #7289da;
+	--color-not-quite-black: #23272a;
+	--color-dark: #2c2f33;
+	--color-lighter-dark: #45494e;
+	--color-full-white: #ffffff;
+	--color-grey-white: #B9BBBE;
+	--color-grey-dark: #242629;
+	--color-actually-black: #000000;
+	--color-fantastic-green: #00ae7a;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+ul[class] {
+	list-style: none;
+}
+
+button {
+  font: inherit;
+}
+
+body {
+	background: var(--color-dark);
+	font-family: "Open Sans", sans-serif;
+	color: var(--color-full-white);
+	min-height: 100vh;
+}
+
+nav {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	overflow-x: scroll;
+	width: 100%;
+}
+nav::-webkit-scrollbar {
+	display: none;
+}
+
+.server-container {
+	background: var(--color-not-quite-black);
+	padding: 1rem;
+	display: flex;
+	flex-direction: row;
+	min-width: 100vw;
+	gap: 1rem;
+	position: absolute;
+	box-sizing: border-box;
+	z-index: 2;
+}
+
+.squircle {
+	background: var(--color-lighter-dark);
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	cursor: pointer;
+	position: relative;
+	transition: border-radius 128ms, background 128ms, color 128ms;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.squircle:hover {
+	border-radius: 36%;
+}
+.squircle:hover::before {
+	transform: translate(-100%, -50%) scale(.5);
+} 
+.squircle:hover .popper {
+	opacity: 1;
+	transform: translateY(-50%) scale(1);
+}
+
+.squircle::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    background: var(--color-fantastic-green);
+    position: absolute;
+    border-radius: 5px;
+    top: -50%;
+    left: 100%;
+    transform: translate(-50%, -100%) scale(0);
+    transition: transform 180ms;
+}
+
+
+.server-icon:hover {
+	background: var(--color-blurple);
+}
+
+.divider {
+	min-height: 100%;
+	background: var(--color-full-white);
+	width: 2px;
+	border-radius: 1px;
+	opacity: .06;
+	transform: scale(.75);
+}
+
+/* Popper - make it appear on the bottom of the origin */
+.popper {
+    position: absolute;
+    top: 200%;
+    transform: translateX(-50%) scale(0);
+    background: var(--color-not-quite-black);
+    color: var(--color-full-white);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 128ms, transform 128ms;
+}
