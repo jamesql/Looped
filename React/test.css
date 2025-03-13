@@ -33,7 +33,7 @@ body {
 	background: var(--color-full-white);
 	font-family: "Open Sans", sans-serif;
 	color: var(--color-full-white);
-	min-height: 100vh;
+	max-height: 100vh;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -60,7 +60,7 @@ body {
 .server-nav {  
     display: flex;
 	width: 100%;
-    padding-bottom: 5rem;
+    padding-bottom: 10rem;
     padding-left: 5rem;
     padding-right: 5rem;
 
@@ -85,7 +85,8 @@ body {
     z-index: 2;
     justify-content: center;
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: hidden;
+    padding-bottom: 5rem;
 
 }
 .server-container::-webkit-scrollbar {
@@ -144,7 +145,7 @@ body {
 
 .popper {
     position: relative;
-    top: 5rem;
+    top: 150%;
     transform: translateX(-50%) scale(0);
     background: var(--color-not-quite-black);
     color: var(--color-full-white);
@@ -166,7 +167,7 @@ body {
     white-space: nowrap;
 }
 
-.members-list {
+.members-profile {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -177,3 +178,5 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.members-list {}
