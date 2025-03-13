@@ -10,6 +10,10 @@
 	--color-grey-dark: #242629;
 	--color-actually-black: #000000;
 	--color-fantastic-green: #00ae7a;
+    --color-midnight-blue: #2C3E50;
+    --color-bright-cyan: #00A8E8;
+    --color-sublte-grey: #B0BEC5;
+    --color-transparent: transparent;
 }
 
 * {
@@ -26,37 +30,70 @@ button {
 }
 
 body {
-	background: var(--color-dark);
+	background: var(--color-full-white);
 	font-family: "Open Sans", sans-serif;
 	color: var(--color-full-white);
 	min-height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: hidden;
 }
 
-nav {
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	overflow-x: scroll;
-	width: 100%;
+.server-info {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 1rem;
+    max-width: 20%;
+    margin-left: 0;
+    background-color: var(--color-sublte-grey);
 }
-nav::-webkit-scrollbar {
+
+.server-card {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    background-color: var(--color-midnight-blue);
+}
+
+.server-nav {  
+    display: flex;
+	width: 100%;
+    padding-bottom: 5rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+
+}
+.server-nav::-webkit-scrollbar {
 	display: none;
 }
 
+.application {
+    justify-items: center;
+    max-width: 70%;
+}
+
 .server-container {
-	background: var(--color-not-quite-black);
-	padding: 1rem;
-	display: flex;
-	flex-direction: row;
-	min-width: 100vw;
-	gap: 1rem;
-	position: absolute;
-	box-sizing: border-box;
-	z-index: 2;
+    background: var(--color-transparent);
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    min-width: 100%;
+    gap: 1rem;
+    box-sizing: border-box;
+    z-index: 2;
+    justify-content: center;
+    overflow-x: auto;
+    overflow-y: visible;
+
+}
+.server-container::-webkit-scrollbar {
+	display: none;
 }
 
 .squircle {
-	background: var(--color-lighter-dark);
+	background: var(--color-midnight-blue);
 	width: 48px;
 	height: 48px;
 	border-radius: 50%;
@@ -82,7 +119,7 @@ nav::-webkit-scrollbar {
     content: '';
     width: 100%;
     height: 100%;
-    background: var(--color-fantastic-green);
+    background: var(--color-bright-cyan);
     position: absolute;
     border-radius: 5px;
     top: -50%;
@@ -93,7 +130,7 @@ nav::-webkit-scrollbar {
 
 
 .server-icon:hover {
-	background: var(--color-blurple);
+	background: var(--color-bright-cyan);
 }
 
 .divider {
@@ -105,10 +142,9 @@ nav::-webkit-scrollbar {
 	transform: scale(.75);
 }
 
-/* Popper - make it appear on the bottom of the origin */
 .popper {
-    position: absolute;
-    top: 200%;
+    position: relative;
+    top: 5rem;
     transform: translateX(-50%) scale(0);
     background: var(--color-not-quite-black);
     color: var(--color-full-white);
@@ -118,4 +154,26 @@ nav::-webkit-scrollbar {
     text-align: center;
     opacity: 0;
     transition: opacity 128ms, transform 128ms;
+    z-index: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 300%;
+}
+
+.popped {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--color-sublte-grey);
+    border-radius: 5px;
+    width: 15%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
