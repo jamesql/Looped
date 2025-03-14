@@ -56,6 +56,8 @@ a {
     background-color: var(--color-sublte-grey);
     min-width: 20vw;
     width: 20vw;
+        /* drop shadow to the right */
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.25);
 }
 
 .server-card {
@@ -203,6 +205,9 @@ a {
     margin: 0;
     padding: 0;
     width: 20vw;
+        /* drop shadow to the left*/
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.25);
+
 }
 
 .members-list {
@@ -220,7 +225,7 @@ a {
     padding: 1rem;
     background-color: var(--color-midnight-blue);
     /* Top only grey border outline */
-    border-top: 1px solid var(--color-dark);
+    border-top: 1px solid var(--color-bright-cyan);
 }
 
 .member-card {
@@ -289,6 +294,8 @@ a {
 
 .channel-active {
     background-color: var(--color-bright-cyan);
+        /* drop shadow */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .messages {
@@ -352,6 +359,9 @@ a {
     padding: .75rem;
     margin: 1rem;
     border-radius: 21px;
+    /* drop shadow */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+    
 }
 
 .message-input {
