@@ -86,7 +86,6 @@ a {
 .server-nav {  
     display: flex;
 	max-width: 60vw;
-    padding-bottom: 10rem;
     overflow-x: scroll;
     overflow-y: hidden;
 
@@ -98,6 +97,8 @@ a {
 .application {
     justify-items: center;
     max-width: 60%;
+    display: flex;
+    flex-direction: column;
 }
 
 .server-container {
@@ -292,17 +293,30 @@ a {
 
 .messages {
     display: flex;
+    flex-direction: column-reverse;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.message {
+    display: flex;
     flex-direction: row;
+    align-items: start;
+    gap: .5rem;
+    padding: .75rem;
 }
 
 .message-details {
     display: flex;
-    flex-direction: column;;
+    flex-direction: column;
+    justify-items: left;    
 }
 
 .author-details {
     display: flex;
     flex-direction: row;
+    gap: 0.25rem;
+
 }
 
 .author-details h3 {
