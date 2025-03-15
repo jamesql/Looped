@@ -29,11 +29,8 @@ body {
     background: var(--color-full-white);
     font-family: "Open Sans", sans-serif;
     color: var(--color-full-white);
-    max-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
 }
 
 button {
@@ -93,12 +90,13 @@ nav {
     align-items: center;
     justify-content:flex-start;
     gap: 1rem;
-    margin-top: 10%;
     padding: 1rem;
     background: var(--color-midnight-blue);
     border-radius: 10px;
-    width: 300px;
-    height: 400px;
+    width: fit-content;
+    height: fit-content;
+    min-width: 400px;
+    min-height: 400px;
     box-sizing: border-box;
     border: 2px solid var(--color-bright-cyan);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
@@ -106,9 +104,6 @@ nav {
     /* align in center of screen */
     margin-left: auto;
     margin-right: auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
 
 }
 
@@ -236,4 +231,12 @@ nav {
 }
 .login-button:focus {
     outline: none;
+}
+
+.names {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
