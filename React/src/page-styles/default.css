@@ -24,9 +24,3 @@
 ul[class] {
 	list-style: none;
 }
-
-button {
-  font: inherit;
-  background: none;
-  border: none;
-}
