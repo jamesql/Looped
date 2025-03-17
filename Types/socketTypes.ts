@@ -25,6 +25,6 @@ export const OPCodes = {
   
     NILOP: -1,
     ERROR: 9999,
-  } as const;
+  };
   
-  export const HEARTBEAT_INTERVAL = 6e4 as const;
+  export const HEARTBEAT_INTERVAL = 6e4;
