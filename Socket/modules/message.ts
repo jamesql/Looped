@@ -6,9 +6,16 @@ import { OPCodes } from "../../Types/socketTypes";
 import TokenUtil from "../../Util/Token";
 import { RedisPubSub } from "../../Util/Redis";
 import LoopedSession from "../../Types/sessionTypes";
+import { Channel, Role, Server } from "../../Types/serverTypes";
+import { subscribe } from "diagnostics_channel";
 
 // Import the TokenUtil class
 const tokenUtil = new TokenUtil();
+
+function handleRedisMessage(message: string) {
+  console.log("Received message from Redis:", message);
+  // Handle the message as needed
+}
 
 // Client message handler
 export default async (
@@ -60,8 +67,6 @@ export default async (
         }
   
         console.log(`[$wss] User ${decode["userId"]} authenticated!`);
-  
-        // fill session object and send it to user
 
         // create client subscriber instance
         let _subscriber = new RedisPubSub();
@@ -98,6 +103,52 @@ export default async (
 
         // add client to server clients
         ws.clients.add(client);
+
+        // subscribe to user events
+        client.subscriber.sub(`user:${decode["userId"]}:events`);
+        // subscribe to server events
+        client.session.servers.forEach((s: Server) => {
+          client.subscriber.sub(`server:${s.id}:events`);
+        });
+        // subscribe to channels
+        client.session.channels.forEach((c: Channel) => {
+          client.subscriber.sub(`server:${c.serverId}}:channel:${c.id}:events`);
+        });
+        // subscribe to roles
+        client.session.roles.forEach((r: Role) => {
+          client.subscriber.sub(`server:${r.serverId}role:${r.id}:events`);
+        });
+
+        client.subscriber.onMessage((subscribedChannel: string, message: string) => {
+          let data = JSON.parse(message);
+
+          let opcode = data["op"];
+          let d = data["d"];
+      
+          let payload = {
+            op: opcode,
+            d: d,
+          };
+
+          // handle opcodes that require subscribing or unsubscribing
+          switch (opcode) {
+            case OPCodes.SERVER_CREATE: 
+              client.subscriber.sub(`server:${d.id}:events`);
+            break;
+            case OPCodes.SERVER_DELETE:
+              client.subscriber.unsubscribe(`server:${d.id}:events`);
+            break;
+            case OPCodes.CHANNEL_CREATE:
+              client.subscriber.sub(`server:${d.serverId}:channel:${d.id}:events`);
+            break;
+            case OPCodes.CHANNEL_DELETE:
+              client.subscriber.unsubscribe(`server:${d.serverId}:channel:${d.id}:events`);
+            break;
+          }
+
+          client.sendAsync(payload);
+        });
+        
         break;
   
       case OPCodes.CHANNEL_CREATE: 
