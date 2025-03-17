@@ -69,6 +69,7 @@ class RedisPubSub {
         await this.client.publish(channel, message);
     }
 
+    // subscribe with implicit callback
     async subscribe(channel: string, callback: (message: string) => void): Promise<void> {
         if (this.subscribedChannels.has(channel)) {
             console.error(`Already subscribed to channel: ${channel}`);
@@ -88,6 +89,30 @@ class RedisPubSub {
             if (subscribedChannel === channel) {
                 callback(message);
             }
+        });
+    }
+
+    // subscribe with no implicit callback, to be implemented after the fact
+    async sub(channel: string): Promise<void> {
+        if (this.subscribedChannels.has(channel)) {
+            console.error(`Already subscribed to channel: ${channel}`);
+            return;
+        }
+
+        this.client.subscribe(channel, (err, count) => {
+            if (err) {
+                console.error('Failed to subscribe: %s', err.message);
+            } else {
+                this.subscribedChannels.add(channel);
+                console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
+            }
+        });
+    }
+
+    // function to export this.client.on('message', ...) to be used in other classes
+    async onMessage(callback: (subscribedChannel: string, message: string) => void): Promise<void> {
+        this.client.on('message', (subscribedChannel, message) => {
+            callback(subscribedChannel, message);
         });
     }
 
