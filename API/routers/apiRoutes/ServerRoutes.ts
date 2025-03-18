@@ -91,6 +91,7 @@ router.post("/edit", [
     body("description").isString().isLength({min: 3, max: 100}),
     body("icon").isString().isLength({min: 1}),
     body("banner").isString().isLength({min: 1}),
+    body("serverId").isString().isLength({min: 1}),
 ], async(req: Request, res: Response) => {
 
     const errors = validationResult(req);
