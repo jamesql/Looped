@@ -93,9 +93,24 @@ const Application: React.FC = () => {
                       </h4>
                     </div>
                   </li>
+                  <li className={classes.divider}></li>
 
                 </ul>
               </div>
+
+              <div className={classes.messages}>
+
+                <div className={classes.message}>
+
+                </div>
+
+                <div className={classes.chat_input}>
+                    
+                </div>
+
+              </div>
+
+
 
         </div>
 
