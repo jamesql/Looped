@@ -185,11 +185,11 @@
 	display: none;
 }
 
-.server_icon-active {
+.server_icon_active {
     background: var(--color-bright-cyan);
 }
 
-.server_icon-active::before {
+.server_icon_active::before {
     transform: translate(-100%, -50%) scale(.5);
 }
 

@@ -72,16 +72,40 @@ const Application: React.FC = () => {
               <h2 className={classes.channel_name}># random</h2>
             </div>
           </div>
+      </div>
 
-          <div className={classes.application}></div>
+      <div className={classes.application}>
+              <div className={classes.server_nav}>
+                <ul className={classes.server_container}>
+                  <li className={classes.divider}></li>
+                  <li className={[classes.squircle, classes.server_icon].join(" ")}>
+                    <div className={classes.popper}>
+                      <h4 className={classes.popped}>
+                        Server Name
+                      </h4>
+                    </div>
+                  </li>
+                  <li className={classes.divider}></li>
+                  <li className={[classes.squircle, classes.server_icon, classes.server_icon_active].join(" ")}>
+                    <div className={classes.popper}>
+                      <h4 className={classes.popped}>
+                        Active Server
+                      </h4>
+                    </div>
+                  </li>
+
+                </ul>
+              </div>
 
         </div>
 
+
         <div className={classes.members_profile}>
-          
+
         </div>
       </div>
     </div>
+
   );
 };
 
