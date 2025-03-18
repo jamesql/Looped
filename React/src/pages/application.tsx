@@ -74,6 +74,11 @@ const Application: React.FC = () => {
           </div>
 
           <div className={classes.application}></div>
+
+        </div>
+
+        <div className={classes.members_profile}>
+          
         </div>
       </div>
     </div>
