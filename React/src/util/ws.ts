@@ -1,4 +1,4 @@
-export type OpCodeHandler = (data: any) => void;
+export type OpCodeHandler = (data: any, client: WebSocketClient) => void;
 
 export class WebSocketClient {
     private ws: WebSocket;
@@ -14,7 +14,7 @@ export class WebSocketClient {
             const data = message.d;
 
             if (this.handlers.has(opCode)) {
-                this.handlers.get(opCode)!.forEach(handler => handler(data));
+                this.handlers.get(opCode)!.forEach(handler => handler(data, this));
             }
         };
 

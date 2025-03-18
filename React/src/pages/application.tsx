@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import WebSocketComponent from "@/components/WebSocket";
-import { OpCodeHandler } from "@/util/ws";
+import { OpCodeHandler, WebSocketClient } from "@/util/ws";
 import { OPCodes } from "../../../Types/socketTypes";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
 import classes from "../styles/application.module.css";
+import LoopedSession from "../../../Types/sessionTypes";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
+  const [session, setSession] = useState<LoopedSession | null>(null);
 
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
@@ -30,24 +32,46 @@ const Application: React.FC = () => {
 
   // done loading after accessToken, refreshToken and authed is true
   useEffect(() => {
-    if (authed) {
+    if (authed && session) {
       setLoading(false);
     }
-  }, [authed]);
+  }, [authed, session]);
 
   // Example handler
-  const exampleHandler: OpCodeHandler = (data) => {
+  const helloHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Received data:", data);
-  };
-  listeners.set(OPCodes.HELLO, [exampleHandler]);
 
-  return loading ? (
-    <div>
-      <Loader />
-    </div>
-  ) : (
+    if (!Cookies.get("access_token")) {
+      console.log("No access token found, redirecting to login");
+      window.location.href = "/login";
+      return;
+    }
+
+    client.send({
+      op: OPCodes.AUTH,
+      d: {
+        access_token: Cookies.get("access_token"),
+      },
+    });
+  };
+
+  const readyHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Ready data:", data);
+
+    setSession(data._session);
+  };
+
+  listeners.set(OPCodes.HELLO, [helloHandler]);
+  listeners.set(OPCodes.READY, [readyHandler]);
+
+  return (
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
+
+      {loading ? (
+        <Loader />
+      ) : (
+        <div>
       <div className={classes.container}>
         <div className={classes.server_info}>
           <div className={classes.server_card}>
@@ -153,7 +177,7 @@ const Application: React.FC = () => {
                   <img className={classes.squircle} src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg" alt="" />
                 </div>
                 <div className={classes.member_info}>
-                  <h3>James Ash</h3>
+                  <h3>{session?.user.firstName} {session?.user.lastName}</h3>
                   <h4>Software Engineer @ Meta</h4>
                 </div>
               </div>
@@ -164,8 +188,9 @@ const Application: React.FC = () => {
         </div>
       </div>
     </div>
-
-  );
+      )}
+    </div>
+  )
 };
 
 export default Application;

@@ -10,6 +10,8 @@ const WebSocketComponent: React.FC<WebSocketProps> = ({ url, listeners }) => {
     const wsRef = useRef<WebSocketClient | null>(null);
 
     useEffect(() => {
+        if (wsRef.current) return;
+        
         wsRef.current = new WebSocketClient(url);
 
         for (const [opCode, handlers] of listeners.entries()) {
@@ -19,10 +21,7 @@ const WebSocketComponent: React.FC<WebSocketProps> = ({ url, listeners }) => {
         }
 
         return () => {
-            if (wsRef.current) {
-                wsRef.current.close();
-                wsRef.current = null;
-            }
+
         };
     }, [url, listeners]);
 
