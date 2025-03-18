@@ -18,7 +18,6 @@ const router: Router = express.Router();
 router.post(
   "/signup",
   [
-    body("username").isString().isLength({ min: 3, max: 20 }),
     body("email").isEmail(),
     body("password").isString().isLength({ min: 6, max: 20 }),
     body("firstName").isString().isLength({ min: 3, max: 20 }),
