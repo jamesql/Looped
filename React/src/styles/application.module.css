@@ -261,9 +261,9 @@
     padding: .75rem;
     margin: 1rem;
     border-radius: 21px;
+    margin-top: auto;
     /* drop shadow */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);  
 }
 
 .message_input {
