@@ -93,6 +93,16 @@ class ServerService {
             },
         });
     }
+
+    async getServerByInviteCode(code: string): Promise<Server | null> {
+        return await prisma.server.findFirst({
+            where: {
+                invites: {
+                    has: code,
+                },
+            },
+        });
+    }
 }
 
 export default new ServerService();
