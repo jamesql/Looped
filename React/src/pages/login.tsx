@@ -3,6 +3,13 @@ import classes from "../styles/auth.module.css";
 import Link from "next/link";
 
 const Login: React.FC = () => {
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        // Handle login logic here
+
+    }
+
     return (
         <div className={classes.container}>
             <nav className={classes.nav}>
@@ -21,7 +28,7 @@ const Login: React.FC = () => {
                 </ul>
                 </nav>   
                 <div className={classes.form_container}>
-        <form action="#" method="POST">
+        <form onSubmit={handleSubmit} method="POST">
             <h2>Login</h2>
             <div className={classes.input_group}>
                 <label htmlFor='email'>Email:</label>
