@@ -52,6 +52,103 @@ class ApiClient {
         });
     }
 
+    // join server post request
+    public async joinServer(serverId: string, userId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/servers/join', {
+            code: serverId,
+        });
+    }
+
+    // create server post request
+    public async createServer(name: string, desc: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/servers/create', {
+            name: name,
+            description: desc,
+        });
+    }
+
+    // edit server info post request
+    public async editServer(serverId: string, name: string, desc: string, icon: string, banner: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/servers/edit', {
+            serverId: serverId,
+            name: name,
+            description: desc,
+            icon: icon,
+            banner: banner,
+        });
+    }
+
+    // delete server post request
+    public async deleteServer(serverId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/servers/delete', {
+            serverId: serverId,
+        });
+    }
+
+    // create channel post request
+    public async createChannel(serverId: string, name: string, desc: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/channels/create', {
+            serverId: serverId,
+            name: name,
+            description: desc,
+        });
+    }
+
+    // edit channel post request
+    public async editChannel(channelId: string, name: string, desc: string, permissionRequired: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/channels/edit', {
+            channelId: channelId,
+            name: name,
+            description: desc,
+            permissionRequired: permissionRequired,
+        });
+    }
+
+    // delete channel post request
+    public async deleteChannel(channelId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/channels/delete', {
+            channelId: channelId,
+        });
+    }
+
+    // create message route
+    public async createMessage(channelId: string, userId: string, content: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/messages/create', {
+            channelId: channelId,
+            content: content,
+            userId: userId,
+        });
+    }
+
+    // edit message route
+    public async editMessage(messageId: string, content: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/messages/edit', {
+            messageId: messageId,
+            content: content,
+        });
+    }
+
+    // delete message route
+    public async deleteMessage(messageId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/messages/delete', {
+            messageId: messageId,
+        });
+    }
+
+    
+
+
+
 }
 
 export default ApiClient
