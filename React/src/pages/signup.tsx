@@ -1,8 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classes from "../styles/auth.module.css";
 import Link from "next/link";
+import ApiClient from '@/util/api';
+import Cookie from 'js-cookie';
+
 
 const Signup: React.FC = () => {
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [location, setLocation] = useState("");
+    const [birthday, setBirthday] = useState("");
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (firstName && lastName && email && password && location && birthday) {
+            ApiClient.getInstance()
+                .signup(email, password, firstName, lastName, birthday, location)
+                .then((response) => {
+                    console.log(response);
+                    if (response.status === 200) {
+                        //save access and refresh token in cookie
+                        Cookie.set("access_token", response.data.accessToken);
+                        Cookie.set("refresh_token", response.data.refreshToken);
+
+                        // redirect to app page
+                        window.location.href = "/application";
+                    } else {
+                        // handle error here
+                        console.log("Error signing up");
+                        alert("Error signing up. Please try again.");
+                    }
+                }
+                )
+                .catch((error) => {
+                    console.log(error);
+                    // handle error here
+                }
+                );
+        }
+    };
+
     return (
         <div className={classes.container}>   
         <nav className={classes.nav}>
@@ -21,35 +60,35 @@ const Signup: React.FC = () => {
     </nav>
 
     <div className={classes.form_container}>
-        <form action="#" method="POST">
+        <form onSubmit={handleSubmit} method="POST">
             <h2>Sign Up</h2>
             <div className={classes.names}>
                 <div className={classes.input_group}>
                     <label htmlFor="first-name">First Name:</label>
-                    <input type="text" id="first-name" name="first-name" required />
+                    <input type="text" id="first-name" name="first-name" onChange={(e) => setFirstName(e.target.value)} required />
                 </div>
                 <div className={classes.input_group}>
                     <label htmlFor="last-name">Last Name:</label>
-                    <input type="text" id="last-name" name="last-name" required />
+                    <input type="text" id="last-name" name="last-name" onChange={(e) => setLastName(e.target.value)} required />
                 </div>
             </div>
             <div className={classes.names}>
                 <div className={classes.input_group}>
                     <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" name="email" required />
+                    <input type="email" id="email" name="email" onChange={(e) => setEmail(e.target.value)} required />
                 </div>
                 <div className={classes.input_group}>
                     <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" required />
+                    <input type="password" id="password" name="password" onChange={(e) => setPassword(e.target.value)} required />
                 </div>
             </div>
             <div className={classes.input_group}>
                 <label htmlFor="location">Location:</label>
-                <input type="text" id="location" name="location" required />
+                <input type="text" id="location" name="location" onChange={(e) => setLocation(e.target.value)} required />
             </div>
             <div className={classes.input_group}>
                 <label htmlFor="birthday">Birthday:</label>
-                <input type="date" id="birthday" name="birthday" required />
+                <input type="date" id="birthday" name="birthday" onChange={(e) => setBirthday(e.target.value)} required />
             </div>
 
             <div className={classes.input_group}>
