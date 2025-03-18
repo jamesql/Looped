@@ -4,6 +4,7 @@ import { OpCodeHandler } from "@/util/ws";
 import { OPCodes } from "../../../Types/socketTypes";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
+import classes from "../styles/application.module.css";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,9 @@ const Application: React.FC = () => {
   ) : (
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
+      <div>
+
+      </div>
     </div>
   );
 };
