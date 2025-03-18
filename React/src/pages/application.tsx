@@ -48,8 +48,33 @@ const Application: React.FC = () => {
   ) : (
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
-      <div>
+      <div className={classes.container}>
+        <div className={classes.server_info}>
+          <div className={classes.server_card}>
+            <div className={classes.server_card_info}>
+              <h1>Meta Recruitment</h1>
+              <a href="https://meta.com">https://meta.com</a>
+            </div>
 
+            <button className={classes.settings_icon}>
+              <img src="/settings.svg" alt="" />
+            </button>
+          </div>
+
+          <div className={classes.channel_list}>
+            <div
+              className={[classes.channel, classes.channel_active].join(" ")}
+            >
+              <h2 className={classes.channel_name}># general</h2>
+            </div>
+
+            <div className={[classes.channel].join(" ")}>
+              <h2 className={classes.channel_name}># random</h2>
+            </div>
+          </div>
+
+          <div className={classes.application}></div>
+        </div>
       </div>
     </div>
   );
