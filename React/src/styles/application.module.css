@@ -158,18 +158,18 @@
 
 /* Server List */
 
-.server-nav {  
+.server_nav {  
     display: flex;
 	max-width: 60vw;
     overflow-x: scroll;
     overflow-y: hidden;
 
 }
-.server-nav::-webkit-scrollbar {
+.server_nav::-webkit-scrollbar {
 	display: none;
 }
 
-.server-container {
+.server_container {
     background: var(--color-transparent);
     padding: 1rem;
     display: flex;
@@ -181,20 +181,20 @@
     padding-bottom: 5rem;    
 
 }
-.server-container::-webkit-scrollbar {
+.server_container::-webkit-scrollbar {
 	display: none;
 }
 
-.server-icon-active {
+.server_icon-active {
     background: var(--color-bright-cyan);
 }
 
-.server-icon-active::before {
+.server_icon-active::before {
     transform: translate(-100%, -50%) scale(.5);
 }
 
 
-.server-icon:hover {
+.server_icon:hover {
 	background: var(--color-bright-cyan);
 }
 
@@ -215,20 +215,20 @@
     padding: .75rem;
 }
 
-.message-details {
+.message_details {
     display: flex;
     flex-direction: column;
     justify-items: left;    
 }
 
-.author-details {
+.author_details {
     display: flex;
     flex-direction: row;
     gap: 0.25rem;
 
 }
 
-.author-details h3 {
+.author_details h3 {
     color: var(--color-actually-black);
     font-size: 1rem;
     text-overflow: ellipsis;
@@ -236,7 +236,7 @@
     white-space: nowrap;
 }
 
-.author-details p {
+.author_details p {
     color: var(--color-lighter-dark);
     font-size: 1rem;
     text-overflow: ellipsis;
@@ -244,15 +244,15 @@
     white-space: nowrap;
 }
 
-.message-content {
+.message_content {
 
 }
 
-.message-content p {
+.message_content p {
     color: var(--color-grey-dark);
 }
 
-.chat-input {
+.chat_input {
     background-color: var(--color-midnight-blue);
     display: flex;
     flex-direction: row;
@@ -266,7 +266,7 @@
     
 }
 
-.message-input {
+.message_input {
     background-color: var(--color-midnight-blue);
     border: none;
     color: var(--color-full-white);
@@ -276,17 +276,17 @@
     border-radius: 21px;
 }
 
-.message-input::placeholder {
+.message_input::placeholder {
     color: var(--color-sublte-grey);
 }
 
-.message-input:focus {
+.message_input:focus {
     outline: none;
 }
 
 /* Members and profiles */
 
-.members-profile {
+.members_profile {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -303,14 +303,14 @@
 
 }
 
-.members-list {
+.members_list {
     overflow-y: scroll;
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.profile-card {
+.profile_card {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -321,7 +321,7 @@
     border-top: 1px solid var(--color-bright-cyan);
 }
 
-.member-card {
+.member_card {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -330,7 +330,7 @@
     border-radius: 5px;
 }
 
-.member-info {
+.member_info {
     display: flex;
     flex-direction: column;
     justify-items: space-around;
@@ -340,7 +340,7 @@
     white-space: nowrap;
 }
 
-.profile-member {
+.profile_member {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -348,7 +348,7 @@
     gap: 1rem;
 }
 
-.member-info h3 {
+.member_info h3 {
     color: var(--color-full-white);
     font-size: 1rem;
     text-overflow: ellipsis;
@@ -356,7 +356,7 @@
     white-space: nowrap;
 }
 
-.member-info h4 {
+.member_info h4 {
     color: var(--color-full-white);
     font-size: 0.75rem;
     text-overflow: ellipsis;
