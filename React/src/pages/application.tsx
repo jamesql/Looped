@@ -6,11 +6,21 @@ import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
 import classes from "../styles/application.module.css";
 import LoopedSession from "../../../Types/sessionTypes";
+import { Channel, Server } from "../../../Types/serverTypes";
+import JoinServerModal from "@/components/JoinServerModal";
+import CreareServerModal from "@/components/CreateServerModal";
+import FriendsModal from "@/components/FriendsModal";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
   const [session, setSession] = useState<LoopedSession | null>(null);
+  const [selectedServer, setSelectedServer] = useState<Server | null>(null);
+  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [joiningServer, setJoiningServer] = useState(false);
+  const [creatingServer, setCreatingServer] = useState(false);
+  const [friendsPage, setFriendsPage] = useState(false);
+  
 
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
@@ -68,6 +78,18 @@ const Application: React.FC = () => {
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
 
+      {joiningServer && (
+        <JoinServerModal isOpen={true} setClose={setJoiningServer} />
+      )}
+
+      {creatingServer && (
+        <CreareServerModal isOpen={true} setClose={setCreatingServer} />
+      )}
+
+      {friendsPage && (
+        <FriendsModal isOpen={true} setClose={setFriendsPage} />
+      )}
+
       {loading ? (
         <Loader />
       ) : (
@@ -76,33 +98,41 @@ const Application: React.FC = () => {
         <div className={classes.server_info}>
           <div className={classes.server_card}>
             <div className={classes.server_card_info}>
-              <h1>Meta Recruitment</h1>
+              <h1>{selectedServer?selectedServer.name:"No Server Selected"}</h1>
               <a href="https://meta.com">https://meta.com</a>
             </div>
 
-            <button className={classes.settings_icon}>
-              <img src="/settings.svg" alt="" />
-            </button>
+            {session?.user.id === selectedServer?.ownerId && (
+              <button className={classes.settings_icon}>
+              <img src="/settings.svg" alt="Settings" />
+              </button>
+            )}
           </div>
 
           <div className={classes.channel_list}>
-            <div
-              className={[classes.channel, classes.channel_active].join(" ")}
-            >
-              <h2 className={classes.channel_name}># general</h2>
-            </div>
 
-            <div className={[classes.channel].join(" ")}>
-              <h2 className={classes.channel_name}># random</h2>
-            </div>
+            {selectedServer?.channels.map((channel) => (
+                <div className={[classes.channel, (selectedChannel?.id===channel.id)?classes.channel_active:""].join(" ")}>
+                  <h2 className={classes.channel_name}># {channel.name}</h2>
+                </div>
+            ))}
+
           </div>
       </div>
 
       <div className={classes.application}>
               <div className={classes.server_nav}>
                 <ul className={classes.server_container}>
+                <li className={classes.divider}></li>
+                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setFriendsPage(true)}>
+                    <div className={classes.popper}>
+                      <h4 className={classes.popped}>
+                        Friends
+                      </h4>
+                    </div>
+                  </li>
                   <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon].join(" ")}>
+                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setJoiningServer(true)}>
                     <div className={classes.popper}>
                       <h4 className={classes.popped}>
                         Join Server
@@ -110,7 +140,7 @@ const Application: React.FC = () => {
                     </div>
                   </li>
                   <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon].join(" ")}>
+                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setCreatingServer(true)}>
                     <div className={classes.popper}>
                       <h4 className={classes.popped}>
                         Create Server
@@ -120,7 +150,7 @@ const Application: React.FC = () => {
                   <li className={classes.divider}></li>
 
                   { session?.servers.map((s => (
-                    <li key={s.id} className={[classes.squircle, classes.server_icon].join(" ")}>
+                    <li key={s.id} className={[classes.squircle, classes.server_icon, s.id===selectedServer?.id?classes.server_icon_active:""].join(" ")} onClick={() => setSelectedServer(s)}>
                       <div className={classes.popper}>
                         <h4 className={classes.popped}>
                           {s.name}
