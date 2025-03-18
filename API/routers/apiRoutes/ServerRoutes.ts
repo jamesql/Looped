@@ -144,6 +144,14 @@ router.post("/edit", [
     // edit server
     const newServer = await ServerService.editServer(server.id, editedServer);
 
+    // tell server members server was edited
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_UPDATED,
+        d: {
+            server: newServer
+        }
+    }));
+
     // return server
     res.status(200).json(newServer);
     return;
@@ -198,6 +206,14 @@ router.post("/delete", [
     // delete server
     await ServerService.deleteServer(server.id);
 
+    // tell server members server was deleted
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_DELETE,
+        d: {
+            serverId: server.id
+        }
+    }));
+
     // return success
     res.status(200).json({ success: true });
     return;
@@ -240,13 +256,22 @@ router.post("/join", [
     // add user to server
     await ServerService.addMember(server.id, user.id);
 
-    // publish to redis {"op":OPCodes, "d":{"type":"serverJoin", "server":newServer}}
-        redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
+    // send new server to user event
+    redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
             op: OPCodes.SERVER_CREATE,
             d: {
                 server: server
             }
         }));
+
+    // send new member to server events
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_MEMBER_ADD,
+        d: {
+            user: user,
+            server: server
+        }
+    }));
     
     // return server
     res.status(200).json(server);

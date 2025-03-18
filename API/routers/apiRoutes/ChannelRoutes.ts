@@ -7,6 +7,8 @@ import ChannelService from "../../data/channels";
 import RoleService from "../../data/roles";
 import { Admin, Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
+import { redisInstance } from "../../data/redis";
+import { OPCodes } from "../../../Types/socketTypes";
 
 const tokenUtil = new TokenUtil();
 
@@ -78,6 +80,15 @@ router.post("/create", [
 
     // create channel
     const newChannel = await ChannelService.createChannel(channel);
+
+    // send to server events channel was created
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.CHANNEL_CREATE,
+        d: {
+            server: server,
+            channel: newChannel
+        }
+    }));
 
     // send response
     res.status(200).json(newChannel);
@@ -157,6 +168,15 @@ router.post("/edit", [
     // edit channel
     const newChannel = await ChannelService.updateChannel(channel.id, editedChannel);
 
+    // send to server events channel was edited
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.CHANNEL_MODIFY,
+        d: {
+            server: server,
+            channel: newChannel
+        }
+    }));
+
     // send response
     res.status(200).json(newChannel);
     return;
@@ -225,6 +245,15 @@ router.post("/delete", [
 
     // delete channel
     const deletedChannel = await ChannelService.deleteChannel(channel.id);
+
+    // send to server events channel was deleted
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.CHANNEL_DELETE,
+        d: {
+            server: server,
+            channel: deletedChannel
+        }
+    }));
 
     // send response
     res.status(200).json(deletedChannel);

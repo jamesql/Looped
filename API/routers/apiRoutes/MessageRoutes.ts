@@ -8,6 +8,8 @@ import RoleService from "../../data/roles";
 import MessageService from "../../data/messages";
 import { Member, Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
+import { redisInstance } from "../../data/redis";
+import { OPCodes } from "../../../Types/socketTypes";
 
 const tokenUtil = new TokenUtil();
 
@@ -92,6 +94,17 @@ router.post(
         // create message
         const newMessage = await MessageService.createMessage(req.body.content, user.id, channel.id);
 
+        // send to clients message was created
+
+        redisInstance.publish(`server:${server.id}:channel:${channel.id}:events`, JSON.stringify({
+            op: OPCodes.MESSAGE_CREATE,
+            d: {
+                server: server,
+                channel: channel,
+                message: newMessage
+            }
+        }));
+
         // return message
         res.status(200).json(newMessage);
         return;
@@ -149,6 +162,26 @@ router.post(
         // edit message
         const newMessage = await MessageService.updateMessage(req.body.messageId, req.body.content);
 
+        // get channel
+        const channel = await ChannelService.getChannelById(message.channelId);
+        // get server
+        const server = await ServerService.getServerById(channel.serverId);
+        // make sure channel and server exist
+        if (!channel || !server) {
+            res.status(404).json({ error: "Channel or Server not found" });
+            return;
+        }
+
+        // send to clients message was edited
+        redisInstance.publish(`server:${server.id}:channel:${channel.id}:events`, JSON.stringify({
+            op: OPCodes.MESSAGE_UPDATE,
+            d: {
+                server: server,
+                channel: channel,
+                message: newMessage
+            }
+        }));
+
         // return message
         res.status(200).json(newMessage);
         return;
@@ -203,8 +236,28 @@ router.post(
             return;
         }
 
+        // get channel and server
+        const channel = await ChannelService.getChannelById(message.channelId);
+        const server = await ServerService.getServerById(channel.serverId);
+
+        // make sure channel and server exist
+        if (!channel || !server) {
+            res.status(404).json({ error: "Channel or Server not found" });
+            return;
+        }        
+
         // delete message
         const newMessage = await MessageService.deleteMessage(req.body.messageId);
+
+        // send to clients message was deleted
+        redisInstance.publish(`server:${server.id}:channel:${channel.id}:events`, JSON.stringify({
+            op: OPCodes.MESSAGE_DELETE,
+            d: {
+                server: server,
+                channel: channel,
+                messageId: req.body.messageId
+            }
+        }));
 
         // return message
         res.status(200).json(newMessage);
