@@ -2,10 +2,12 @@ import express, {Router,  Express, Request, Response } from "express";
 const { body, validationResult, header } = require("express-validator");
 import TokenUtil from "../../../Util/Token";
 import ServerService from "../../data/servers";
+import RoleService from "../../data/roles";
 import UserService from "../../data/users";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
+import { Admin, Manager } from "../../../Types/permissionsTypes";
 
 
 const tokenUtil = new TokenUtil();
@@ -278,6 +280,58 @@ router.post("/join", [
     return;
 });
 
+// create invite code route
+router.get("/invite", [
+    header("Authorization").isString().isLength({min: 1}),
+    body("serverId").isString().isLength({min: 1}),
+], async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+    // validate access token
+    const token = req.header("Authorization");
+    const result = await validateToken(token);
+    if (!result || !result.valid) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+    // get user
+    const user = await UserService.getUserById(result.userId);
 
+    // make sure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+    // get server
+    const server = await ServerService.getServerById(req.query.serverId as string);
+    // make sure server exists
+    if (!server) {
+        res.status(404).json({ error: "Server not found" });
+        return;
+    }
+    
+    // make sure user is either owner or admin
+    if (server.ownerId !== user.id) {
+        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const role = roles.find((role) => role.permissions.includes(Admin));
+
+        // make sure user has the admin role
+        if (!role) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+    }
+
+    // create invite code
+    const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    await ServerService.addInviteCode(server.id, inviteCode);
+
+    // return invite code
+    res.status(200).json({ code: inviteCode });
+    return;
+});
 
 module.exports = router;
