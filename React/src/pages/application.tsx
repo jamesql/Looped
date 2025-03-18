@@ -105,19 +105,29 @@ const Application: React.FC = () => {
                   <li className={[classes.squircle, classes.server_icon].join(" ")}>
                     <div className={classes.popper}>
                       <h4 className={classes.popped}>
-                        Server Name
+                        Join Server
                       </h4>
                     </div>
                   </li>
                   <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon, classes.server_icon_active].join(" ")}>
+                  <li className={[classes.squircle, classes.server_icon].join(" ")}>
                     <div className={classes.popper}>
                       <h4 className={classes.popped}>
-                        Active Server
+                        Create Server
                       </h4>
                     </div>
                   </li>
                   <li className={classes.divider}></li>
+
+                  { session?.servers.map((s => (
+                    <li key={s.id} className={[classes.squircle, classes.server_icon].join(" ")}>
+                      <div className={classes.popper}>
+                        <h4 className={classes.popped}>
+                          {s.name}
+                        </h4>
+                      </div>
+                    </li>
+                  ))) }
 
                 </ul>
               </div>
