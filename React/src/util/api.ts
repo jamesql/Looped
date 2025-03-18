@@ -7,7 +7,7 @@ class ApiClient {
 
   // Private constructor to enforce the singleton pattern
   private constructor() {
-    this.baseUrl = 'http://localhost/api';  // Your API base URL
+    this.baseUrl = 'http://localhost:80/';  // Your API base URL
     this.axiosInstance = axios.create({
       baseURL: this.baseUrl,
       headers: {
@@ -29,7 +29,29 @@ class ApiClient {
     this.axiosInstance.defaults.headers['Authorization'] = token;
   }
 
-  
+  // make login request
+    public async login(username: string, password: string): Promise<AxiosResponse> {
+        return this.axiosInstance.post('/auth/login', {
+            email: username,
+            password: password
+        });
+    }
 
+    // make signup request
+    /**
+     * 
+     */
+    public async signup(email: string, password: string, firstName: string, lastName: string, birthday: string, location: string ): Promise<AxiosResponse> {
+        return this.axiosInstance.post('/auth/signup', {
+        password,
+        email,
+        firstName,
+        lastName,
+        birthday,
+        location
+        });
+    }
 
 }
+
+export default ApiClient
