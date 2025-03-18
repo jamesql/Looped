@@ -7,6 +7,9 @@ import Loader from "@/components/Loader";
 import classes from "../styles/application.module.css";
 import LoopedSession from "../../../Types/sessionTypes";
 import { Channel, Server } from "../../../Types/serverTypes";
+import JoinServerModal from "@/components/JoinServerModal";
+import CreareServerModal from "@/components/CreateServerModal";
+import FriendsModal from "@/components/FriendsModal";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -16,6 +19,7 @@ const Application: React.FC = () => {
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
   const [joiningServer, setJoiningServer] = useState(false);
   const [creatingServer, setCreatingServer] = useState(false);
+  const [friendsPage, setFriendsPage] = useState(false);
   
 
   // create the map of listeners
@@ -74,6 +78,18 @@ const Application: React.FC = () => {
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
 
+      {joiningServer && (
+        <JoinServerModal isOpen={true} setClose={setJoiningServer} />
+      )}
+
+      {creatingServer && (
+        <CreareServerModal isOpen={true} setClose={setCreatingServer} />
+      )}
+
+      {friendsPage && (
+        <FriendsModal isOpen={true} setClose={setFriendsPage} />
+      )}
+
       {loading ? (
         <Loader />
       ) : (
@@ -100,7 +116,7 @@ const Application: React.FC = () => {
                   <h2 className={classes.channel_name}># {channel.name}</h2>
                 </div>
             ))}
-            
+
           </div>
       </div>
 
@@ -108,7 +124,7 @@ const Application: React.FC = () => {
               <div className={classes.server_nav}>
                 <ul className={classes.server_container}>
                 <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon].join(" ")}>
+                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setFriendsPage(true)}>
                     <div className={classes.popper}>
                       <h4 className={classes.popped}>
                         Friends
