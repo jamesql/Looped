@@ -151,7 +151,7 @@
 
 .application {
     justify-items: center;
-    max-width: 60%;
+    width: 60%;
     display: flex;
     flex-direction: column;
 }
@@ -282,6 +282,26 @@
 
 .message_input:focus {
     outline: none;
+}
+
+.attach_button {
+    width: 24px;
+    height: 24px;
+    /* center */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.send_button {
+    width: 24px;
+    height: 24px;
+        /* center */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* button is to close to the right */
+        margin-right: 0.5rem;
 }
 
 /* Members and profiles */

@@ -105,7 +105,13 @@ const Application: React.FC = () => {
                 </div>
 
                 <div className={classes.chat_input}>
-                    
+                    <button className={classes.attach_button}>
+                      <img src="/paperclip.svg" alt="Add File" />
+                    </button>
+                    <input className={classes.message_input} type="text" placeholder="Type a message..." />
+                    <button className={classes.send_button}>
+                      <img src="/send.svg" alt="Send Message" />
+                    </button>
                 </div>
 
               </div>
