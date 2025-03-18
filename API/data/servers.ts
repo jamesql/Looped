@@ -103,6 +103,18 @@ class ServerService {
             },
         });
     }
+
+    async addInviteCode(serverId: string, code: string): Promise<Server> {
+        return await prisma.server.update({
+            where: { id: serverId },
+            data: {
+                invites: {
+                    push: code,
+                },
+            },
+        });
+    }
+    
 }
 
 export default new ServerService();
