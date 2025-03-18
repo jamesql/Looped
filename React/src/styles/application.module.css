@@ -360,6 +360,10 @@
     white-space: nowrap;
 }
 
+.member_card .member_info h4, .member_card .member_info h3 {
+    color: var(--color-actually-black) !important;
+}
+
 .profile_member {
     display: flex;
     flex-direction: row;
