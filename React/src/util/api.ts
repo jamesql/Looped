@@ -43,12 +43,12 @@ class ApiClient {
      */
     public async signup(email: string, password: string, firstName: string, lastName: string, birthday: string, location: string ): Promise<AxiosResponse> {
         return this.axiosInstance.post('/auth/signup', {
-        password,
-        email,
-        firstName,
-        lastName,
-        birthday,
-        location
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        birthday: birthday,
+        location: location
         });
     }
 
