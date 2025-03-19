@@ -13,8 +13,8 @@ interface ServerSettingsModalProps {
 const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setClose, server}) => {
     const [serverName, setServerName] = React.useState(server.name);
     const [serverDesc, setServerDesc] = React.useState(server.description || "");
-    const [serverIcon, setServerIcon] = React.useState(server.icon);
-    const [serverBanner, setServerBanner] = React.useState(server.banner);
+    const [serverIcon, setServerIcon] = React.useState(server.icon || "");
+    const [serverBanner, setServerBanner] = React.useState(server.banner || "");
 
     const handleSubmit = async (e: any) => {
         console.log(serverName);
