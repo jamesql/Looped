@@ -11,6 +11,7 @@ import JoinServerModal from "@/components/JoinServerModal";
 import CreareServerModal from "@/components/CreateServerModal";
 import FriendsModal from "@/components/FriendsModal";
 import ApiClient from "@/util/api";
+import ServerSettingsModal from "@/components/ServerSettingsModal";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,7 @@ const Application: React.FC = () => {
   const [joiningServer, setJoiningServer] = useState(false);
   const [creatingServer, setCreatingServer] = useState(false);
   const [friendsPage, setFriendsPage] = useState(false);
+  const [serverSettings, setServerSettings] = useState(false);
   
 
   // create the map of listeners
@@ -97,6 +99,10 @@ const Application: React.FC = () => {
 
       {friendsPage && (
         <FriendsModal isOpen={true} setClose={setFriendsPage} />
+      )}
+
+      {serverSettings && (
+        <ServerSettingsModal isOpen={true} setClose={setServerSettings} server={selectedServer!}/>
       )}
 
       {loading ? (
