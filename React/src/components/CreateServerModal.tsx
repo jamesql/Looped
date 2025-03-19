@@ -1,5 +1,7 @@
 import React from 'react';
 import classes from "../styles/createservermodal.module.css"
+import ApiClient from '@/util/api';
+import Cookie from 'js-cookie';
 
 interface CreateServerModalProps {
     isOpen: boolean;
@@ -7,10 +9,19 @@ interface CreateServerModalProps {
 }
 
 const CreareServerModal: React.FC<CreateServerModalProps> = ({ isOpen,  setClose}) => {
-    const [serverId, setServerId] = React.useState('');
+    const [name, setServerName] = React.useState('');
+    const [desc, setDescription] = React.useState('');
 
-    const handleJoin = (e: any) => {
-        console.log(serverId);
+    const handleJoin = async (e: any) => {
+
+        await ApiClient.getInstance().createServer(
+            name, 
+            desc,
+            Cookie.get("access_token") || ""
+        ).then((response) => {
+            console.log(response);
+        });
+
         setClose(false);
     };
 
@@ -23,9 +34,15 @@ const CreareServerModal: React.FC<CreateServerModalProps> = ({ isOpen,  setClose
                 <h2>Create Server</h2>
                 <input
                     type="text"
-                    value={serverId}
-                    onChange={(e) => setServerId(e.target.value)}
-                    placeholder="Enter server invite code"
+                    value={name}
+                    onChange={(e) => setServerName(e.target.value)}
+                    placeholder="Enter Server Name"
+                />
+                <input
+                    type="text"
+                    value={desc}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Enter Server Description"
                 />
                 <button onClick={(e) => handleJoin(e)}>Create</button>
             </div>
