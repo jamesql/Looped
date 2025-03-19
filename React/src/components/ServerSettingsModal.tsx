@@ -58,25 +58,25 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                 <h2>Edit Server Settings</h2>
                 <input
                     type="text"
-                    value={server.name}
+                    defaultValue={server.name.toString()}
                     onChange={(e) => setServerName(e.target.value)}
                     placeholder={server.name}
                 />
                 <input
                     type="text"
-                    value={server.description}
+                    defaultValue={server.description}
                     onChange={(e) => setServerDesc(e.target.value)}
                     placeholder={server.description}
                 />
                 <input
                     type="text"
-                    value={server.icon}
+                    defaultValue={server.icon}
                     onChange={(e) => setServerIcon(e.target.value)}
                     placeholder={server.icon}
                 />
                 <input
                     type="text"
-                    value={server.banner}
+                    defaultValue={server.banner}
                     onChange={(e) => setServerBanner(e.target.value)}
                     placeholder={server.banner}
                 />
