@@ -52,7 +52,21 @@ const Application: React.FC = () => {
     }
   }, [authed, session]);
 
-  // Example handler
+  // Send message function
+  const sendMessage = (): void => {
+    if (currentMessage.trim() !== "") {
+      // Here you would typically send the message to the server
+      console.log("Sending message:", currentMessage);
+      ApiClient.getInstance().createMessage(
+        selectedChannel?.id || "",
+        currentMessage,
+        Cookies.get("access_token") || ""
+      ).then((response) => {
+        console.log(response);
+      });
+    }
+  };
+
   const helloHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Received data:", data);
 
@@ -208,7 +222,7 @@ const Application: React.FC = () => {
                       <img src="/paperclip.svg" alt="Add File" />
                     </button>
                     <input className={classes.message_input} onChange={(e) => setCurrentMessage(e.target.value)} type="text" placeholder="Type a message..." />
-                    <button className={classes.send_button}>
+                    <button className={classes.send_button} onClick={() => sendMessage()}>
                       <img src="/send.svg" alt="Send Message" />
                     </button>
                 </div>
