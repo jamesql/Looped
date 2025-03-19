@@ -1,5 +1,7 @@
 import React from 'react';
 import classes from "../styles/joinmodal.module.css"
+import ApiClient from '@/util/api';
+import Cookie from 'js-cookie';
 
 interface JoinServerModalProps {
     isOpen: boolean;
@@ -9,8 +11,16 @@ interface JoinServerModalProps {
 const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen,  setClose}) => {
     const [serverId, setServerId] = React.useState('');
 
-    const handleJoin = (e: any) => {
+    const handleJoin = async (e: any) => {
         console.log(serverId);
+
+        await ApiClient.getInstance().joinServer(
+            serverId,
+            Cookie.get("access_token") || ""
+        ).then((response) => {
+            console.log(response);
+        });
+
         setClose(false);
     };
 
