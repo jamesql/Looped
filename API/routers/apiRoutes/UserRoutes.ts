@@ -3,6 +3,7 @@ const { body, validationResult, header } = require("express-validator");
 import { validateToken } from "../../data/token";
 import UserService from "../../data/users";
 import { redisInstance } from "../../data/redis";
+import LoopedSession from "../../../Types/sessionTypes";
 
 const router: Router = express.Router();
 
@@ -24,7 +25,7 @@ router.get("/get-user-data", [
         return;
     }
 
-    const user = await UserService.getAllUserData(result.userId);
+    const user: LoopedSession = await UserService.getAllUserData(result.userId);
 
     if (!user) {
         res.status(404).json({ error: "User not found" });
