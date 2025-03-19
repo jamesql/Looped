@@ -8,6 +8,7 @@ import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
 import { Admin, Manager } from "../../../Types/permissionsTypes";
+import { param } from "express-validator";
 
 
 const tokenUtil = new TokenUtil();
@@ -18,7 +19,7 @@ const router: Router = express.Router();
 router.post("/create", [
     header("Authorization").isString().isLength({min: 1}),
     body("name").isString().isLength({min: 3, max: 20}),
-    body("description").isString().isLength({min: 3, max: 100}),
+    body("description").isString().isLength({min: 0, max: 100}),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -88,9 +89,9 @@ router.post("/create", [
 router.post("/edit", [
     header("Authorization").isString().isLength({min: 1}),
     body("name").isString().isLength({min: 3, max: 20}),
-    body("description").isString().isLength({min: 3, max: 100}),
-    body("icon").isString().isLength({min: 1}),
-    body("banner").isString().isLength({min: 1}),
+    body("description").isString().isLength({min: 0, max: 100}),
+    body("icon").isString().isLength({min: 0}),
+    body("banner").isString().isLength({min: 0}),
     body("serverId").isString().isLength({min: 1}),
 ], async(req: Request, res: Response) => {
 
@@ -282,9 +283,9 @@ router.post("/join", [
 });
 
 // create invite code route
-router.get("/invite", [
+router.get("/invite/:serverId", [
     header("Authorization").isString().isLength({min: 1}),
-    body("serverId").isString().isLength({min: 1}),
+    param("serverId").isString().isLength({min: 1}),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -307,7 +308,7 @@ router.get("/invite", [
         return;
     }
     // get server
-    const server = await ServerService.getServerById(req.query.serverId as string);
+    const server = await ServerService.getServerById(req.params.serverId as string);
     // make sure server exists
     if (!server) {
         res.status(404).json({ error: "Server not found" });
@@ -325,6 +326,8 @@ router.get("/invite", [
             return;
         }
     }
+
+    // change this eventually so they only have one invite code
 
     // create invite code
     const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
