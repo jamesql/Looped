@@ -33,6 +33,8 @@ The mission of Looped is to provide a secure and engaging space for professional
 | [React](React)       | Frontend application built with React and Express |
 | [Redis](Redis)       | Caching layer setup for optimized performance |
 | [Socket](Socket)     | Real-time WebSocket server for seamless communication |
+| [Util](Util)         | Utility wrapper classes to reuse throughout the project |
+| [Types](Types)       | Types to be used throughout the project                 |
 | [Assets](Assets)     | UI/UX design assets, branding materials, and other static files |
 
 ---
