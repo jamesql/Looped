@@ -183,23 +183,6 @@ const Application: React.FC = () => {
 
               <div className={classes.messages}>
 
-                <div className={classes.message}>
-                  <img className={classes.squircle} src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg" alt="" />
-                  <div className={classes.message_details}>
-                    <div className={classes.author_details}>
-                        <h3>James Ash</h3>
-                        <p>03/14/2025 - 11:15 AM</p>
-                    </div>
-
-                    <div className={classes.message_content}>
-                        <p>
-                        Hello, this is a test message to see how the chat looks like. Hello, this is a test message to see how the chat looks like. Hello, this is a test message to see how the chat looks like. Hello, this is a test message to see how the chat looks like.
-                        </p>
-                    </div>
-
-                  </div>  
-                </div>
-
                 {selectedChannel?.messages.map((message) => (
                   <div className={classes.message}>
                   <img className={classes.squircle} src={message.author.avatar} alt="" />
