@@ -55,7 +55,7 @@ class ApiClient {
     }
 
     // join server post request
-    public async joinServer(serverId: string, userId: string, token: string): Promise<AxiosResponse> {
+    public async joinServer(serverId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/server/join', {
             code: serverId,
