@@ -1,6 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors"
+import { redisInstance } from "./data/redis";
+import LoopedSession from "../Types/sessionTypes";
+import UserService from "./data/users";
 
 // include .env
 require('dotenv').config();
@@ -23,4 +26,13 @@ app.use("/auth", require("./routers/Auth"));
 // port should change later, from env file
 app.listen(80, () => {
   console.log(`[$api] API Server Started.`);
+});
+
+redisInstance.subscribe("SessionUpdateQueue", async (message) => {
+  console.log(`[$api] Updating session for user ${message}`);
+
+  const _s: LoopedSession = await UserService.getAllUserData(message);
+  if (_s) {
+    redisInstance.set(`user:${message}:session`, JSON.stringify(_s));
+  }
 });
