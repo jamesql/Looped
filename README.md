@@ -68,8 +68,6 @@ Ensure you have the following installed on your system:
    Create a `.env` file and configure the required variables:
    ```plaintext
 
-   ```
-
 # JWT Secrets
 
 ACCESS_TOKEN_SECRET=your_jwt_secret_key
@@ -86,8 +84,8 @@ REDIS_URL=redis://localhost:6379
 # bCrypt Salt Rounds
 
 BCRYPT_SALT_ROUNDS=10
-
-````
+```
+```
 4. **Start Redis Server**
    ```redis-server```
 5. **Install Database**
