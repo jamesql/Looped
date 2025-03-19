@@ -88,7 +88,9 @@ REDIS_URL=redis://localhost:6379
 BCRYPT_SALT_ROUNDS=10
 
 ````
-4. **Install Database**
+4. **Start Redis Server**
+   ```redis-server```
+5. **Install Database**
    ```
    You'll need to copy your .env to ./API to use prisma migrate
    cd ./API
