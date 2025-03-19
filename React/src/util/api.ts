@@ -148,7 +148,7 @@ class ApiClient {
     }
 
     // get user data
-    public async getUserData(userId: string, token: string): Promise<AxiosResponse> {
+    public async getUserData(token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.get(`/api/user/get-user-data`);
     }
