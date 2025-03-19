@@ -66,24 +66,19 @@ Ensure you have the following installed on your system:
    ```
 3. **Set Up Environment Variables**  
    Create a `.env` file and configure the required variables:
-   ```
+   ```plaintext
+   # JWT Secrets
+   ACCESS_TOKEN_SECRET=your_jwt_secret_key
+   REFRESH_TOKEN_SECRET=your_jwt_secret_key
 
-# JWT Secrets
-
-ACCESS_TOKEN_SECRET=your_jwt_secret_key
-REFRESH_TOKEN_SECRET=your_jwt_secret_key
-
-# Prisma PostgreSQL Database URL
-
-DATABASE_URL=postgresql://username:password@localhost:5432/database_name?schema=public
-
-# Redis URL
-
-REDIS_URL=redis://localhost:6379
-
-# bCrypt Salt Rounds
-
-BCRYPT_SALT_ROUNDS=10
+   # Prisma PostgreSQL Database URL
+   DATABASE_URL=postgresql://username:password@localhost:5432/database_name?schema=public
+   
+   # Redis URL
+   REDIS_URL=redis://localhost:6379
+   
+   # bCrypt Salt Rounds
+   BCRYPT_SALT_ROUNDS=10
 ```
 ```
 4. **Start Redis Server**
