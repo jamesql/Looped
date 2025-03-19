@@ -55,7 +55,6 @@ const Application: React.FC = () => {
   // Send message function
   const sendMessage = (): void => {
     if (currentMessage.trim() !== "") {
-      // Here you would typically send the message to the server
       console.log("Sending message:", currentMessage);
       ApiClient.getInstance().createMessage(
         selectedChannel?.id || "",
