@@ -8,9 +8,14 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
     return (
-        <div className={classes.usercard}>
-            <img src={user.avatar} alt="User Avatar" className={classes.useravatar} />
-            <div className={classes.username}>{user.}</div>
+        <li className={classes.member_card}>
+        <div className={classes.member_image}>
+            <img className={classes.squircle} src={user.avatar} alt="" />
         </div>
+        <div className={classes.member_info}>
+            <h3>{user.firstName} {user.lastName}</h3>
+            <h4>{user.bio}</h4>
+        </div>
+    </li>
     );
 };
