@@ -24,6 +24,7 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [friendsPage, setFriendsPage] = useState(false);
   const [serverSettings, setServerSettings] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState("");
   
 
   // create the map of listeners
@@ -198,13 +199,32 @@ const Application: React.FC = () => {
 
                   </div>  
                 </div>
+
+                {selectedChannel?.messages.map((message) => (
+                  <div className={classes.message}>
+                  <img className={classes.squircle} src={message.author.avatar} alt="" />
+                  <div className={classes.message_details}>
+                    <div className={classes.author_details}>
+                        <h3>{message.author.firstName} {message.author.lastName}</h3>
+                        <p>{new Date(message.createdAt).toLocaleString()}</p>
+                    </div>
+
+                    <div className={classes.message_content}>
+                        <p>
+                        {message.content}
+                        </p>
+                    </div>
+
+                </div>
+                </div>
+                ))}
                 </div>
 
                 <div className={classes.chat_input}>
                     <button className={classes.attach_button}>
                       <img src="/paperclip.svg" alt="Add File" />
                     </button>
-                    <input className={classes.message_input} type="text" placeholder="Type a message..." />
+                    <input className={classes.message_input} onChange={(e) => setCurrentMessage(e.target.value)} type="text" placeholder="Type a message..." />
                     <button className={classes.send_button}>
                       <img src="/send.svg" alt="Send Message" />
                     </button>
