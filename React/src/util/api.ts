@@ -29,6 +29,8 @@ class ApiClient {
     this.axiosInstance.defaults.headers['Authorization'] = token;
   }
 
+
+
   // make login request
     public async login(username: string, password: string): Promise<AxiosResponse> {
         return this.axiosInstance.post('/auth/login', {
@@ -55,7 +57,7 @@ class ApiClient {
     // join server post request
     public async joinServer(serverId: string, userId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/servers/join', {
+        return this.axiosInstance.post('/server/join', {
             code: serverId,
         });
     }
@@ -63,7 +65,7 @@ class ApiClient {
     // create server post request
     public async createServer(name: string, desc: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/servers/create', {
+        return this.axiosInstance.post('/server/create', {
             name: name,
             description: desc,
         });
@@ -72,7 +74,7 @@ class ApiClient {
     // edit server info post request
     public async editServer(serverId: string, name: string, desc: string, icon: string, banner: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/servers/edit', {
+        return this.axiosInstance.post('/server/edit', {
             serverId: serverId,
             name: name,
             description: desc,
@@ -84,7 +86,7 @@ class ApiClient {
     // delete server post request
     public async deleteServer(serverId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/servers/delete', {
+        return this.axiosInstance.post('/server/delete', {
             serverId: serverId,
         });
     }
@@ -92,7 +94,7 @@ class ApiClient {
     // create channel post request
     public async createChannel(serverId: string, name: string, desc: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/channels/create', {
+        return this.axiosInstance.post('/channel/create', {
             serverId: serverId,
             name: name,
             description: desc,
@@ -102,7 +104,7 @@ class ApiClient {
     // edit channel post request
     public async editChannel(channelId: string, name: string, desc: string, permissionRequired: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/channels/edit', {
+        return this.axiosInstance.post('/channel/edit', {
             channelId: channelId,
             name: name,
             description: desc,
@@ -113,7 +115,7 @@ class ApiClient {
     // delete channel post request
     public async deleteChannel(channelId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/channels/delete', {
+        return this.axiosInstance.post('/channel/delete', {
             channelId: channelId,
         });
     }
@@ -121,7 +123,7 @@ class ApiClient {
     // create message route
     public async createMessage(channelId: string, userId: string, content: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/messages/create', {
+        return this.axiosInstance.post('/message/create', {
             channelId: channelId,
             content: content,
             userId: userId,
@@ -131,7 +133,7 @@ class ApiClient {
     // edit message route
     public async editMessage(messageId: string, content: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/messages/edit', {
+        return this.axiosInstance.post('/message/edit', {
             messageId: messageId,
             content: content,
         });
@@ -140,12 +142,12 @@ class ApiClient {
     // delete message route
     public async deleteMessage(messageId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/messages/delete', {
+        return this.axiosInstance.post('/message/delete', {
             messageId: messageId,
         });
     }
 
-    
+
 
 
 
