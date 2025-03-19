@@ -156,9 +156,7 @@ class ApiClient {
     // generate invite code
     public async generateInviteCode(serverId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post('/api/server/invite', {
-            serverId: serverId,
-        });
+        return this.axiosInstance.get(`/api/server/invite/${serverId}`, {});
     }
 
 
