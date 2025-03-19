@@ -27,12 +27,3 @@ app.use("/auth", require("./routers/Auth"));
 app.listen(80, () => {
   console.log(`[$api] API Server Started.`);
 });
-
-redisInstance.subscribe("SessionUpdateQueue", async (message) => {
-  console.log(`[$api] Updating session for user ${message}`);
-
-  const _s: LoopedSession = await UserService.getAllUserData(message);
-  if (_s) {
-    redisInstance.set(`user:${message}:session`, JSON.stringify(_s));
-  }
-});
