@@ -66,7 +66,7 @@ Ensure you have the following installed on your system:
    ```
 3. **Set Up Environment Variables**  
    Create a `.env` file and configure the required variables:
-   ```plaintext
+   ```
 
 # JWT Secrets
 
