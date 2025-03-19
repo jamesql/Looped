@@ -13,6 +13,7 @@ import FriendsModal from "@/components/FriendsModal";
 import ApiClient from "@/util/api";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserCard from "@/components/UserCard";
+import MessageComponent from "@/components/MessageComponent";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -197,22 +198,7 @@ const Application: React.FC = () => {
               <div className={classes.messages}>
 
                 {selectedChannel?.messages.map((message) => (
-                  <div className={classes.message}>
-                  <img className={classes.squircle} src={message.author.avatar} alt="" />
-                  <div className={classes.message_details}>
-                    <div className={classes.author_details}>
-                        <h3>{message.author.firstName} {message.author.lastName}</h3>
-                        <p>{new Date(message.createdAt).toLocaleString()}</p>
-                    </div>
-
-                    <div className={classes.message_content}>
-                        <p>
-                        {message.content}
-                        </p>
-                    </div>
-
-                </div>
-                </div>
+                  <MessageComponent message={message} />
                 ))}
                 </div>
 
