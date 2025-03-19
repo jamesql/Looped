@@ -16,8 +16,22 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     const [serverIcon, setServerIcon] = React.useState('');
     const [serverBanner, setServerBanner] = React.useState('');
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any) => {
         console.log(serverName);
+
+        const token = Cookies.get("access_token") || "";
+        await ApiClient.getInstance().editServer(
+            server.id,
+            serverName,
+            serverDesc,
+            serverIcon,
+            serverBanner,
+            token
+        ).then((response) => {
+            console.log(response);
+        }
+        );
+
         setClose(false);
     };
 
