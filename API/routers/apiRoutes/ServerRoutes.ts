@@ -19,7 +19,7 @@ const router: Router = express.Router();
 router.post("/create", [
     header("Authorization").isString().isLength({min: 1}),
     body("name").isString().isLength({min: 3, max: 20}),
-    body("description").isString().isLength({min: 3, max: 100}),
+    body("description").isString().isLength({min: 0, max: 100}),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -89,9 +89,9 @@ router.post("/create", [
 router.post("/edit", [
     header("Authorization").isString().isLength({min: 1}),
     body("name").isString().isLength({min: 3, max: 20}),
-    body("description").isString().isLength({min: 3, max: 100}),
-    body("icon").isString().isLength({min: 1}),
-    body("banner").isString().isLength({min: 1}),
+    body("description").isString().isLength({min: 0, max: 100}),
+    body("icon").isString().isLength({min: 0}),
+    body("banner").isString().isLength({min: 0}),
     body("serverId").isString().isLength({min: 1}),
 ], async(req: Request, res: Response) => {
 
