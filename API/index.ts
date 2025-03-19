@@ -1,6 +1,9 @@
 import express, { Express, Request, Response } from "express";
 import bodyParser from "body-parser";
 import cors from "cors"
+import { redisInstance } from "./data/redis";
+import LoopedSession from "../Types/sessionTypes";
+import UserService from "./data/users";
 
 // include .env
 require('dotenv').config();
