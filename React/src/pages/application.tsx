@@ -24,6 +24,7 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [friendsPage, setFriendsPage] = useState(false);
   const [serverSettings, setServerSettings] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState("");
   
 
   // create the map of listeners
@@ -51,7 +52,21 @@ const Application: React.FC = () => {
     }
   }, [authed, session]);
 
-  // Example handler
+  // Send message function
+  const sendMessage = (): void => {
+    if (currentMessage.trim() !== "") {
+      // Here you would typically send the message to the server
+      console.log("Sending message:", currentMessage);
+      ApiClient.getInstance().createMessage(
+        selectedChannel?.id || "",
+        currentMessage,
+        Cookies.get("access_token") || ""
+      ).then((response) => {
+        console.log(response);
+      });
+    }
+  };
+
   const helloHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Received data:", data);
 
@@ -182,30 +197,32 @@ const Application: React.FC = () => {
 
               <div className={classes.messages}>
 
-                <div className={classes.message}>
-                  <img className={classes.squircle} src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg" alt="" />
+                {selectedChannel?.messages.map((message) => (
+                  <div className={classes.message}>
+                  <img className={classes.squircle} src={message.author.avatar} alt="" />
                   <div className={classes.message_details}>
                     <div className={classes.author_details}>
-                        <h3>James Ash</h3>
-                        <p>03/14/2025 - 11:15 AM</p>
+                        <h3>{message.author.firstName} {message.author.lastName}</h3>
+                        <p>{new Date(message.createdAt).toLocaleString()}</p>
                     </div>
 
                     <div className={classes.message_content}>
                         <p>
-                        Hello, this is a test message to see how the chat looks like. Hello, this is a test message to see how the chat looks like. Hello, this is a test message to see how the chat looks like. Hello, this is a test message to see how the chat looks like.
+                        {message.content}
                         </p>
                     </div>
 
-                  </div>  
                 </div>
+                </div>
+                ))}
                 </div>
 
                 <div className={classes.chat_input}>
                     <button className={classes.attach_button}>
                       <img src="/paperclip.svg" alt="Add File" />
                     </button>
-                    <input className={classes.message_input} type="text" placeholder="Type a message..." />
-                    <button className={classes.send_button}>
+                    <input className={classes.message_input} onChange={(e) => setCurrentMessage(e.target.value)} type="text" placeholder="Type a message..." />
+                    <button className={classes.send_button} onClick={() => sendMessage()}>
                       <img src="/send.svg" alt="Send Message" />
                     </button>
                 </div>

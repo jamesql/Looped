@@ -21,7 +21,6 @@ router.post(
     [
         header("Authorization").isString().isLength({ min: 1 }),
         body("content").isString().isLength({ min: 1, max: 200 }),
-        body("userId").isString().isLength({ min: 1 }),
         body("channelId").isString().isLength({ min: 1 }),
     ],
     async (req: Request, res: Response) => {
