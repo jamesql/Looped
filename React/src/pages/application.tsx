@@ -118,7 +118,7 @@ const Application: React.FC = () => {
             </div>
 
             {session?.user.id === selectedServer?.ownerId && (
-              <button className={classes.settings_icon}>
+              <button className={classes.settings_icon} onClick={() => setServerSettings(true)}>
               <img src="/settings.svg" alt="Settings" />
               </button>
             )}
