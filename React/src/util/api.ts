@@ -121,12 +121,11 @@ class ApiClient {
     }
 
     // create message route
-    public async createMessage(channelId: string, userId: string, content: string, token: string): Promise<AxiosResponse> {
+    public async createMessage(channelId: string, content: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/message/create', {
             channelId: channelId,
             content: content,
-            userId: userId,
         });
     }
 
