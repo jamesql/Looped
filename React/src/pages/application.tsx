@@ -10,6 +10,7 @@ import { Channel, Server } from "../../../Types/serverTypes";
 import JoinServerModal from "@/components/JoinServerModal";
 import CreareServerModal from "@/components/CreateServerModal";
 import FriendsModal from "@/components/FriendsModal";
+import ApiClient from "@/util/api";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -65,11 +66,19 @@ const Application: React.FC = () => {
     });
   };
 
-  const readyHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+  const readyHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
     console.log("Ready data:", data);
-
-    setSession(data._session);
-  };
+    const token = Cookies.get("access_token");
+    if (token) {
+      const rawData = await ApiClient.getInstance().getUserData(token);
+      const _s: LoopedSession = rawData.data as LoopedSession;
+      if (rawData.status === 200) {
+        setSession(_s);
+      } else {
+        location.href = "/login";
+      }
+    }
+};
 
   listeners.set(OPCodes.HELLO, [helloHandler]);
   listeners.set(OPCodes.READY, [readyHandler]);
