@@ -72,6 +72,8 @@ export default async (
         let _subscriber = new RedisPubSub();
         client.subscriber = _subscriber;
         
+        // send to SessionUpdateQueue
+        client.subscriber.publish(`SessionUpdateQueue`, decode["userId"]);
   
         // get session and store in client.session
         let _session = JSON.parse( await client.subscriber.get(`user:${decode["userId"]}:session`) );
