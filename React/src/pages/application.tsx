@@ -149,7 +149,7 @@ const Application: React.FC = () => {
                   </li>
                   <li className={classes.divider}></li>
 
-                  { session?.servers.map((s => (
+                  { session?.servers.map((s => (<>
                     <li key={s.id} className={[classes.squircle, classes.server_icon, s.id===selectedServer?.id?classes.server_icon_active:""].join(" ")} onClick={() => setSelectedServer(s)}>
                       <div className={classes.popper}>
                         <h4 className={classes.popped}>
@@ -157,6 +157,8 @@ const Application: React.FC = () => {
                         </h4>
                       </div>
                     </li>
+                    <li className={classes.divider}></li>
+                    </>
                   ))) }
 
                 </ul>
