@@ -182,23 +182,13 @@ const Application: React.FC = () => {
         const updatedServers = prevSession.servers.map((s) => {
           if (s.id === server.id) {
             const updatedChannels = s.channels.map((c) => {
-              if (c.id !== channel.id) {
-                return c;
-              }
-              else if (c.messages === null) {
+              if (c.id === channel.id) {
                 return {
                   ...c,
-                  messages: [newMessage],
+                  messages: [...c.messages, newMessage],
                 };
               }
-              else {
-                console.log(c.messages);
-                return {
-                  ...c,
-                  // add new message to the existing messages
-                  messages: [...(c.messages?c.messages:[]), newMessage],
-                };
-              }
+              return c;
             });
 
             return {
@@ -216,6 +206,7 @@ const Application: React.FC = () => {
       }
       return prevSession;
     });
+
 
     // if server is selected, update the selected channel's messages
     setSelectedChannel((prev: Channel | null) => {
