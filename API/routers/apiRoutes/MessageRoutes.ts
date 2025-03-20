@@ -10,6 +10,7 @@ import { Member, Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
+import { Message } from "../../../Types/serverTypes";
 
 const tokenUtil = new TokenUtil();
 
@@ -92,6 +93,10 @@ router.post(
 
         // create message
         const newMessage = await MessageService.createMessage(req.body.content, user.id, channel.id);
+        
+        // add author to message using typecast to type Message
+        newMessage["author"] = user;
+        newMessage["authorId"] = user.id;
 
         // send to clients message was created
 

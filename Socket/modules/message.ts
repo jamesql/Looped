@@ -111,7 +111,7 @@ export default async (
         });
         // subscribe to channels
         client.session.channels.forEach((c: Channel) => {
-          client.subscriber.sub(`server:${c.serverId}}:channel:${c.id}:events`);
+          client.subscriber.sub(`server:${c.serverId}:channel:${c.id}:events`);
         });
         // subscribe to roles
         client.session.roles.forEach((r: Role) => {
@@ -132,16 +132,16 @@ export default async (
           // handle opcodes that require subscribing or unsubscribing
           switch (opcode) {
             case OPCodes.SERVER_CREATE: 
-              client.subscriber.sub(`server:${d.id}:events`);
+              client.subscriber.sub(`server:${d.server.id}:events`);
             break;
             case OPCodes.SERVER_DELETE:
               client.subscriber.unsubscribe(`server:${d.id}:events`);
             break;
             case OPCodes.CHANNEL_CREATE:
-              client.subscriber.sub(`server:${d.serverId}:channel:${d.id}:events`);
+              client.subscriber.sub(`server:${d.server.id}:channel:${d.channel.id}:events`);
             break;
             case OPCodes.CHANNEL_DELETE:
-              client.subscriber.unsubscribe(`server:${d.serverId}:channel:${d.id}:events`);
+              client.subscriber.unsubscribe(`server:${d.server.id}:channel:${d.channel.id}:events`);
             break;
           }
 

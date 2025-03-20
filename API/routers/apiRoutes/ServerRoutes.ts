@@ -63,20 +63,20 @@ router.post("/create", [
         icon: "",
         invites: [],
         createdAt: undefined,
-        updatedAt: undefined,
+        updatedAt: undefined
     };
 
     // create server
     const newServer = await ServerService.createServer(server);
 
     // join user to server
-    await ServerService.addMember(newServer.id, user.id);
+    const resServer = await ServerService.addMember(newServer.id, user.id);
 
     // publish to redis {"op":OPCodes, "d":{"type":"serverJoin", "server":newServer}}
     redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
         op: OPCodes.SERVER_CREATE,
         d: {
-            server: newServer
+            server: await ServerService.getAllServerData(newServer.id)
         }
     }));
 
