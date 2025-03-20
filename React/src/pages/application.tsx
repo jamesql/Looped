@@ -185,7 +185,7 @@ const Application: React.FC = () => {
               if (c.id === channel.id) {
                 return {
                   ...c,
-                  messages: [...c.messages, newMessage],
+                  messages: [...(c.messages?c.messages:[]), newMessage],
                 };
               }
               return c;
