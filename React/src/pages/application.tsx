@@ -29,7 +29,6 @@ const Application: React.FC = () => {
   const [serverSettings, setServerSettings] = useState(false);
   const [createChannel, setCreateChannel] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
-  
 
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
@@ -60,17 +59,21 @@ const Application: React.FC = () => {
   const sendMessage = (): void => {
     if (currentMessage.trim() !== "") {
       console.log("Sending message:", currentMessage);
-      ApiClient.getInstance().createMessage(
-        selectedChannel?.id || "",
-        currentMessage,
-        Cookies.get("access_token") || ""
-      ).then((response) => {
-        console.log(response);
-      });
+      ApiClient.getInstance()
+        .createMessage(
+          selectedChannel?.id || "",
+          currentMessage,
+          Cookies.get("access_token") || ""
+        )
+        .then((response) => {
+          console.log(response);
+        });
 
       setCurrentMessage("");
       // clear input box with class message_input
-      (document.querySelector('.' + classes.message_input) as HTMLInputElement).value = '';
+      (
+        document.querySelector("." + classes.message_input) as HTMLInputElement
+      ).value = "";
     }
   };
 
@@ -91,7 +94,10 @@ const Application: React.FC = () => {
     });
   };
 
-  const readyHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
+  const readyHandler: OpCodeHandler = async (
+    data: any,
+    client: WebSocketClient
+  ) => {
     console.log("Ready data:", data);
     const token = Cookies.get("access_token");
     if (token) {
@@ -103,7 +109,7 @@ const Application: React.FC = () => {
         location.href = "/login";
       }
     }
-};
+  };
 
   listeners.set(OPCodes.HELLO, [helloHandler]);
   listeners.set(OPCodes.READY, [readyHandler]);
@@ -120,146 +126,190 @@ const Application: React.FC = () => {
         <CreareServerModal isOpen={true} setClose={setCreatingServer} />
       )}
 
-      {friendsPage && (
-        <FriendsModal isOpen={true} setClose={setFriendsPage} />
-      )}
+      {friendsPage && <FriendsModal isOpen={true} setClose={setFriendsPage} />}
 
       {serverSettings && (
-        <ServerSettingsModal isOpen={true} setClose={setServerSettings} server={selectedServer!}/>
+        <ServerSettingsModal
+          isOpen={true}
+          setClose={setServerSettings}
+          server={selectedServer!}
+        />
       )}
 
       {createChannel && (
-        <CreateChannelModal isOpen={true} setClose={setCreateChannel} server={selectedServer!}/>
+        <CreateChannelModal
+          isOpen={true}
+          setClose={setCreateChannel}
+          server={selectedServer!}
+        />
       )}
 
       {loading ? (
         <Loader />
       ) : (
         <div>
-      <div className={classes.container}>
-        <div className={classes.server_info}>
-          <div className={classes.server_card}>
-            <ServerInfo selectedServer={selectedServer} />
+          <div className={classes.container}>
+            <div className={classes.server_info}>
+              <div className={classes.server_card}>
+                <ServerInfo selectedServer={selectedServer} />
 
-            {session?.user.id === selectedServer?.ownerId && (
-              <button className={classes.settings_icon} onClick={() => setServerSettings(true)}>
-              <img src="/settings.svg" alt="Settings" />
-              </button>
-            )}
-          </div>
+                {session?.user.id === selectedServer?.ownerId && (
+                  <button
+                    className={classes.settings_icon}
+                    onClick={() => setServerSettings(true)}
+                  >
+                    <img src="/settings.svg" alt="Settings" />
+                  </button>
+                )}
+              </div>
 
-          <div className={classes.channel_list}>
+              <div className={classes.channel_list}>
+                <div className={classes.channels_header}>
+                  <h4>Channels: </h4>
+                  {session?.user.id === selectedServer?.ownerId && (
+                    <button onClick={() => setCreateChannel(true)}>+</button>
+                  )}
+                </div>
 
-            <div className={classes.channels_header}>
-              <h4>Channels: </h4>
-              {session?.user.id === selectedServer?.ownerId && (
-              <button onClick={() => setCreateChannel(true)}>+</button>
-            )}
+                {selectedServer?.channels.map((channel) => (
+                  <div
+                    className={[
+                      classes.channel,
+                      selectedChannel?.id === channel.id
+                        ? classes.channel_active
+                        : "",
+                    ].join(" ")}
+                    onClick={() => setSelectedChannel(channel)}
+                  >
+                    <h2 className={classes.channel_name}># {channel.name}</h2>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {selectedServer?.channels.map((channel) => (
-                <div className={[classes.channel, (selectedChannel?.id===channel.id)?classes.channel_active:""].join(" ")} onClick={() => setSelectedChannel(channel)}>
-                  <h2 className={classes.channel_name}># {channel.name}</h2>
-                </div>
-            ))}
-
-          </div>
-      </div>
-
-      <div className={classes.application}>
+            <div className={classes.application}>
               <div className={classes.server_nav}>
                 <ul className={classes.server_container}>
-                <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setFriendsPage(true)}>
+                  <li className={classes.divider}></li>
+                  <li
+                    className={[classes.squircle, classes.server_icon].join(
+                      " "
+                    )}
+                    onClick={() => setFriendsPage(true)}
+                  >
                     <div className={classes.popper}>
-                      <h4 className={classes.popped}>
-                        Friends
-                      </h4>
+                      <h4 className={classes.popped}>Friends</h4>
                     </div>
                   </li>
                   <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setJoiningServer(true)}>
+                  <li
+                    className={[classes.squircle, classes.server_icon].join(
+                      " "
+                    )}
+                    onClick={() => setJoiningServer(true)}
+                  >
                     <div className={classes.popper}>
-                      <h4 className={classes.popped}>
-                        Join Server
-                      </h4>
+                      <h4 className={classes.popped}>Join Server</h4>
                     </div>
                   </li>
                   <li className={classes.divider}></li>
-                  <li className={[classes.squircle, classes.server_icon].join(" ")} onClick={() => setCreatingServer(true)}>
+                  <li
+                    className={[classes.squircle, classes.server_icon].join(
+                      " "
+                    )}
+                    onClick={() => setCreatingServer(true)}
+                  >
                     <div className={classes.popper}>
-                      <h4 className={classes.popped}>
-                        Create Server
-                      </h4>
+                      <h4 className={classes.popped}>Create Server</h4>
                     </div>
                   </li>
                   <li className={classes.divider}></li>
 
-                  { session?.servers.map((s => (<>
-                    <li key={s.id} className={[classes.squircle, classes.server_icon, s.id===selectedServer?.id?classes.server_icon_active:""].join(" ")} onClick={() => {setSelectedServer(s);setSelectedChannel(null);}}>
-                      <div className={classes.popper}>
-                        <h4 className={classes.popped}>
-                          {s.name}
-                        </h4>
-                      </div>
-                    </li>
-                    <li className={classes.divider}></li>
+                  {session?.servers.map((s) => (
+                    <>
+                      <li
+                        key={s.id}
+                        className={[
+                          classes.squircle,
+                          classes.server_icon,
+                          s.id === selectedServer?.id
+                            ? classes.server_icon_active
+                            : "",
+                        ].join(" ")}
+                        onClick={() => {
+                          setSelectedServer(s);
+                          setSelectedChannel(null);
+                        }}
+                      >
+                        <div className={classes.popper}>
+                          <h4 className={classes.popped}>{s.name}</h4>
+                        </div>
+                      </li>
+                      <li className={classes.divider}></li>
                     </>
-                  ))) }
-
+                  ))}
                 </ul>
               </div>
 
               <div className={classes.messages}>
+                {[...(selectedChannel?.messages || [])]
+                  .reverse()
+                  .map((message) => (
+                    <MessageComponent message={message} />
+                  ))}
+              </div>
 
-                {[...(selectedChannel?.messages || [])].reverse().map((message) => (
-                  <MessageComponent message={message} />
-                ))}
-                </div>
+              <div className={classes.chat_input}>
+                <button className={classes.attach_button}>
+                  <img src="/paperclip.svg" alt="Add File" />
+                </button>
+                <input
+                  className={classes.message_input}
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  type="text"
+                  placeholder="Type a message..."
+                />
+                <button
+                  className={classes.send_button}
+                  onClick={() => sendMessage()}
+                >
+                  <img src="/send.svg" alt="Send Message" />
+                </button>
+              </div>
+            </div>
 
-                <div className={classes.chat_input}>
-                    <button className={classes.attach_button}>
-                      <img src="/paperclip.svg" alt="Add File" />
-                    </button>
-                    <input className={classes.message_input} onChange={(e) => setCurrentMessage(e.target.value)} type="text" placeholder="Type a message..." />
-                    <button className={classes.send_button} onClick={() => sendMessage()}>
-                      <img src="/send.svg" alt="Send Message" />
-                    </button>
-                </div>
-
-              
-
-
-
-        </div>
-
-
-        <div className={classes.members_profile}>
-            <ul className={classes.members_list}>
+            <div className={classes.members_profile}>
+              <ul className={classes.members_list}>
                 {selectedServer?.members.map((member) => (
                   <UserCard user={member} />
-                  ))}
-            </ul>
-            <div className={classes.profile_card}>
-              <div className={classes.profile_member}>
-                <div className={classes.member_image}>
-                  <img className={classes.squircle} src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg" alt="" />
+                ))}
+              </ul>
+              <div className={classes.profile_card}>
+                <div className={classes.profile_member}>
+                  <div className={classes.member_image}>
+                    <img
+                      className={classes.squircle}
+                      src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg"
+                      alt=""
+                    />
+                  </div>
+                  <div className={classes.member_info}>
+                    <h3>
+                      {session?.user.firstName} {session?.user.lastName}
+                    </h3>
+                    <h4>Software Engineer @ Meta</h4>
+                  </div>
                 </div>
-                <div className={classes.member_info}>
-                  <h3>{session?.user.firstName} {session?.user.lastName}</h3>
-                  <h4>Software Engineer @ Meta</h4>
-                </div>
+                <button className={classes.settings_icon}>
+                  <img src="/settings.svg" alt="" />
+                </button>
               </div>
-              <button className={classes.settings_icon}>
-                <img src="/settings.svg" alt="" />
-              </button>
             </div>
+          </div>
         </div>
-      </div>
-    </div>
       )}
     </div>
-  )
+  );
 };
 
 export default Application;
