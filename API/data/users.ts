@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 class UserService {
   async createUser(
-    data: Omit<User, "id" | "createdAt" | "updatedAt">
+    data: Omit<User, "id" | "createdAt" | "updatedAt" | "status">
   ): Promise<User> {
     return await prisma.user.create({
       data,

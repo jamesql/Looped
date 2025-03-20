@@ -9,7 +9,7 @@ interface MessageComponentProps {
 const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
   return (
     <div className={classes.message}>
-      <img className={classes.squircle} src={message.author.avatar} alt="" />
+      <img className={classes.squircle} src={message.author.avatar?message.author.avatar:"/logo_main.jpg"} alt="" />
       <div className={classes.message_details}>
         <div className={classes.author_details}>
           <h3>

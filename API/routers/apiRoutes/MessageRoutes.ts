@@ -95,6 +95,10 @@ router.post(
         const newMessage = await MessageService.createMessage(req.body.content, user.id, channel.id);
         
         // add author to message using typecast to type Message
+
+        // remove password from user
+        user.password = undefined;
+
         newMessage["author"] = user;
         newMessage["authorId"] = user.id;
 

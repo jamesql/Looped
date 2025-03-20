@@ -17,6 +17,7 @@ import MessageComponent from "@/components/MessageComponent";
 import CreateChannelModal from "@/components/CreateChannelModal";
 import ServerInfo from "@/components/ServerInfo";
 import ServerIcon from "@/components/ServerIcon";
+import UserSettingsModal from "@/components/UserSettingsModal";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [friendsPage, setFriendsPage] = useState(false);
   const [serverSettings, setServerSettings] = useState(false);
+  const [userSettings, setUserSettings] = useState(false);
   const [createChannel, setCreateChannel] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
 
@@ -313,6 +315,14 @@ const Application: React.FC = () => {
         />
       )}
 
+      {userSettings && (
+        <UserSettingsModal
+          isOpen={true}
+          setClose={setUserSettings}
+          user={session?.user}
+        />
+      )}
+
       {loading ? (
         <Loader />
       ) : (
@@ -448,7 +458,7 @@ const Application: React.FC = () => {
                   <div className={classes.member_image}>
                     <img
                       className={classes.squircle}
-                      src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg"
+                      src={session?.user.avatar?session.user.avatar:"/logo_main.jpg"}
                       alt=""
                     />
                   </div>
@@ -456,10 +466,10 @@ const Application: React.FC = () => {
                     <h3>
                       {session?.user.firstName} {session?.user.lastName}
                     </h3>
-                    <h4>Software Engineer @ Meta</h4>
+                    <h4>{session?.user.status}</h4>
                   </div>
                 </div>
-                <button className={classes.settings_icon}>
+                <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
                   <img src="/settings.svg" alt="" />
                 </button>
               </div>

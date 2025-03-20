@@ -54,6 +54,18 @@ class ApiClient {
         });
     }
 
+    // edit user post request
+    public async editUser(firstName: string, lastName: string, location: string, status: string, avatar: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/api/user/edit', {
+            firstName: firstName,
+            lastName: lastName,
+            location: location,
+            avatar: avatar,
+            status: status
+        });
+    }
+
     // join server post request
     public async joinServer(serverId: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
