@@ -16,6 +16,7 @@ import UserCard from "@/components/UserCard";
 import MessageComponent from "@/components/MessageComponent";
 import CreateChannelModal from "@/components/CreateChannelModal";
 import ServerInfo from "@/components/ServerInfo";
+import ServerIcon from "@/components/ServerIcon";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -394,27 +395,12 @@ const Application: React.FC = () => {
                   <li className={classes.divider}></li>
 
                   {session?.servers.map((s) => (
-                    <>
-                      <li
-                        key={s.id}
-                        className={[
-                          classes.squircle,
-                          classes.server_icon,
-                          s.id === selectedServer?.id
-                            ? classes.server_icon_active
-                            : "",
-                        ].join(" ")}
-                        onClick={() => {
-                          setSelectedServer(s);
-                          setSelectedChannel(null);
-                        }}
-                      >
-                        <div className={classes.popper}>
-                          <h4 className={classes.popped}>{s.name}</h4>
-                        </div>
-                      </li>
-                      <li className={classes.divider}></li>
-                    </>
+                    <ServerIcon server={s} 
+                    setSelectedServer={setSelectedServer} 
+                    setSelectedChannel={setSelectedChannel}
+                    selectedServer={selectedServer}
+                    selectedChannel={selectedChannel}
+                     />
                   ))}
                 </ul>
               </div>

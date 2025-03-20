@@ -85,6 +85,8 @@
     height: 38px;
 }
 
+
+
 /* Server Info */
 
 .server_info {
@@ -218,6 +220,10 @@
 	display: none;
 }
 
+.server_icon {
+    border-radius: 50%;
+}
+
 .server_icon_active {
     background: var(--color-bright-cyan);
 }
@@ -229,6 +235,30 @@
 
 .server_icon:hover {
 	background: var(--color-bright-cyan);
+}
+
+.server_icon .tooltip {
+    position: absolute;
+    top: 150%;
+    left: -75%;
+    transform: translateX(-50%) scale(0);
+    background: var(--color-not-quite-black);
+    color: var(--color-full-white);
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 128ms, transform 128ms;
+    z-index: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 200%;
+    text-align: center;
+}
+
+.server_icon:hover .tooltip {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
 }
 
 /* More main app stuff */
