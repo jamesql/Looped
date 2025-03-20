@@ -429,6 +429,11 @@ const Application: React.FC = () => {
                   onChange={(e) => setCurrentMessage(e.target.value)}
                   type="text"
                   placeholder="Type a message..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      sendMessage();
+                    }
+                  }}
                 />
                 <button
                   className={classes.send_button}
