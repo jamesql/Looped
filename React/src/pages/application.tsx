@@ -172,6 +172,62 @@ const Application: React.FC = () => {
 
   const createMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Create message data:", data);
+
+    const newMessage = data.message;
+    const server = data.server; 
+    const channel = data.channel;
+    // add message to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers.map((s) => {
+          if (s.id === server.id) {
+            const updatedChannels = s.channels.map((c) => {
+              if (c.id !== channel.id) {
+                return c;
+              }
+              else if (c.messages === null) {
+                return {
+                  ...c,
+                  messages: [newMessage],
+                };
+              }
+              else {
+                console.log(c.messages);
+                return {
+                  ...c,
+                  messages: [...(c.messages?c.messages:[]), newMessage],
+                };
+              }
+            });
+
+            return {
+              ...s,
+              channels: updatedChannels,
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
+
+    // if server is selected, update the selected channel's messages
+    setSelectedChannel((prev: Channel | null) => {
+      if (!prev || prev.id !== channel.id) {
+        return null;
+      }
+      const updatedMessages = [...(prev?.messages || []), newMessage];
+      return {
+        ...prev,
+        messages: updatedMessages,
+      };
+    });
+
   };
 
   const editServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
