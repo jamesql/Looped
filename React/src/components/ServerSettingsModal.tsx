@@ -56,30 +56,42 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
             <div className={classes.modal_content}>
                 <span className={classes.close} onClick={() => setClose(false)}>&times;</span>
                 <h2>Edit Server Settings</h2>
-                <input
-                    type="text"
-                    defaultValue={server.name.toString()}
-                    onChange={(e) => setServerName(e.target.value)}
-                    placeholder={server.name}
-                />
-                <input
-                    type="text"
-                    defaultValue={server.description}
-                    onChange={(e) => setServerDesc(e.target.value)}
-                    placeholder={server.description}
-                />
-                <input
-                    type="text"
-                    defaultValue={server.icon}
-                    onChange={(e) => setServerIcon(e.target.value)}
-                    placeholder={server.icon}
-                />
-                <input
-                    type="text"
-                    defaultValue={server.banner}
-                    onChange={(e) => setServerBanner(e.target.value)}
-                    placeholder={server.banner}
-                />
+                <label>
+                    Server Name:
+                    <input
+                        type="text"
+                        defaultValue={server.name.toString()}
+                        onChange={(e) => setServerName(e.target.value)}
+                        placeholder={server.name}
+                    />
+                </label>
+                <label>
+                    Server Description:
+                    <input
+                        type="text"
+                        defaultValue={server.description}
+                        onChange={(e) => setServerDesc(e.target.value)}
+                        placeholder={server.description}
+                    />
+                </label>
+                <label>
+                    Server Icon:
+                    <input
+                        type="text"
+                        defaultValue={server.icon}
+                        onChange={(e) => setServerIcon(e.target.value)}
+                        placeholder={server.icon}
+                    />
+                </label>
+                <label>
+                    Server Banner:
+                    <input
+                        type="text"
+                        defaultValue={server.banner}
+                        onChange={(e) => setServerBanner(e.target.value)}
+                        placeholder={server.banner}
+                    />
+                </label>
                 <button onClick={(e) => handleGenInvite(e)}>Generate Invite Code</button>
 
 
