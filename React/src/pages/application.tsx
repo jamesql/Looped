@@ -14,6 +14,7 @@ import ApiClient from "@/util/api";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserCard from "@/components/UserCard";
 import MessageComponent from "@/components/MessageComponent";
+import CreateChannelModal from "@/components/CreateChannelModal";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,7 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [friendsPage, setFriendsPage] = useState(false);
   const [serverSettings, setServerSettings] = useState(false);
+  const [createChannel, setCreateChannel] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
   
 
@@ -121,6 +123,10 @@ const Application: React.FC = () => {
         <ServerSettingsModal isOpen={true} setClose={setServerSettings} server={selectedServer!}/>
       )}
 
+      {createChannel && (
+        <CreateChannelModal isOpen={true} setClose={setCreateChannel} server={selectedServer!}/>
+      )}
+
       {loading ? (
         <Loader />
       ) : (
@@ -145,7 +151,7 @@ const Application: React.FC = () => {
             <div className={classes.channels_header}>
               <h4>Channels: </h4>
               {session?.user.id === selectedServer?.ownerId && (
-              <button>+</button>
+              <button onClick={() => setCreateChannel(true)}>+</button>
             )}
             </div>
 
