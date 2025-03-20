@@ -17,6 +17,7 @@ import MessageComponent from "@/components/MessageComponent";
 import CreateChannelModal from "@/components/CreateChannelModal";
 import ServerInfo from "@/components/ServerInfo";
 import ServerIcon from "@/components/ServerIcon";
+import UserSettingsModal from "@/components/UserSettingsModal";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -314,6 +315,14 @@ const Application: React.FC = () => {
         />
       )}
 
+      {userSettings && (
+        <UserSettingsModal
+          isOpen={true}
+          setClose={setUserSettings}
+          user={session?.user}
+        />
+      )}
+
       {loading ? (
         <Loader />
       ) : (
@@ -460,7 +469,7 @@ const Application: React.FC = () => {
                     <h4>Software Engineer @ Meta</h4>
                   </div>
                 </div>
-                <button className={classes.settings_icon}>
+                <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
                   <img src="/settings.svg" alt="" />
                 </button>
               </div>
