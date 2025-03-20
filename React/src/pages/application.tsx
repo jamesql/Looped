@@ -77,6 +77,7 @@ const Application: React.FC = () => {
     }
   };
 
+  /* WebSocket Hooks */
   const helloHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Received data:", data);
 
@@ -111,8 +112,68 @@ const Application: React.FC = () => {
     }
   };
 
+  const createServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Create server data:", data);
+  };
+
+  const createChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Create channel data:", data);
+  };
+
+  const createMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Create message data:", data);
+  };
+
+  const editServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Edit server data:", data);
+  };
+
+  const editChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Edit channel data:", data);
+  };
+
+  const editMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Edit message data:", data);
+  };
+
+  const deleteServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Delete server data:", data);
+  };
+
+  const deleteChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Delete channel data:", data);
+  };
+
+  const deleteMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Delete message data:", data);
+  };
+
+  const serverMemberAddHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Server member add data:", data);
+  };
+
+  const serverMemberUpdateHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Server member update data:", data);
+  };
+
+  const serverMemberDelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+    console.log("Server member delete data:", data);
+  };
+
   listeners.set(OPCodes.HELLO, [helloHandler]);
   listeners.set(OPCodes.READY, [readyHandler]);
+  listeners.set(OPCodes.SERVER_CREATE, [createServerHandler]);
+  listeners.set(OPCodes.CHANNEL_CREATE, [createChannelHandler]);
+  listeners.set(OPCodes.MESSAGE_CREATE, [createMessageHandler]);
+  listeners.set(OPCodes.SERVER_UPDATED, [editServerHandler]);
+  listeners.set(OPCodes.CHANNEL_MODIFY, [editChannelHandler]);
+  listeners.set(OPCodes.MESSAGE_UPDATE, [editMessageHandler]);
+  listeners.set(OPCodes.SERVER_DELETE, [deleteServerHandler]);
+  listeners.set(OPCodes.CHANNEL_DELETE, [deleteChannelHandler]);
+  listeners.set(OPCodes.MESSAGE_DELETE, [deleteMessageHandler]);
+  listeners.set(OPCodes.SERVER_MEMBER_ADD, [serverMemberAddHandler]);
+  listeners.set(OPCodes.SERVER_MEMBER_UPDATE, [serverMemberUpdateHandler]);
+  listeners.set(OPCodes.SERVER_MEMBER_DEL, [serverMemberDelHandler]);
 
   return (
     <div>
