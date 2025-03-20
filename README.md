@@ -79,8 +79,7 @@ Ensure you have the following installed on your system:
    
    # bCrypt Salt Rounds
    BCRYPT_SALT_ROUNDS=10
-```
-```
+   ```
 4. **Start Redis Server**
    ```redis-server```
 5. **Install Database**
