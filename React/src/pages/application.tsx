@@ -151,7 +151,7 @@ const Application: React.FC = () => {
             <div className={classes.channels_header}>
               <h4>Channels: </h4>
               {session?.user.id === selectedServer?.ownerId && (
-              <button>+</button>
+              <button onClick={() => setCreateChannel(true)}>+</button>
             )}
             </div>
 
