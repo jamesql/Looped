@@ -78,6 +78,7 @@ router.post("/edit", [
     body("lastName").isString().isLength({ min: 1 }),
     body("location").isString().isLength({ min: 1 }),
     body("status").isString().isLength({ min: 1 }),
+    body("avatar").isString().isLength({ min: 1 }),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -103,6 +104,7 @@ router.post("/edit", [
         lastName: req.body.lastName,
         location: req.body.location,
         status: req.body.status,
+        avatar: req.body.avatar,
     });
 
     const newUser = await UserService.getAllUserData(result.userId);
