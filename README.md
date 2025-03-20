@@ -89,12 +89,12 @@ Ensure you have the following installed on your system:
    npx prisma migrate dev
    ```
 5. **Start the Application**
-```bash
-All but React will be started from root directory /Looped
-API - ts-node ./API
-Socket - ts-node ./Socket
-React - npx run dev
-````
+   ```bash
+   All but React will be started from root directory /Looped
+   API - ts-node ./API
+   Socket - ts-node ./Socket
+   React - npx run dev
+   ```
 
 ---
 
