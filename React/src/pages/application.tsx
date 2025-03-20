@@ -342,7 +342,7 @@ const Application: React.FC = () => {
                     ].join(" ")}
                     onClick={() => setSelectedChannel(channel)}
                   >
-                    <h2 className={classes.channel_name}># {channel.name}</h2>
+                    <h2 className={classes.channel_name}># {channel.name.toLowerCase().split(" ").join("-")}</h2>
                   </div>
                 ))}
               </div>
