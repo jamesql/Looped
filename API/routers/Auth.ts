@@ -47,6 +47,7 @@ router.post(
         avatar: "",
         createdAt: undefined,
         updatedAt: undefined,
+        status: undefined
       };
       const newUser = await users.createUser(user);
 
