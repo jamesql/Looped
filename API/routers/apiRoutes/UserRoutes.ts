@@ -32,6 +32,9 @@ router.get("/get-user-data", [
         return;
     }
 
+    // store session
+    redisInstance.set(`user:${user.user.id}:session`, JSON.stringify(user));
+
     res.status(200).json(user);
     return;
     
