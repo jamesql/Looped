@@ -195,6 +195,7 @@ const Application: React.FC = () => {
                 console.log(c.messages);
                 return {
                   ...c,
+                  // add new message to the existing messages
                   messages: [...(c.messages?c.messages:[]), newMessage],
                 };
               }
