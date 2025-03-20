@@ -21,13 +21,13 @@ const ServerIcon: React.FC<ServerIconProps> = ({
     <>
       <li
         key={server.id}
-        className={[classes.squircle].join(" ")}
+        className={[classes.squircle, selectedServer?.id===server.id?classes.server_icon_active:""].join(" ")}
         onClick={() => {
           setSelectedServer(server);
           setSelectedChannel(null);
         }}
       >
-        <div className={[classes.server_icon].join(" ")}>
+        <div className={classes.server_icon}>
           <img className={classes.squircle} src={server.icon?server.icon:"/logo_main.jpg"} alt="" />
           <span className={classes.tooltip}>{server.name}</span>
         </div>
