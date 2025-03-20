@@ -159,7 +159,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Documentation
 
-For detailed setup instructions, API references, and developer guides, please visit the [official documentation](DOCUMENTATION_LINK).
+For detailed setup instructions, API references, and developer guides, please visit the [official documentation](https://thejamesash1.gitbook.io/looped).
 
 ---
 
