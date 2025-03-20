@@ -15,6 +15,7 @@ import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserCard from "@/components/UserCard";
 import MessageComponent from "@/components/MessageComponent";
 import CreateChannelModal from "@/components/CreateChannelModal";
+import ServerInfo from "@/components/ServerInfo";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -138,10 +139,7 @@ const Application: React.FC = () => {
       <div className={classes.container}>
         <div className={classes.server_info}>
           <div className={classes.server_card}>
-            <div className={classes.server_card_info}>
-              <h1>{selectedServer?selectedServer.name:"No Server Selected"}</h1>
-              <a href="https://meta.com">https://meta.com</a>
-            </div>
+            <ServerInfo selectedServer={selectedServer} />
 
             {session?.user.id === selectedServer?.ownerId && (
               <button className={classes.settings_icon} onClick={() => setServerSettings(true)}>
