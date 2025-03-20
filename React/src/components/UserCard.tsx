@@ -14,7 +14,7 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
         </div>
         <div className={classes.member_info}>
             <h3>{user.firstName} {user.lastName}</h3>
-            <h4>{user.bio}</h4>
+            <h4>{user.status}</h4>
         </div>
     </li>
     );
