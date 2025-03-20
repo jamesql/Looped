@@ -466,7 +466,7 @@ const Application: React.FC = () => {
                     <h3>
                       {session?.user.firstName} {session?.user.lastName}
                     </h3>
-                    <h4>Software Engineer @ Meta</h4>
+                    <h4>{session?.user.status}</h4>
                   </div>
                 </div>
                 <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
