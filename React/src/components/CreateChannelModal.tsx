@@ -10,7 +10,7 @@ interface CreateChannelModalProps {
     server: Server;
 }
 
-const CreareChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen,  setClose, server}) => {
+const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen,  setClose, server}) => {
     const [name, setServerName] = React.useState('');
     const [desc, setDescription] = React.useState('');
     const [type, setType] = React.useState('');
@@ -55,4 +55,4 @@ const CreareChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen,  setClo
     );
 };
 
-export default CreareChannelModal;
+export default CreateChannelModal;
