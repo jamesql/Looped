@@ -66,6 +66,10 @@ const Application: React.FC = () => {
       ).then((response) => {
         console.log(response);
       });
+
+      setCurrentMessage("");
+      // clear input box with class message_input
+      (document.querySelector('.' + classes.message_input) as HTMLInputElement).value = '';
     }
   };
 
@@ -194,7 +198,7 @@ const Application: React.FC = () => {
                   <li className={classes.divider}></li>
 
                   { session?.servers.map((s => (<>
-                    <li key={s.id} className={[classes.squircle, classes.server_icon, s.id===selectedServer?.id?classes.server_icon_active:""].join(" ")} onClick={() => setSelectedServer(s)}>
+                    <li key={s.id} className={[classes.squircle, classes.server_icon, s.id===selectedServer?.id?classes.server_icon_active:""].join(" ")} onClick={() => {setSelectedServer(s);setSelectedChannel(null);}}>
                       <div className={classes.popper}>
                         <h4 className={classes.popped}>
                           {s.name}
@@ -210,7 +214,7 @@ const Application: React.FC = () => {
 
               <div className={classes.messages}>
 
-                {selectedChannel?.messages.map((message) => (
+                {[...(selectedChannel?.messages || [])].reverse().map((message) => (
                   <MessageComponent message={message} />
                 ))}
                 </div>
