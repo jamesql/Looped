@@ -114,6 +114,20 @@ const Application: React.FC = () => {
 
   const createServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Create server data:", data);
+
+    const newServer: Server = data.server;
+    // add server to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        return {
+          ...prevSession,
+          servers: [...prevSession.servers, newServer],
+        };
+      }
+      return prevSession;
+    });
+    setSelectedServer(newServer);  
+    setSelectedChannel(null);  
   };
 
   const createChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
