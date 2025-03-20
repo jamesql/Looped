@@ -78,20 +78,37 @@ const Application: React.FC = () => {
   };
 
   /* WebSocket Hooks */
-  const helloHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+  const helloHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
     console.log("Received data:", data);
+    const token = Cookies.get("access_token");
 
-    if (!Cookies.get("access_token")) {
+    if (!token) {
       console.log("No access token found, redirecting to login");
       window.location.href = "/login";
       return;
     }
 
-    client.send({
-      op: OPCodes.AUTH,
-      d: {
-        access_token: Cookies.get("access_token"),
-      },
+    const rawData = await ApiClient.getInstance().getUserData(token).catch((error) => {
+      console.log(error);
+    }).then((response) => {
+      if (!response) {
+        location.href = "/login";
+        return;
+      }
+      const _s: LoopedSession = response.data as LoopedSession;
+      if (response.status === 200) {
+        setSession(_s);
+      } else {
+        location.href = "/login";
+        return;
+      }
+  
+      client.send({
+        op: OPCodes.AUTH,
+        d: {
+          access_token: Cookies.get("access_token"),
+        },
+      });
     });
   };
 
@@ -100,16 +117,6 @@ const Application: React.FC = () => {
     client: WebSocketClient
   ) => {
     console.log("Ready data:", data);
-    const token = Cookies.get("access_token");
-    if (token) {
-      const rawData = await ApiClient.getInstance().getUserData(token);
-      const _s: LoopedSession = rawData.data as LoopedSession;
-      if (rawData.status === 200) {
-        setSession(_s);
-      } else {
-        location.href = "/login";
-      }
-    }
   };
 
   const createServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
