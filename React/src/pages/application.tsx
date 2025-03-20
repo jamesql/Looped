@@ -28,6 +28,7 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [friendsPage, setFriendsPage] = useState(false);
   const [serverSettings, setServerSettings] = useState(false);
+  const [userSettings, setUserSettings] = useState(false);
   const [createChannel, setCreateChannel] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
 
