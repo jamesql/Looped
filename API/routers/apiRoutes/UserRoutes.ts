@@ -76,7 +76,6 @@ router.post("/edit", [
     header("Authorization").isString().isLength({ min: 1 }),
     body("firstName").isString().isLength({ min: 1 }),
     body("lastName").isString().isLength({ min: 1 }),
-    body("birthday").isString().isLength({ min: 1 }),
     body("location").isString().isLength({ min: 1 }),
     body("status").isString().isLength({ min: 1 }),
 ], async (req: Request, res: Response) => {
@@ -102,7 +101,6 @@ router.post("/edit", [
     const updatedUser = await UserService.updateUser(result.userId, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        birthday: req.body.birthday,
         location: req.body.location,
         status: req.body.status,
     });
