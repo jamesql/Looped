@@ -61,6 +61,7 @@ class ApiClient {
             firstName: firstName,
             lastName: lastName,
             location: location,
+            avatar: avatar,
             status: status
         });
     }
