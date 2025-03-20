@@ -458,7 +458,7 @@ const Application: React.FC = () => {
                   <div className={classes.member_image}>
                     <img
                       className={classes.squircle}
-                      src="https://as1.ftcdn.net/v2/jpg/05/56/29/36/1000_F_556293653_e9P80XtK4yyDd8WU1vRtdqSU1Vym7zoX.jpg"
+                      src={session?.user.avatar?session.user.avatar:"/logo_main.jpg"}
                       alt=""
                     />
                   </div>
