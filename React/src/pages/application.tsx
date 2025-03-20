@@ -156,7 +156,7 @@ const Application: React.FC = () => {
             </div>
 
             {selectedServer?.channels.map((channel) => (
-                <div className={[classes.channel, (selectedChannel?.id===channel.id)?classes.channel_active:""].join(" ")}>
+                <div className={[classes.channel, (selectedChannel?.id===channel.id)?classes.channel_active:""].join(" ")} onClick={() => setSelectedChannel(channel)}>
                   <h2 className={classes.channel_name}># {channel.name}</h2>
                 </div>
             ))}
