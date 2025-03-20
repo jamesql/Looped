@@ -142,6 +142,13 @@ const Application: React.FC = () => {
 
           <div className={classes.channel_list}>
 
+            <div className={classes.channels_header}>
+              <h4>Channels: </h4>
+              {session?.user.id === selectedServer?.ownerId && (
+              <button>+</button>
+            )}
+            </div>
+
             {selectedServer?.channels.map((channel) => (
                 <div className={[classes.channel, (selectedChannel?.id===channel.id)?classes.channel_active:""].join(" ")}>
                   <h2 className={classes.channel_name}># {channel.name}</h2>
