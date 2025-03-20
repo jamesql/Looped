@@ -129,6 +129,34 @@
 
 }
 
+.channels_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+.channels_header button {
+    background-color: var(--color-bright-cyan);
+    color: var(--color-full-white);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.channels_header button:hover {
+    background-color: var(--color-not-quite-black);
+    color: var(--color-full-white);
+}
+.channels_header button:focus {
+    outline: none;
+}
+.channels_header button:active {
+    transform: scale(0.95);
+}
+
 .channel {
     border-radius: 10px;
     padding: .1rem;
