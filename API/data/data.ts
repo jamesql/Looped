@@ -102,14 +102,49 @@ export class ServerDatapacks {
         channels: {
             messages: {
                 author: {
-                    password: false
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        avatar: true,
+                        status: true,
+                        location: true,
+                        birthday: true,
+                        email: true,
+                        password: false
+                    }
                 }
             }
 
         },
-        members: true,
+        members: {
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+                status: true,
+                location: true,
+                birthday: true,
+                email: true,
+                password: false
+            }
+        },
         roles: true,
-        owner: true
+        owner: {
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true,
+                status: true,
+                location: true,
+                birthday: true,
+                email: true,
+                password: false
+            }
+        },
 
     }
+    public static readonly SERVER_PUBLIC_DATA: RelationMap<Server> = {};
 }
