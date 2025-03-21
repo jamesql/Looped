@@ -64,7 +64,9 @@ router.post(
         refreshToken: refresh_token,
       };
 
-      const session: LoopedSession = await users._getUserById(newUser.id, UserDatapacks.ALL_USER_DATA);
+      const session: LoopedSession = await users.getUserById(newUser.id, UserDatapacks.ALL_USER_DATA);
+      // remove password
+      delete session.password;
 
       redisInstance.set(`user:${newUser.id}:session`, JSON.stringify(session));
 
@@ -88,7 +90,7 @@ router.post(
     }
 
     // find user by email
-    const user = await users.getUserByEmail(req.body.email);
+    const user = await users.getUserByEmail(req.body.email, UserDatapacks.ALL_USER_DATA);
 
     // check if user exists
     if (!user) {
@@ -105,19 +107,20 @@ router.post(
       return;
     }
 
-    // get all user data
-    const userData = await users._getUserById(user.id, UserDatapacks.ALL_USER_DATA);
     
     // generate tokens
     const access_token = tokenUtil.generateAccessToken(user.id);
     const refresh_token = tokenUtil.generateRefreshToken(user.id);
 
     // set user session
-    redisInstance.set(`user:${user.id}:session`, JSON.stringify(userData));
+    redisInstance.set(`user:${user.id}:session`, JSON.stringify(user));
+
+    // remove password from user object
+    delete user.password;
 
     // return authenticated user
     const authenticatedUser: AuthenticatedUser = {
-      user: userData as User,
+      user: user as User,
       accessToken: access_token,
       refreshToken: refresh_token,
     };
