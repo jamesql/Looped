@@ -1,4 +1,6 @@
-import { PrismaClient, Server } from "@prisma/client";
+import { Prisma, PrismaClient, Server } from "@prisma/client";
+import { Server as _Server } from "../../Types/serverTypes";
+import { MapRMapToPMap, RelationMap } from "./data";
 
 const prisma = new PrismaClient();
 
@@ -134,6 +136,41 @@ class ServerService {
           },
         },
       },
+    });
+  }
+
+  /** New functions  */
+  async _createServer(
+    data: Omit<_Server, "id" | "createdAt" | "updatedAt">
+  ): Promise<_Server> {
+    return await prisma.server.create({
+      data: data as Server,
+    });
+  }
+
+  async _getServerById(
+    id: string,
+    relation: RelationMap<_Server>
+  ): Promise<_Server> {
+    const inc: Prisma.ServerInclude = await MapRMapToPMap(relation);
+    return await prisma.server.findUnique({
+      where: { id },
+      include: {
+        ...inc,
+      },
+    });
+  }
+
+  async _editServerById(id: string, data: Partial<_Server>): Promise<_Server> {
+    return await prisma.server.update({
+      where: { id },
+      data: data as Partial<Server>,
+    });
+  }
+
+  async _deleteServerById(id: string): Promise<_Server> {
+    return await prisma.server.delete({
+      where: { id },
     });
   }
 }
