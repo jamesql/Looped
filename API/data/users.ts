@@ -24,7 +24,8 @@ class UserService {
 
   async getUserById(
     id: string,
-    relation: RelationMap<User>
+    relation: RelationMap<User>,
+    removePassword = true
   ): Promise<User> {
     const inc: Prisma.UserInclude = await MapRMapToPMap(relation);
 
@@ -33,6 +34,7 @@ class UserService {
       include: {
         ...inc,
       },
+      omit: removePassword ? { password: true } : undefined,
     });
   }
 
