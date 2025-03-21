@@ -62,9 +62,35 @@ export class UserDatapacks {
                         }
                     }
                 }
-            }
+            },
+            members: {
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                    status: true,
+                    location: true,
+                    birthday: true,
+                    email: true,
+                    password: false
+                }
+            },
+            owner: {
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                    status: true,
+                    location: true,
+                    birthday: true,
+                    email: true,
+                    password: false
+                }
+            },
         },
-        roles: true
+        roles: true,
      
 
     }
