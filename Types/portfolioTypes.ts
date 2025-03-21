@@ -3,8 +3,8 @@ import { User } from "./userTypes";
 export interface Portfolio {
     id: string;
     user?: User;
-    images: string[];
+    files: string[];
     userId: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
