@@ -11,7 +11,7 @@ import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
 import { Message } from "../../../Types/serverTypes";
-import { UserDatapacks } from "../../data/data";
+import { ServerDatapacks, UserDatapacks } from "../../data/data";
 
 const tokenUtil = new TokenUtil();
 
@@ -68,7 +68,7 @@ router.post(
         }
 
         // make sure user is in server
-        const server = await ServerService.getServerById(channel.serverId);
+        const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
         // make sure server exists
         if (!server) {
@@ -174,7 +174,7 @@ router.post(
         // get channel
         const channel = await ChannelService.getChannelById(message.channelId);
         // get server
-        const server = await ServerService.getServerById(channel.serverId);
+        const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
         // make sure channel and server exist
         if (!channel || !server) {
             res.status(404).json({ error: "Channel or Server not found" });
@@ -247,7 +247,7 @@ router.post(
 
         // get channel and server
         const channel = await ChannelService.getChannelById(message.channelId);
-        const server = await ServerService.getServerById(channel.serverId);
+        const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
         // make sure channel and server exist
         if (!channel || !server) {
