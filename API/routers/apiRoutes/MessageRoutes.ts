@@ -11,6 +11,7 @@ import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
 import { Message } from "../../../Types/serverTypes";
+import { UserDatapacks } from "../../data/data";
 
 const tokenUtil = new TokenUtil();
 
@@ -49,7 +50,7 @@ router.post(
         }
 
         // get user
-        const user = await UserService.getUserById(userId["userId"]);
+        const user = await UserService.getUserById(userId["userId"], UserDatapacks.USER_PUBLIC_DATA);
 
         // make sure user exists
         if (!user) {
@@ -144,7 +145,7 @@ router.post(
         }
 
         // get user
-        const user = await UserService.getUserById(result.userId);
+        const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
         // make sure user exists
         if (!user) {
@@ -220,7 +221,7 @@ router.post(
         }
 
         // get user
-        const user = await UserService.getUserById(result.userId);
+        const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
         // make sure user exists
         if (!user) {

@@ -28,7 +28,7 @@ router.get("/get-user-data", [
         return;
     }
 
-    const u: User = await UserService._getUserById(result.userId, UserDatapacks.ALL_USER_DATA);
+    const u: User = await UserService.getUserById(result.userId, UserDatapacks.ALL_USER_DATA);
 
     if (!u) {
         res.status(404).json({ error: "User not found" });
@@ -64,7 +64,7 @@ router.post("/status", [
         return;
     }
 
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     if (!user) {
         res.status(404).json({ error: "User not found" });
@@ -98,12 +98,12 @@ router.post("/edit", [
         return;
     }
 
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
     if (!user) {
         res.status(404).json({ error: "User not found" });
         return;
     }
-    const updatedUser = await UserService.updateUser(result.userId, {
+    const updatedUser = await UserService.updateUserById(result.userId, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         location: req.body.location,
@@ -111,7 +111,7 @@ router.post("/edit", [
         avatar: req.body.avatar,
     });
 
-    const newUser = await UserService._getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
+    const newUser = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
     
     res.status(200).json(newUser);
     return;

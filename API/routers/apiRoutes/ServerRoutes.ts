@@ -9,6 +9,7 @@ import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
 import { Admin, Manager } from "../../../Types/permissionsTypes";
 import { param } from "express-validator";
+import { UserDatapacks } from "../../data/data";
 
 
 const tokenUtil = new TokenUtil();
@@ -45,7 +46,7 @@ router.post("/create", [
     }
 
     // get user
-    const user = await UserService.getUserById(userId["userId"]);
+    const user = await UserService.getUserById(userId["userId"], UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -112,7 +113,7 @@ router.post("/edit", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -184,7 +185,7 @@ router.post("/delete", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -243,7 +244,7 @@ router.post("/join", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
     // make sure user exists
     if (!user) {
         res.status(404).json({ error: "User not found" });
@@ -300,7 +301,7 @@ router.get("/invite/:serverId", [
         return;
     }
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {

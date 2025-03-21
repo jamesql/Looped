@@ -9,6 +9,7 @@ import { Admin, Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
+import { UserDatapacks } from "../../data/data";
 
 const tokenUtil = new TokenUtil();
 
@@ -37,7 +38,7 @@ router.post("/create", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -120,7 +121,7 @@ router.post("/edit", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -205,7 +206,7 @@ router.post("/delete", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
