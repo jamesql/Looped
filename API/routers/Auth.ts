@@ -127,9 +127,6 @@ router.post(
       refreshToken: refresh_token,
     };
 
-    // debug for later, im sure it will break
-    console.log(userData);
-
     res.status(200).json(authenticatedUser);
     return;
     
