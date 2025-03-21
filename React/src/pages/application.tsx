@@ -242,6 +242,40 @@ const Application: React.FC = () => {
 
   const editServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Edit server data:", data);
+
+    const updatedServer: Server = data.server;
+    // update server in session
+    // updated server will only contain the updated fields
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === updatedServer.id) {
+            return {
+              ...s,
+              ...updatedServer
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
+
+    // if server is selected, update the selected server
+    setSelectedServer((prev: Server | null) => {
+      if (!prev || prev.id !== updatedServer.id) {
+        return null;
+      }
+      return {
+        ...prev,
+        ...updatedServer
+      };
+    });
   };
 
   const editChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
