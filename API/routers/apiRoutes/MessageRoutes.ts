@@ -162,7 +162,7 @@ router.post(
         }
 
         // make sure user is owner
-        if (message.userId !== user.id) {
+        if (message.authorId !== user.id) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }
@@ -239,7 +239,7 @@ router.post(
 
         // todo: check if user is server owner or has admin permissions
         // make sure user is owner
-        if (message.userId !== user.id) {
+        if (message.authorId !== user.id) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }
