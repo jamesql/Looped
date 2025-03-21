@@ -104,6 +104,7 @@ export default async (
       // subscribe to user events
       client.subscriber.sub(`user:${decode["userId"]}:events`);
       // subscribe to server events
+      if (client.session.servers)
       client.session.servers.forEach((s: Server) => {
         client.subscriber.sub(`server:${s.id}:events`);
 
