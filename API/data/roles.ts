@@ -1,11 +1,12 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role as PrismaRole } from '@prisma/client';
+import { Role } from '../../Types/serverTypes';
 
 const prisma = new PrismaClient();
 
 class RoleService {
     async createRole(data: Omit<Role, 'id' | 'createdAt' | 'updatedAt'>): Promise<Role> {
         return prisma.role.create({
-            data,
+            data: data as PrismaRole,
         });
     }
 
@@ -27,7 +28,7 @@ class RoleService {
     async updateRole(id: string, data: Partial<Omit<Role, 'id' | 'createdAt' | 'updatedAt'>>): Promise<Role> {
         return prisma.role.update({
             where: { id },
-            data,
+            data: data as Partial<PrismaRole>,
         });
     }
 

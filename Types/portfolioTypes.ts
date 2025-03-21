@@ -2,9 +2,9 @@ import { User } from "./userTypes";
 
 export interface Portfolio {
     id: string;
-    user: User;
-    images: string[];
+    user?: User;
+    files: string[];
     userId: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
 }

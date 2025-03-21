@@ -1,11 +1,12 @@
-import { PrismaClient, Channel } from '@prisma/client';
+import { PrismaClient, Channel as PrismaChannel } from '@prisma/client';
+import { Channel } from '../../Types/serverTypes';
 
 const prisma = new PrismaClient();
 
 class ChannelService {
     async createChannel(data: Omit<Channel, 'id' | 'createdAt' | 'updatedAt'>): Promise<Channel> {
         return await prisma.channel.create({
-            data,
+            data: data as PrismaChannel,
         });
     }
 
@@ -15,7 +16,7 @@ class ChannelService {
         });
     }
 
-    async updateChannel(id: string, data: Partial<Channel>): Promise<Channel> {
+    async updateChannel(id: string, data: Partial<PrismaChannel>): Promise<Channel> {
         return await prisma.channel.update({
             where: { id },
             data,

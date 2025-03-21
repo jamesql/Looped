@@ -7,6 +7,9 @@ interface MessageComponentProps {
 }
 
 const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
+    if (!message || !message.author) {
+        return null;
+    }
   return (
     <div className={classes.message}>
       <img className={classes.squircle} src={message.author.avatar?message.author.avatar:"/logo_main.jpg"} alt="" />

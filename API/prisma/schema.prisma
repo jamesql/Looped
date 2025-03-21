@@ -30,11 +30,11 @@ model User {
   servers Server[] @relation("ServerMembers")
 
 
-  Message Message[]
+  messages Message[]
 
-  Role Role[]
+  roles Role[]
 
-  Portfolio Portfolio[]
+  portfolios Portfolio[]
 
   bannedFrom Server[]
 }
@@ -50,11 +50,11 @@ model Server {
   ownerId String
   members User[] @relation("ServerMembers")
 
-  User User @relation("ServerOwner", fields: [ownerId], references: [id])
+  owner User @relation("ServerOwner", fields: [ownerId], references: [id])
 
   channels Channel[]
 
-  Role Role[]
+  roles Role[]
 
 
   invites String[] @default([])
@@ -74,7 +74,7 @@ model Channel {
 
   server Server @relation(fields: [serverId], references: [id])
 
-  Message Message[]
+  messages Message[]
 
   roles Role[]
 
@@ -85,10 +85,10 @@ model Message {
   content String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId String
+  authorId String
   channelId String
 
-  user User @relation(fields: [userId], references: [id])
+  author User @relation(fields: [authorId], references: [id])
   channel Channel @relation(fields: [channelId], references: [id])
 }
 
@@ -101,10 +101,10 @@ model Role {
   userId String
   serverId String
 
-  Server Server @relation(fields: [serverId], references: [id])
+  server Server @relation(fields: [serverId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
-  Channel Channel[]
+  channel Channel[]
 }
 
 model Portfolio {
@@ -115,7 +115,7 @@ model Portfolio {
   updatedAt DateTime @updatedAt
   userId String
 
-  User User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   files String[]
 }

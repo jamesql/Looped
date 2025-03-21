@@ -5,6 +5,8 @@ import UserService from "../../data/users";
 import { redisInstance } from "../../data/redis";
 import LoopedSession from "../../../Types/sessionTypes";
 import { OPCodes } from "../../../Types/socketTypes";
+import { User } from "../../../Types/userTypes";
+import { UserDatapacks } from "../../data/data";
 
 const router: Router = express.Router();
 
@@ -26,17 +28,19 @@ router.get("/get-user-data", [
         return;
     }
 
-    const user: LoopedSession = await UserService.getAllUserData(result.userId);
+    const u: User = await UserService.getUserById(result.userId, UserDatapacks.ALL_USER_DATA);
 
-    if (!user) {
+    if (!u) {
         res.status(404).json({ error: "User not found" });
         return;
     }
 
     // store session
-    redisInstance.set(`user:${user.user.id}:session`, JSON.stringify(user));
+    redisInstance.set(`user:${u.id}:session`, JSON.stringify(u));
 
-    res.status(200).json(user);
+    console.log(u);
+
+    res.status(200).json(u);
     return;
     
 });
@@ -60,7 +64,7 @@ router.post("/status", [
         return;
     }
 
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     if (!user) {
         res.status(404).json({ error: "User not found" });
@@ -94,12 +98,12 @@ router.post("/edit", [
         return;
     }
 
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
     if (!user) {
         res.status(404).json({ error: "User not found" });
         return;
     }
-    const updatedUser = await UserService.updateUser(result.userId, {
+    const updatedUser = await UserService.updateUserById(result.userId, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         location: req.body.location,
@@ -107,10 +111,7 @@ router.post("/edit", [
         avatar: req.body.avatar,
     });
 
-    const newUser = await UserService.getAllUserData(result.userId);
-    // remove password
-    const { password, ...userWithoutPassword } = newUser.user;
-
+    const newUser = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
     
     res.status(200).json(newUser);
     return;

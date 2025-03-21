@@ -9,14 +9,12 @@ export interface User {
     servers?: Server[];
     friends?: User[];
     onlineFriends?: User[];
-    avatar?: string;
+    avatar: string;
     friendsRequests?: User[];
     friendRequestsSent?: User[];
-    createdAt?: Date;
-    updatedAt?: Date;
-    token?: string;
+    createdAt: Date;
+    updatedAt: Date;
     status?: string;
-    bio?: string;
     location?: string;
     birthday?: Date;
     roles?: Role[];

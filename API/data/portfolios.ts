@@ -1,11 +1,12 @@
-import { PrismaClient, Portfolio } from '@prisma/client';
+import { PrismaClient, Portfolio as PrismaPortfolio } from '@prisma/client';
+import { Portfolio } from '../../Types/portfolioTypes';
 
 const prisma = new PrismaClient();
 
 class PortfolioService {
     async createPortfolio(data: Omit<Portfolio, 'id' | 'createdAt' | 'updatedAt'>): Promise<Portfolio> {
         return await prisma.portfolio.create({
-            data,
+            data: data as PrismaPortfolio,
         });
     }
 
@@ -22,7 +23,7 @@ class PortfolioService {
     async updatePortfolio(id: string, data: Partial<Portfolio>): Promise<Portfolio> {
         return await prisma.portfolio.update({
             where: { id },
-            data,
+            data: data as Partial<PrismaPortfolio>,
         });
     }
 

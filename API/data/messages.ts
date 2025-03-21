@@ -1,4 +1,5 @@
-import { PrismaClient, Message } from '@prisma/client';
+import { PrismaClient, Message as PrismaMessage } from '@prisma/client';
+import { Message } from '../../Types/serverTypes';
 
 const prisma = new PrismaClient();
 
@@ -7,13 +8,13 @@ class MessageService {
         return await prisma.message.create({
             data: {
                 content,
-                userId,
+                authorId: userId,
                 channelId,
             },
         });
     }
 
-    async getMessageById(id: string): Promise<Message | null> {
+    async getMessageById(id: string): Promise<Message> {
         return await prisma.message.findUnique({
             where: { id },
         });
@@ -34,7 +35,7 @@ class MessageService {
 
     async getMessagesByUserId(userId: string): Promise<Message[]> {
         return await prisma.message.findMany({
-            where: { userId },
+            where: { authorId: userId },
         });
     }
 

@@ -11,6 +11,7 @@ import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
 import { Message } from "../../../Types/serverTypes";
+import { ServerDatapacks, UserDatapacks } from "../../data/data";
 
 const tokenUtil = new TokenUtil();
 
@@ -49,7 +50,7 @@ router.post(
         }
 
         // get user
-        const user = await UserService.getUserById(userId["userId"]);
+        const user = await UserService.getUserById(userId["userId"], UserDatapacks.USER_PUBLIC_DATA);
 
         // make sure user exists
         if (!user) {
@@ -67,7 +68,7 @@ router.post(
         }
 
         // make sure user is in server
-        const server = await ServerService.getServerById(channel.serverId);
+        const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
         // make sure server exists
         if (!server) {
@@ -144,7 +145,7 @@ router.post(
         }
 
         // get user
-        const user = await UserService.getUserById(result.userId);
+        const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
         // make sure user exists
         if (!user) {
@@ -162,7 +163,7 @@ router.post(
         }
 
         // make sure user is owner
-        if (message.userId !== user.id) {
+        if (message.authorId !== user.id) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }
@@ -173,7 +174,7 @@ router.post(
         // get channel
         const channel = await ChannelService.getChannelById(message.channelId);
         // get server
-        const server = await ServerService.getServerById(channel.serverId);
+        const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
         // make sure channel and server exist
         if (!channel || !server) {
             res.status(404).json({ error: "Channel or Server not found" });
@@ -220,7 +221,7 @@ router.post(
         }
 
         // get user
-        const user = await UserService.getUserById(result.userId);
+        const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
         // make sure user exists
         if (!user) {
@@ -239,14 +240,14 @@ router.post(
 
         // todo: check if user is server owner or has admin permissions
         // make sure user is owner
-        if (message.userId !== user.id) {
+        if (message.authorId !== user.id) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }
 
         // get channel and server
         const channel = await ChannelService.getChannelById(message.channelId);
-        const server = await ServerService.getServerById(channel.serverId);
+        const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
         // make sure channel and server exist
         if (!channel || !server) {

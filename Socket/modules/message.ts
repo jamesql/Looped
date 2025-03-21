@@ -19,108 +19,116 @@ function handleRedisMessage(message: string) {
 
 // Client message handler
 export default async (
-    ws: Socket.SocketServer,
-    client: Socket.SocketClient,
-    req: IncomingMessage,
-    payload: ws.RawData
-  ) => {
-    let data;
+  ws: Socket.SocketServer,
+  client: Socket.SocketClient,
+  req: IncomingMessage,
+  payload: ws.RawData
+) => {
+  let data;
 
-    // make sure payload is valid
-    try {
-      data = JSON.parse(payload.toString());
-    } catch (e) {
-      data = null;
-      console.log(e);
-      console.log(payload);
-    }
-  
-    // invalid packet, close connection
-    if (data === null) return client.close();
-  
-    console.log(
-      `[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.address}`
-    );
-  
-    switch (data.op) {
-  
-      case OPCodes.AUTH:
-        const { d } = data;
-        const token = d.access_token;
-  
-        if (!token) {
-          client.close(1008, "Unauthorized.");
-          break;
-        }
-  
-        let decode = await tokenUtil.validateAccessToken(token);
-        if (decode === null) {
-          client.close(1008, "Unauthorized.");
-          break;
-        }
-  
-        let isExpired = Date.now() / 1000 > decode["exp"];
-  
-        if (isExpired) {
-          client.close(1008, "Unauthorized.");
-          break;
-        }
-  
-        console.log(`[$wss] User ${decode["userId"]} authenticated!`);
+  // make sure payload is valid
+  try {
+    data = JSON.parse(payload.toString());
+  } catch (e) {
+    data = null;
+    console.log(e);
+    console.log(payload);
+  }
 
-        // create client subscriber instance
-        let _subscriber = new RedisPubSub();
-        client.subscriber = _subscriber;
-  
-        // get session and store in client.session
-        let _session = JSON.parse( await client.subscriber.get(`user:${decode["userId"]}:session`) );
-        client.session = _session as LoopedSession;
+  // invalid packet, close connection
+  if (data === null) return client.close();
 
-        // add some error handling
-        if (!client.session) {
-          client.close(1008, "Unauthorized.");
-          console.log(`[$wss] User ${decode["userId"]} session not found!`);
-          break;
-        }  
+  console.log(
+    `[$wss] [Client>>Server] Recieved OP Code >${data.op}< from ${client.address}`
+  );
 
-        // send session to client with ready
-        let payload = {
-          op: OPCodes.READY,
-          d: {
-            _session: client.session,
-          },
-        };
-  
-        // send payload
-        client.sendAsync(payload);
-  
-        // set client to authenticated
-        client.authenticated = true;
+  switch (data.op) {
+    case OPCodes.AUTH:
+      const { d } = data;
+      const token = d.access_token;
 
-        // add client to server clients
-        ws.clients.add(client);
+      if (!token) {
+        client.close(1008, "Unauthorized.");
+        break;
+      }
 
-        // subscribe to user events
-        client.subscriber.sub(`user:${decode["userId"]}:events`);
-        // subscribe to server events
-        client.session.servers.forEach((s: Server) => {
-          client.subscriber.sub(`server:${s.id}:events`);
-        });
+      let decode = await tokenUtil.validateAccessToken(token);
+      if (decode === null) {
+        client.close(1008, "Unauthorized.");
+        break;
+      }
+
+      let isExpired = Date.now() / 1000 > decode["exp"];
+
+      if (isExpired) {
+        client.close(1008, "Unauthorized.");
+        break;
+      }
+
+      console.log(`[$wss] User ${decode["userId"]} authenticated!`);
+
+      // create client subscriber instance
+      let _subscriber = new RedisPubSub();
+      client.subscriber = _subscriber;
+
+      // get session and store in client.session
+      let _session = JSON.parse(
+        await client.subscriber.get(`user:${decode["userId"]}:session`)
+      );
+      client.session = _session as LoopedSession;
+
+      // add some error handling
+      if (!client.session) {
+        client.close(1008, "Unauthorized.");
+        console.log(`[$wss] User ${decode["userId"]} session not found!`);
+        break;
+      }
+
+      // send session to client with ready
+      let payload = {
+        op: OPCodes.READY,
+        d: {
+          _session: client.session,
+        },
+      };
+
+      // send payload
+      client.sendAsync(payload);
+
+      // set client to authenticated
+      client.authenticated = true;
+
+      // add client to server clients
+      ws.clients.add(client);
+
+      // subscribe to user events
+      client.subscriber.sub(`user:${decode["userId"]}:events`);
+      // subscribe to server events
+      if (client.session.servers)
+      client.session.servers.forEach((s: Server) => {
+        client.subscriber.sub(`server:${s.id}:events`);
+
         // subscribe to channels
-        client.session.channels.forEach((c: Channel) => {
-          client.subscriber.sub(`server:${c.serverId}:channel:${c.id}:events`);
-        });
-        // subscribe to roles
-        client.session.roles.forEach((r: Role) => {
-          client.subscriber.sub(`server:${r.serverId}role:${r.id}:events`);
-        });
+        if (s.channels)
+          s.channels.forEach((c: Channel) => {
+            client.subscriber.sub(
+              `server:${c.serverId}:channel:${c.id}:events`
+            );
+          });
 
-        client.subscriber.onMessage((subscribedChannel: string, message: string) => {
+        if (s.roles)
+          s.roles.forEach((r: Role) => {
+            client.subscriber.sub(`server:${s.id}:role:${r.id}:events`);
+          });
+      });
+
+      client.subscriber.onMessage(
+        (subscribedChannel: string, message: string) => {
           let data = JSON.parse(message);
 
           let opcode = data["op"];
           let d = data["d"];
-      
+
           let payload = {
             op: opcode,
             d: d,
@@ -128,36 +136,41 @@ export default async (
 
           // handle opcodes that require subscribing or unsubscribing
           switch (opcode) {
-            case OPCodes.SERVER_CREATE: 
+            case OPCodes.SERVER_CREATE:
               client.subscriber.sub(`server:${d.server.id}:events`);
-            break;
+              break;
             case OPCodes.SERVER_DELETE:
               client.subscriber.unsubscribe(`server:${d.id}:events`);
-            break;
+              break;
             case OPCodes.CHANNEL_CREATE:
-              client.subscriber.sub(`server:${d.server.id}:channel:${d.channel.id}:events`);
-            break;
+              client.subscriber.sub(
+                `server:${d.server.id}:channel:${d.channel.id}:events`
+              );
+              break;
             case OPCodes.CHANNEL_DELETE:
-              client.subscriber.unsubscribe(`server:${d.server.id}:channel:${d.channel.id}:events`);
-            break;
+              client.subscriber.unsubscribe(
+                `server:${d.server.id}:channel:${d.channel.id}:events`
+              );
+              break;
           }
 
           client.sendAsync(payload);
-        });
-        
-        break;
-  
-      case OPCodes.CHANNEL_CREATE: 
-        break;
-  
-      case OPCodes.SERVER_CREATE:
-        //subscribeToServerEvents(client);
-        break;
-  
-      case OPCodes.ERROR:
-        break;
-  
-      default:
-        client.close();
-    }
-  };
+        }
+      );
+
+      break;
+
+    case OPCodes.CHANNEL_CREATE:
+      break;
+
+    case OPCodes.SERVER_CREATE:
+      //subscribeToServerEvents(client);
+      break;
+
+    case OPCodes.ERROR:
+      break;
+
+    default:
+      client.close();
+  }
+};

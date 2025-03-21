@@ -9,6 +9,8 @@ import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
 import { Admin, Manager } from "../../../Types/permissionsTypes";
 import { param } from "express-validator";
+import { ServerDatapacks, UserDatapacks } from "../../data/data";
+import { Server } from "../../../Types/serverTypes";
 
 
 const tokenUtil = new TokenUtil();
@@ -45,7 +47,7 @@ router.post("/create", [
     }
 
     // get user
-    const user = await UserService.getUserById(userId["userId"]);
+    const user = await UserService.getUserById(userId["userId"], UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -76,7 +78,7 @@ router.post("/create", [
     redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
         op: OPCodes.SERVER_CREATE,
         d: {
-            server: await ServerService.getAllServerData(newServer.id)
+            server: await ServerService.getServerById(newServer.id, ServerDatapacks.ALL_SERVER_DATA)
         }
     }));
 
@@ -112,7 +114,7 @@ router.post("/edit", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -121,7 +123,7 @@ router.post("/edit", [
     }
 
     // get server
-    const server = await ServerService.getServerById(req.body.serverId);
+    const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
     // make sure server exists
     if (!server) {
@@ -136,7 +138,7 @@ router.post("/edit", [
     }
 
     // create edited server object
-    let editedServer = {
+    let editedServer: Partial<Server> = {
         name: req.body.name,
         description: req.body.description,
         banner: req.body.banner,
@@ -146,7 +148,7 @@ router.post("/edit", [
     };
 
     // edit server
-    const newServer = await ServerService.editServer(server.id, editedServer);
+    const newServer: Server = await ServerService.editServerById(server.id, editedServer);
 
     // tell server members server was edited
     redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
@@ -184,7 +186,7 @@ router.post("/delete", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -193,7 +195,7 @@ router.post("/delete", [
     }
 
     // get server
-    const server = await ServerService.getServerById(req.body.serverId);
+    const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
     // make sure server exists
     if (!server) {
@@ -208,7 +210,7 @@ router.post("/delete", [
     }
 
     // delete server
-    await ServerService.deleteServer(server.id);
+    await ServerService.deleteServerById(server.id);
 
     // tell server members server was deleted
     redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
@@ -243,7 +245,7 @@ router.post("/join", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
     // make sure user exists
     if (!user) {
         res.status(404).json({ error: "User not found" });
@@ -251,7 +253,7 @@ router.post("/join", [
     }
 
     // get server by invite code
-    const server = await ServerService.getServerByInviteCode(req.body.code);
+    const server = await ServerService.getServerByInviteCode(req.body.code, ServerDatapacks.ALL_SERVER_DATA);
     // make sure server exists
     if (!server) {
         res.status(404).json({ error: "Server not found" });
@@ -300,7 +302,7 @@ router.get("/invite/:serverId", [
         return;
     }
     // get user
-    const user = await UserService.getUserById(result.userId);
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -308,7 +310,7 @@ router.get("/invite/:serverId", [
         return;
     }
     // get server
-    const server = await ServerService.getServerById(req.params.serverId as string);
+    const server = await ServerService.getServerById(req.params.serverId as string, ServerDatapacks.SERVER_PUBLIC_DATA);
     // make sure server exists
     if (!server) {
         res.status(404).json({ error: "Server not found" });

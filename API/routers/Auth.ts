@@ -8,6 +8,7 @@ import { User as u } from "@prisma/client";
 import TokenUtil from "../../Util/Token";
 import { Bcrypt } from "../data/bcrypt";
 import { redisInstance } from "../data/redis";
+import { UserDatapacks } from "../data/data";
 
 const tokenUtil = new TokenUtil(); // TokenUtil class
 const bCrypt = new Bcrypt(); // Bcrypt class
@@ -63,13 +64,10 @@ router.post(
         refreshToken: refresh_token,
       };
 
-      // set user session
-        const session: LoopedSession = {
-            user: userWithoutPassword as User,
-            servers: [],
-            channels: [],
-            roles: []
-        };
+      const session: LoopedSession = await users.getUserById(newUser.id, UserDatapacks.ALL_USER_DATA);
+      // remove password
+      delete session.password;
+
       redisInstance.set(`user:${newUser.id}:session`, JSON.stringify(session));
 
       res.status(200).json(authenticatedUser);
@@ -92,7 +90,7 @@ router.post(
     }
 
     // find user by email
-    const user = await users.getUserByEmail(req.body.email);
+    const user = await users.getUserByEmail(req.body.email, UserDatapacks.ALL_USER_DATA);
 
     // check if user exists
     if (!user) {
@@ -109,20 +107,20 @@ router.post(
       return;
     }
 
-    // get all user data
-    const userData = await users.getAllUserData(user.id);
     
     // generate tokens
     const access_token = tokenUtil.generateAccessToken(user.id);
     const refresh_token = tokenUtil.generateRefreshToken(user.id);
 
     // set user session
-    redisInstance.set(`user:${user.id}:session`, JSON.stringify(userData));
+    redisInstance.set(`user:${user.id}:session`, JSON.stringify(user));
+
+    // remove password from user object
+    delete user.password;
 
     // return authenticated user
-    const { password, ...userWithoutPassword } = user;
     const authenticatedUser: AuthenticatedUser = {
-      user: userWithoutPassword as User,
+      user: user as User,
       accessToken: access_token,
       refreshToken: refresh_token,
     };

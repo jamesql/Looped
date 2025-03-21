@@ -18,6 +18,7 @@ import CreateChannelModal from "@/components/CreateChannelModal";
 import ServerInfo from "@/components/ServerInfo";
 import ServerIcon from "@/components/ServerIcon";
 import UserSettingsModal from "@/components/UserSettingsModal";
+import { User } from "../../../Types/userTypes";
 
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -131,7 +132,7 @@ const Application: React.FC = () => {
       if (prevSession) {
         return {
           ...prevSession,
-          servers: [...prevSession.servers, newServer],
+          servers: [...prevSession.servers!, newServer],
         };
       }
       return prevSession;
@@ -149,8 +150,11 @@ const Application: React.FC = () => {
     // add channel in session to server
     setSession((prevSession) => {
       if (prevSession) {
-        const updatedServers = prevSession.servers.map((s) => {
+        const updatedServers = prevSession.servers!.map((s) => {
           if (s.id === server.id) {
+            if (!s.channels) {
+              return s;
+            }
             return {
               ...s,
               channels: [...s.channels, newChannel],
@@ -189,8 +193,12 @@ const Application: React.FC = () => {
     // add message to session
     setSession((prevSession) => {
       if (prevSession) {
-        const updatedServers = prevSession.servers.map((s) => {
+
+        const updatedServers = prevSession.servers!.map((s) => {
           if (s.id === server.id) {
+            if (!s.channels) {
+              return s;
+            }
             const updatedChannels = s.channels.map((c) => {
               if (c.id === channel.id) {
                 return {
@@ -319,7 +327,7 @@ const Application: React.FC = () => {
         <UserSettingsModal
           isOpen={true}
           setClose={setUserSettings}
-          user={session?.user}
+          user={session as User}
         />
       )}
 
@@ -332,7 +340,7 @@ const Application: React.FC = () => {
               <div className={classes.server_card}>
                 <ServerInfo selectedServer={selectedServer} />
 
-                {session?.user.id === selectedServer?.ownerId && (
+                {session?.id === selectedServer?.ownerId && (
                   <button
                     className={classes.settings_icon}
                     onClick={() => setServerSettings(true)}
@@ -345,12 +353,12 @@ const Application: React.FC = () => {
               <div className={classes.channel_list}>
                 <div className={classes.channels_header}>
                   <h4>Channels: </h4>
-                  {session?.user.id === selectedServer?.ownerId && (
+                  {session?.id === selectedServer?.ownerId && (
                     <button onClick={() => setCreateChannel(true)}>+</button>
                   )}
                 </div>
 
-                {selectedServer?.channels.map((channel) => (
+                {selectedServer?.channels?selectedServer.channels.map((channel) => (
                   <div
                     className={[
                       classes.channel,
@@ -362,7 +370,7 @@ const Application: React.FC = () => {
                   >
                     <h2 className={classes.channel_name}># {channel.name.toLowerCase().split(" ").join("-")}</h2>
                   </div>
-                ))}
+                )):("")}
               </div>
             </div>
 
@@ -404,7 +412,7 @@ const Application: React.FC = () => {
                   </li>
                   <li className={classes.divider}></li>
 
-                  {session?.servers.map((s) => (
+                  {session?.servers?.map((s) => (
                     <ServerIcon server={s} 
                     setSelectedServer={setSelectedServer} 
                     setSelectedChannel={setSelectedChannel}
@@ -449,24 +457,24 @@ const Application: React.FC = () => {
 
             <div className={classes.members_profile}>
               <ul className={classes.members_list}>
-                {selectedServer?.members.map((member) => (
+                {selectedServer?.members?selectedServer?.members.map((member) => (
                   <UserCard user={member} />
-                ))}
+                )):("")}
               </ul>
               <div className={classes.profile_card}>
                 <div className={classes.profile_member}>
                   <div className={classes.member_image}>
                     <img
                       className={classes.squircle}
-                      src={session?.user.avatar?session.user.avatar:"/logo_main.jpg"}
+                      src={session?.avatar?session.avatar:"/logo_main.jpg"}
                       alt=""
                     />
                   </div>
                   <div className={classes.member_info}>
                     <h3>
-                      {session?.user.firstName} {session?.user.lastName}
+                      {session?.firstName} {session?.lastName}
                     </h3>
-                    <h4>{session?.user.status}</h4>
+                    <h4>{session?.status}</h4>
                   </div>
                 </div>
                 <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
