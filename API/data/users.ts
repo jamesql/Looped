@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { Prisma, PrismaClient, User } from "@prisma/client";
 import { User as LoopedUser } from "../../Types/userTypes";
 import { Message, Server } from "../../Types/serverTypes";
 import { Channel } from "../../Types/serverTypes";
@@ -134,6 +134,77 @@ class UserService {
       where: { id },
     });
   }
+
+
+
+
+/** New user crud methods to map to global types */
+
+
+async _createUser(user: LoopedUser): Promise<LoopedUser> {
+  return await prisma.user.create({
+    data: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      password: user.password,
+      avatar: user.avatar || "",
+      status: user.status || "New to Looped!",
+      location: user.location || "",
+      birthday: user.birthday || undefined,
+    }
+  })
+};
+
+async _getUserById(id: string, relation: RelationMap<LoopedUser>): Promise<LoopedUser> {
+  const inc = await this.MapRMapToPrismaUser(relation);
+
+  return await prisma.user.findUnique({
+    where: { id },
+    include: {
+      ...inc
+    }
+  })
 }
+
+async _updateUserById(id: string, data: Partial<LoopedUser>): Promise<LoopedUser> {
+  const keys = Object.keys(data);
+  const updateData = keys.reduce((acc, key) => {
+    acc[key] = data[key];
+    return acc;
+  }, {});
+
+  return await prisma.user.update({
+    where: { id },
+    data: {
+      ...updateData
+    }
+  });
+}
+
+async _deleteUserById(id: string): Promise<void> {
+  await prisma.user.delete({
+    where: { id },
+  });
+  return;
+}
+
+async MapRMapToPrismaUser(relation: RelationMap<LoopedUser>): Promise<Prisma.UserInclude> {
+  const include: Prisma.UserInclude = {};
+
+  // Map the relation to Prisma include
+  for (const key in relation) {
+    if (relation[key] && key in include) {
+      include[key] = true;
+    }
+  }
+  return include;
+}
+
+}
+
+type RelationMap<T> = {
+  [K in keyof T]?: boolean | (T[K] extends Array<infer U> ? RelationMap<U>[] : RelationMap<T[K]>);
+};
 
 export default new UserService();
