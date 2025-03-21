@@ -1,4 +1,4 @@
-import { Server } from "../../Types/serverTypes";
+import { Channel, Message, Role, Server } from "../../Types/serverTypes";
 import { User } from "../../Types/userTypes";
 
 export type SelectMap<T> = {
@@ -150,21 +150,21 @@ export class ServerDatapacks {
 }
 
 export class ChannelDatapacks {
-    public static readonly CHANNEL_PUBLIC_DATA: RelationMap<Server> = {};
+    public static readonly CHANNEL_PUBLIC_DATA: RelationMap<Channel> = {};
 }
 
 export class MessageDatapacks {
-    public static readonly MESSAGE_PUBLIC_DATA: RelationMap<Server> = {};
+    public static readonly MESSAGE_PUBLIC_DATA: RelationMap<Message> = {};
 }
 
 export class RoleDatapacks {
-    public static readonly ROLE_PUBLIC_DATA: RelationMap<Server> = {};
+    public static readonly ROLE_PUBLIC_DATA: RelationMap<Role> = {};
 }
 
 export class PortfolioDatapacks {
-    public static readonly PORTFOLIO_PUBLIC_DATA: RelationMap<Server> = {};
+    public static readonly PORTFOLIO_PUBLIC_DATA: RelationMap<PortfolioDatapacks> = {};
 }
 
 export class JobDatapacks {
-    public static readonly JOB_PUBLIC_DATA: RelationMap<Server> = {};
+    public static readonly JOB_PUBLIC_DATA: RelationMap<JobDatapacks> = {};
 }
