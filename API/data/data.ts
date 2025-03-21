@@ -1,7 +1,14 @@
+import { Server } from "../../Types/serverTypes";
 import { User } from "../../Types/userTypes";
+
+export type SelectMap<T> = {
+    [K in keyof T]?: boolean;
+}
 
 export type RelationMap<T> = {
     [K in keyof T]?: boolean | (T[K] extends Array<infer U> ? RelationMap<U> : RelationMap<T[K]>);
+} & {
+    select?: SelectMap<T>;
 };
 
 export async function MapRMapToPMap<R, P>(
@@ -13,6 +20,12 @@ export async function MapRMapToPMap<R, P>(
     for (const key in relation) {
       if (relation[key] === true) {
         (include as any)[key] = true;
+      } 
+      // if the value is a select object, include it
+      else if (relation[key] && typeof relation[key] === "object" && relation[key].select) {
+        (include as any)[key] = {
+          select: relation[key].select
+        };
       }
       // if the value is an object, recursively map it
       else if (typeof relation[key] === "object") {
@@ -35,7 +48,19 @@ export class UserDatapacks {
         servers: {
             channels: {
                 messages: {
-                    author: true
+                    author: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            avatar: true,
+                            status: true,
+                            location: true,
+                            birthday: true,
+                            email: true,
+                            password: false
+                        }
+                    }
                 }
             }
         },
@@ -46,3 +71,19 @@ export class UserDatapacks {
     public static readonly USER_PUBLIC_DATA: RelationMap<User> = {}
 }
 
+export class ServerDatapacks {
+    public static readonly ALL_SERVER_DATA: RelationMap<Server> = {
+        channels: {
+            messages: {
+                author: {
+                    password: false
+                }
+            }
+
+        },
+        members: true,
+        roles: true,
+        owner: true
+
+    }
+}
