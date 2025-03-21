@@ -3,28 +3,29 @@ import { User } from "./userTypes";
 export interface Server {
     id: string;
     name: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
     ownerId: string;
-    owner: User;
-    members: User[];
-    channels: Channel[];
+    owner?: User;
+    members?: User[];
+    channels?: Channel[];
     invites: string[];
-    icon?: string;
-    banner?: string;
-    description?: string;
+    icon: string;
+    banner: string;
+    description: string;
     onlineMembers?: User[];
-    roles: Role[];
+    roles?: Role[];
 }
 
 export interface Channel {
     id: string;
     name: string;
+    description: string;
     createdAt: Date;
     updatedAt: Date;
     serverId: string;
     server?: Server;
-    messages: Message[];
+    messages?: Message[];
 }
 
 export interface Message {
@@ -33,7 +34,7 @@ export interface Message {
     createdAt: Date;
     updatedAt: Date;
     authorId: string;
-    author: User;
+    author?: User;
     channelId: string;
     channel?: Channel;
 }
@@ -43,5 +44,7 @@ export interface Role {
     name: string;
     permissions: string[];
     serverId: string;
+    createdAt: Date;
+    updatedAt: Date;
     server?: Server;
 }
