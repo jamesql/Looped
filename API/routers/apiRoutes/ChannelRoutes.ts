@@ -9,7 +9,7 @@ import { Admin, Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
-import { UserDatapacks } from "../../data/data";
+import { ServerDatapacks, UserDatapacks } from "../../data/data";
 
 const tokenUtil = new TokenUtil();
 
@@ -47,7 +47,7 @@ router.post("/create", [
     }
 
     // check if user is either owner or admin, check their roles and then roles with the same server id has a list of permissions that can either be OWNER ADMIN MANAGER OR MEMBER
-    const server = await ServerService.getServerById(req.body.serverId);
+    const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
     // make sure server exists
     if (!server) {
@@ -139,7 +139,7 @@ router.post("/edit", [
     }
 
     // get server
-    const server = await ServerService.getServerById(channel.serverId);
+    const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
     // make sure server exists
     if (!server) {
@@ -224,7 +224,7 @@ router.post("/delete", [
     }
 
     // get server
-    const server = await ServerService.getServerById(channel.serverId);
+    const server = await ServerService.getServerById(channel.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
 
     // make sure server exists
     if (!server) {
