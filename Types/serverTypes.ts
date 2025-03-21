@@ -26,6 +26,7 @@ export interface Channel {
     serverId: string;
     server?: Server;
     messages?: Message[];
+    permissionRequired: string;
 }
 
 export interface Message {
