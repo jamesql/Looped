@@ -8,6 +8,7 @@ import { User as u } from "@prisma/client";
 import TokenUtil from "../../Util/Token";
 import { Bcrypt } from "../data/bcrypt";
 import { redisInstance } from "../data/redis";
+import { UserDatapacks } from "../data/data";
 
 const tokenUtil = new TokenUtil(); // TokenUtil class
 const bCrypt = new Bcrypt(); // Bcrypt class
@@ -63,13 +64,8 @@ router.post(
         refreshToken: refresh_token,
       };
 
-      // set user session
-        const session: LoopedSession = {
-            user: userWithoutPassword as User,
-            servers: [],
-            channels: [],
-            roles: []
-        };
+      const session: LoopedSession = await users._getUserById(newUser.id, UserDatapacks.ALL_USER_DATA);
+
       redisInstance.set(`user:${newUser.id}:session`, JSON.stringify(session));
 
       res.status(200).json(authenticatedUser);
@@ -110,7 +106,7 @@ router.post(
     }
 
     // get all user data
-    const userData = await users.getAllUserData(user.id);
+    const userData = await users._getUserById(user.id, UserDatapacks.ALL_USER_DATA);
     
     // generate tokens
     const access_token = tokenUtil.generateAccessToken(user.id);
@@ -120,9 +116,8 @@ router.post(
     redisInstance.set(`user:${user.id}:session`, JSON.stringify(userData));
 
     // return authenticated user
-    const { password, ...userWithoutPassword } = user;
     const authenticatedUser: AuthenticatedUser = {
-      user: userWithoutPassword as User,
+      user: userData as User,
       accessToken: access_token,
       refreshToken: refresh_token,
     };
