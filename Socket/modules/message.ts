@@ -105,14 +105,15 @@ export default async (
         // subscribe to server events
         client.session.servers.forEach((s: Server) => {
           client.subscriber.sub(`server:${s.id}:events`);
-        });
-        // subscribe to channels
-        client.session.channels.forEach((c: Channel) => {
-          client.subscriber.sub(`server:${c.serverId}:channel:${c.id}:events`);
-        });
-        // subscribe to roles
-        client.session.roles.forEach((r: Role) => {
-          client.subscriber.sub(`server:${r.serverId}role:${r.id}:events`);
+
+          // subscribe to channels
+          s.channels.forEach((c: Channel) => {
+            client.subscriber.sub(`server:${c.serverId}:channel:${c.id}:events`);
+          });
+
+          s.roles.forEach((r: Role) => {
+            client.subscriber.sub(`server:${s.id}:role:${r.id}:events`);
+          });
         });
 
         client.subscriber.onMessage((subscribedChannel: string, message: string) => {
