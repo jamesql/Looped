@@ -262,14 +262,6 @@ router.post("/join", [
     // add user to server
     await ServerService.addMember(server.id, user.id);
 
-    // send new server to user event
-    redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
-            op: OPCodes.SERVER_CREATE,
-            d: {
-                server: server
-            }
-        }));
-
     // send new member to server events
     redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
         op: OPCodes.SERVER_MEMBER_ADD,
@@ -278,6 +270,14 @@ router.post("/join", [
             server: server
         }
     }));
+
+    // send new server to user event
+    redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
+            op: OPCodes.SERVER_CREATE,
+            d: {
+                server: server
+            }
+        }));
     
     // return server
     res.status(200).json(server);
