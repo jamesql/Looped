@@ -122,13 +122,13 @@ class ServerService {
       where: { id: serverId },
       include: {
         members: true,
-        Role: true,
+        roles: true,
         bannedUsers: true,
         channels: {
           include: {
-            Message: {
+            messages: {
               include: {
-                user: true,
+                author: true,
               },
             },
           },
