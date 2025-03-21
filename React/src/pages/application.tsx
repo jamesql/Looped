@@ -151,6 +151,9 @@ const Application: React.FC = () => {
       if (prevSession) {
         const updatedServers = prevSession.servers.map((s) => {
           if (s.id === server.id) {
+            if (!s.channels) {
+              return s;
+            }
             return {
               ...s,
               channels: [...s.channels, newChannel],
@@ -191,6 +194,9 @@ const Application: React.FC = () => {
       if (prevSession) {
         const updatedServers = prevSession.servers.map((s) => {
           if (s.id === server.id) {
+            if (!s.channels) {
+              return s;
+            }
             const updatedChannels = s.channels.map((c) => {
               if (c.id === channel.id) {
                 return {
@@ -350,7 +356,7 @@ const Application: React.FC = () => {
                   )}
                 </div>
 
-                {selectedServer?.channels.map((channel) => (
+                {selectedServer?.channels?selectedServer.channels.map((channel) => (
                   <div
                     className={[
                       classes.channel,
@@ -362,7 +368,7 @@ const Application: React.FC = () => {
                   >
                     <h2 className={classes.channel_name}># {channel.name.toLowerCase().split(" ").join("-")}</h2>
                   </div>
-                ))}
+                )):("")}
               </div>
             </div>
 
@@ -449,9 +455,9 @@ const Application: React.FC = () => {
 
             <div className={classes.members_profile}>
               <ul className={classes.members_list}>
-                {selectedServer?.members.map((member) => (
+                {selectedServer?.members?selectedServer?.members.map((member) => (
                   <UserCard user={member} />
-                ))}
+                )):("")}
               </ul>
               <div className={classes.profile_card}>
                 <div className={classes.profile_member}>
