@@ -7,7 +7,7 @@ class MessageService {
         return await prisma.message.create({
             data: {
                 content,
-                userId,
+                authorId: userId,
                 channelId,
             },
         });
@@ -34,7 +34,7 @@ class MessageService {
 
     async getMessagesByUserId(userId: string): Promise<Message[]> {
         return await prisma.message.findMany({
-            where: { userId },
+            where: { authorId: userId },
         });
     }
 
