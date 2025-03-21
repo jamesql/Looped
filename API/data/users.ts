@@ -5,6 +5,7 @@ import { Channel } from "../../Types/serverTypes";
 import { Role } from "../../Types/serverTypes";
 
 import LoopedSession from "../../Types/sessionTypes";
+import { RelationMap } from "./data";
 
 const prisma = new PrismaClient();
 
@@ -135,76 +136,75 @@ class UserService {
     });
   }
 
+  /** New user crud methods to map to global types */
 
-
-
-/** New user crud methods to map to global types */
-
-
-async _createUser(user: LoopedUser): Promise<LoopedUser> {
-  return await prisma.user.create({
-    data: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      password: user.password,
-      avatar: user.avatar || "",
-      status: user.status || "New to Looped!",
-      location: user.location || "",
-      birthday: user.birthday || undefined,
-    }
-  })
-};
-
-async _getUserById(id: string, relation: RelationMap<LoopedUser>): Promise<LoopedUser> {
-  const inc = await this.MapRMapToPrismaUser(relation);
-
-  return await prisma.user.findUnique({
-    where: { id },
-    include: {
-      ...inc
-    }
-  })
-}
-
-async _updateUserById(id: string, data: Partial<LoopedUser>): Promise<LoopedUser> {
-  const keys = Object.keys(data);
-  const updateData = keys.reduce((acc, key) => {
-    acc[key] = data[key];
-    return acc;
-  }, {});
-
-  return await prisma.user.update({
-    where: { id },
-    data: {
-      ...updateData
-    }
-  });
-}
-
-async _deleteUserById(id: string): Promise<void> {
-  await prisma.user.delete({
-    where: { id },
-  });
-  return;
-}
-
-async MapRMapToPrismaUser(relation: RelationMap<LoopedUser>): Promise<Prisma.UserInclude> {
-  const include: Prisma.UserInclude = {};
-
-  // Map the relation to Prisma include
-  for (const key in relation) {
-    if (relation[key] && key in include) {
-      include[key] = true;
-    }
+  async _createUser(user: LoopedUser): Promise<LoopedUser> {
+    return await prisma.user.create({
+      data: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        avatar: user.avatar || "",
+        status: user.status || "New to Looped!",
+        location: user.location || "",
+        birthday: user.birthday || undefined,
+      },
+    });
   }
-  return include;
-}
 
-}
+  async _getUserById(
+    id: string,
+    relation: RelationMap<LoopedUser>
+  ): Promise<LoopedUser> {
+    const inc = await this.MapRMapToPrismaUser(relation);
 
-type RelationMap<T> = {
-  [K in keyof T]?: boolean | (T[K] extends Array<infer U> ? RelationMap<U>[] : RelationMap<T[K]>);
-};
+    return await prisma.user.findUnique({
+      where: { id },
+      include: {
+        ...inc,
+      },
+    });
+  }
+
+  async _updateUserById(
+    id: string,
+    data: Partial<LoopedUser>
+  ): Promise<LoopedUser> {
+    const keys = Object.keys(data);
+    const updateData = keys.reduce((acc, key) => {
+      acc[key] = data[key];
+      return acc;
+    }, {});
+
+    return await prisma.user.update({
+      where: { id },
+      data: {
+        ...updateData,
+      },
+    });
+  }
+
+  async _deleteUserById(id: string): Promise<void> {
+    await prisma.user.delete({
+      where: { id },
+    });
+    return;
+  }
+
+  async MapRMapToPrismaUser(
+    relation: RelationMap<LoopedUser>
+  ): Promise<Prisma.UserInclude> {
+    const include: Prisma.UserInclude = {};
+
+    // Map the relation to Prisma include
+    for (const key in relation) {
+      if (relation[key] && key in include) {
+        include[key] = true;
+      }
+    }
+    return include;
+  }
+}
 
 export default new UserService();
