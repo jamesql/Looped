@@ -27,7 +27,6 @@ class UserService {
     relation: RelationMap<User>
   ): Promise<User> {
     const inc: Prisma.UserInclude = await MapRMapToPMap(relation);
-    console.log(inc);
 
     return await prisma.user.findUnique({
       where: { id },
