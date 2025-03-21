@@ -148,3 +148,23 @@ export class ServerDatapacks {
     }
     public static readonly SERVER_PUBLIC_DATA: RelationMap<Server> = {};
 }
+
+export class ChannelDatapacks {
+    public static readonly CHANNEL_PUBLIC_DATA: RelationMap<Server> = {};
+}
+
+export class MessageDatapacks {
+    public static readonly MESSAGE_PUBLIC_DATA: RelationMap<Server> = {};
+}
+
+export class RoleDatapacks {
+    public static readonly ROLE_PUBLIC_DATA: RelationMap<Server> = {};
+}
+
+export class PortfolioDatapacks {
+    public static readonly PORTFOLIO_PUBLIC_DATA: RelationMap<Server> = {};
+}
+
+export class JobDatapacks {
+    public static readonly JOB_PUBLIC_DATA: RelationMap<Server> = {};
+}
