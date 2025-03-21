@@ -30,92 +30,6 @@ class UserService {
     });
   }
 
-  async getAllUserData(id: string): Promise<LoopedSession | null> {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: {
-        Role: true,
-        servers: {
-          include: {
-            Role: true,
-            channels: {
-              include: {
-                Message: {
-                  include: {
-                    user: true,
-                  },
-                },
-              },
-            },
-            members: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    // map all servers to include the channels and messages
-    const servers = user.servers.map((server) => {
-      const channels = server.channels.map((channel) => {
-        const messages = channel.Message.map((message) => {
-          return {
-            ...message,
-            author: {
-              ...message.user,
-              password: undefined,
-            },
-            authorId: message.userId,
-          };
-        });
-
-        return {
-          ...channel,
-          messages,
-        };
-      });
-
-      return {
-        ...server,
-        channels,
-        owner: server.members.find((member) => member.id === server.ownerId),
-        roles: server.Role,
-      };
-    });
-
-    // create a list of all channels user is in from servers
-    const channels: Channel[] = [];
-    servers.forEach((server) => {
-      server.channels.forEach((channel) => {
-        channels.push(channel);
-      });
-    });
-
-    // create a list of all roles user has from servers
-    const roles: Role[] = [];
-    servers.forEach((server) => {
-      server.roles.forEach((role) => {
-        user.Role.find((userRole) => userRole.id === role.id) &&
-          roles.push(role);
-      });
-    });
-
-    const session: LoopedSession = {
-      user: {
-        ...user,
-        password: undefined,
-        servers: undefined,
-      },
-      servers: servers,
-      channels: channels,
-      roles: roles,
-    };
-
-    return session;
-  }
-
   async getAllUsers(): Promise<User[]> {
     return await prisma.user.findMany();
   }
@@ -158,6 +72,7 @@ class UserService {
     relation: RelationMap<LoopedUser>
   ): Promise<LoopedUser> {
     const inc = await this.MapRMapToPrismaUser(relation);
+    console.log(inc);
 
     return await prisma.user.findUnique({
       where: { id },
@@ -171,11 +86,12 @@ class UserService {
     id: string,
     data: Partial<LoopedUser>
   ): Promise<LoopedUser> {
-    const keys = Object.keys(data);
-    const updateData = keys.reduce((acc, key) => {
-      acc[key] = data[key];
-      return acc;
-    }, {});
+    const updateData: Partial<User> = {};
+    for (const key in data) {
+      if (data[key] && key in updateData) {
+        updateData[key] = data[key];
+      }
+    }
 
     return await prisma.user.update({
       where: { id },
@@ -192,15 +108,38 @@ class UserService {
     return;
   }
 
+  async _getUserByEmail(email: string, relation: RelationMap<LoopedUser>): Promise<LoopedUser> {
+    const inc = await this.MapRMapToPrismaUser(relation);
+
+    return await prisma.user.findUnique({
+      where: { email },
+      include: {
+        ...inc,
+      },
+    });
+  }
+
   async MapRMapToPrismaUser(
-    relation: RelationMap<LoopedUser>
+    relation: RelationMap<Omit<LoopedUser, "id" | "createdAt" | "updatedAt">>
   ): Promise<Prisma.UserInclude> {
     const include: Prisma.UserInclude = {};
 
-    // Map the relation to Prisma include
+    // map relation to the include, include all rescursive relations in RelationMap
     for (const key in relation) {
-      if (relation[key] && key in include) {
+      if (relation[key] === true) {
         include[key] = true;
+      }
+      // if the value is an object, recursively map it
+      else if (typeof relation[key] === "object") {
+        include[key] = {
+          include: await this.MapRMapToPrismaUser(relation[key] as RelationMap<LoopedUser>)
+        };
+      }
+      // if the value is an array, map it as well
+      else if (Array.isArray(relation[key])) {
+        include[key] = {
+          include: await this.MapRMapToPrismaUser(relation[key][0] as RelationMap<LoopedUser>)
+        };
       }
     }
     return include;
