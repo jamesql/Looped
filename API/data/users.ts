@@ -5,7 +5,7 @@ import { Channel } from "../../Types/serverTypes";
 import { Role } from "../../Types/serverTypes";
 
 import LoopedSession from "../../Types/sessionTypes";
-import { RelationMap } from "./data";
+import { MapRMapToPMap, RelationMap } from "./data";
 
 const prisma = new PrismaClient();
 
@@ -71,7 +71,7 @@ class UserService {
     id: string,
     relation: RelationMap<LoopedUser>
   ): Promise<LoopedUser> {
-    const inc = await this.MapRMapToPrismaUser(relation);
+    const inc: Prisma.UserInclude = await MapRMapToPMap(relation);
     console.log(inc);
 
     return await prisma.user.findUnique({
