@@ -356,6 +356,10 @@ const Application: React.FC = () => {
   const serverMemberDelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Server member delete data:", data);
   };
+  
+  const roleCreateHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
+
+  };
   /* WebSocket Hooks */
 
   // Add hooks to WebSocket listeners
