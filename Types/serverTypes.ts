@@ -1,4 +1,5 @@
 import { User } from "./userTypes";
+import { Job } from "./jobTypes";
 
 export interface Server {
     id: string;
@@ -7,6 +8,7 @@ export interface Server {
     updatedAt?: Date;
     ownerId: string;
     owner?: User;
+    website: string;
     members?: User[];
     channels?: Channel[];
     invites: string[];
@@ -15,6 +17,7 @@ export interface Server {
     description: string;
     onlineMembers?: User[];
     roles?: Role[];
+    jobListings?: Job[];
 }
 
 export interface Channel {
