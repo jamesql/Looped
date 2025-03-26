@@ -4,9 +4,10 @@ import classes from "../styles/application.module.css";
 
 interface UserCardProps {
   user: User;
+  is_admin : boolean;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user }) => {
+const UserCard: React.FC<UserCardProps> = ({ user, is_admin }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
 
@@ -30,7 +31,7 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
   
     setDropdownPosition({ x, y });
     setDropdownVisible(true);
-    };
+};
 
   const handleClickOutside = () => {
     setDropdownVisible(false);
@@ -74,8 +75,8 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
           <li onClick={() => console.log("Report")}>Report</li>
-          <li onClick={() => console.log("Kick")}>Kick</li>
-          <li onClick={() => console.log("Ban")}>Ban</li>
+          {is_admin && <li onClick={() => console.log("Ban")}>Ban</li>}
+          {is_admin && <li onClick={() => console.log("Kick")}>Kick</li>}
         </ul>
       )}
     </li>

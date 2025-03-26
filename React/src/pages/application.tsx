@@ -543,7 +543,7 @@ const Application: React.FC = () => {
             <div className={classes.members_profile}>
               <ul className={classes.members_list}>
                 {selectedServer?.members?selectedServer?.members.map((member) => (
-                  <UserCard user={member} />
+                  <UserCard user={member} is_admin={session?.id === selectedServer?.ownerId} /> // TODO: improve perm checking here.
                 )):("")}
               </ul>
               <div className={classes.profile_card}>
