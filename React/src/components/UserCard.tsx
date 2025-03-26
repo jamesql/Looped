@@ -57,9 +57,9 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
           className={classes.custom_dropdown}
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
-          <li onClick={() => console.log("View Profile")}>View Profile</li>
-          <li onClick={() => console.log("Send Message")}>Send Message</li>
-          <li onClick={() => console.log("Remove User")}>Remove User</li>
+          <li onClick={() => console.log("Report")}>Report</li>
+          <li onClick={() => console.log("Kick")}>Kick</li>
+          <li onClick={() => console.log("Ban")}>Ban</li>
         </ul>
       )}
     </li>
