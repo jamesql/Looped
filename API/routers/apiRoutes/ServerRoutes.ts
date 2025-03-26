@@ -65,7 +65,10 @@ router.post("/create", [
         icon: "",
         invites: [],
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
+        jobListings: [],
+        website: "https://looped.it.com",
+        
     };
 
     // create server
