@@ -1,4 +1,5 @@
 import { Role, Server } from "./serverTypes";
+import { Job } from "./jobTypes";
 
 export interface User {
     id: string;
@@ -18,4 +19,5 @@ export interface User {
     location?: string;
     birthday?: Date;
     roles?: Role[];
+    applications?: Job[];
 }
