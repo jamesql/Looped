@@ -12,9 +12,25 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent the default right-click menu
-    setDropdownPosition({ x: e.pageX, y: e.pageY });
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const dropdownWidth = 150; // Approximate width of the dropdown
+    const dropdownHeight = 100; // Approximate height of the dropdown
+  
+    let x = e.pageX;
+    let y = e.pageY;
+  
+    if (x + dropdownWidth > viewportWidth) {
+      x = viewportWidth - dropdownWidth - 10; // Add some padding
+    }
+    if (y + dropdownHeight > viewportHeight) {
+      y = viewportHeight - dropdownHeight - 10; // Add some padding
+    }
+  
+    setDropdownPosition({ x, y });
     setDropdownVisible(true);
-  };
+    };
 
   const handleClickOutside = () => {
     setDropdownVisible(false);
