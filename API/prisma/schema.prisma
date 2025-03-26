@@ -37,6 +37,8 @@ model User {
   portfolios Portfolio[]
 
   bannedFrom Server[]
+
+  applications Job[]
 }
 
 model Server {
@@ -48,6 +50,7 @@ model Server {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ownerId String
+  website String @default("https://looped.it.com")
   members User[] @relation("ServerMembers")
 
   owner User @relation("ServerOwner", fields: [ownerId], references: [id])
@@ -60,6 +63,8 @@ model Server {
   invites String[] @default([])
 
   bannedUsers User[]
+
+  jobListings Job[]
 }
 
 model Channel {
@@ -118,4 +123,20 @@ model Portfolio {
   user User @relation(fields: [userId], references: [id])
 
   files String[]
+}
+
+model Job {
+  id String @id @default(cuid())
+  title String
+  description String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  location String
+  salary String
+  serverId String
+  status String @default("Accepting Applications")
+  server Server @relation(fields: [serverId], references: [id])
+  
+
+  applicants User[]
 }
