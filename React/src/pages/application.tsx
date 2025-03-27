@@ -19,7 +19,7 @@ import ServerInfo from "@/components/ServerInfo";
 import ServerIcon from "@/components/ServerIcon";
 import UserSettingsModal from "@/components/UserSettingsModal";
 import { User } from "../../../Types/userTypes";
-
+import { MdAttachFile, MdOutlineAttachFile, MdSend } from "react-icons/md";
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
@@ -525,8 +525,8 @@ const Application: React.FC = () => {
               </div>
 
               <div className={classes.chat_input}>
-                <button className={classes.attach_button} onClick={handleFileButtonClick}>
-                  <img src="/paperclip.svg" alt="Add File" className={classes.char_bar_icon}/>
+                <button className={classes.chat_bar_button} >
+                  <MdAttachFile className={classes.chat_bar_icon} onClick={handleFileButtonClick}/>
                 </button>
                 <input
                   type="file"
@@ -546,10 +546,10 @@ const Application: React.FC = () => {
                   }}
                 />
                 <button
-                  className={classes.send_button}
+                  className={classes.chat_bar_button}
                   onClick={() => sendMessage()}
                 >
-                  <img src="/send.svg" className={classes.char_bar_icon} alt="Send Message" />
+                  <MdSend className={classes.chat_bar_icon} />
                 </button>
               </div>
             </div>
