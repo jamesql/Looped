@@ -19,7 +19,7 @@ import ServerInfo from "@/components/ServerInfo";
 import ServerIcon from "@/components/ServerIcon";
 import UserSettingsModal from "@/components/UserSettingsModal";
 import { User } from "../../../Types/userTypes";
-import { MdAttachFile, MdOutlineAttachFile, MdSend } from "react-icons/md";
+import { MdAttachFile, MdSend } from "react-icons/md";
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
@@ -87,10 +87,51 @@ const Application: React.FC = () => {
     fileInput?.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    console.log(files);
+    if (files && files.length > 0) {
+      const validFiles: File[] = [];
+  
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`File "${file.name}" is too large (max 5MB).`);
+        } else {
+          validFiles.push(file);
+        }
+      }
+  
+      if (validFiles.length === 0) return;
+  
+      try {
+        const response = await ApiClient.getInstance().generateFileUrl(Cookies.get("access_token") || "");
+        const url = response.data;
+        console.log("Cloudflare Stream URL generated:", url);
+  
+        for (const file of validFiles) {
+          const formData = new FormData();
+          formData.append("file", file);
+          //formData.append("requireSignedURLs", "false");
+          formData.append("allowedOrigins", "*");
+  
+          const uploadResponse = await fetch(url, {
+            method: "POST",
+            body: formData,
+          });
+  
+          if (!uploadResponse.ok) {
+            console.error(`Upload failed for ${file.name}:`, await uploadResponse.text());
+          } else {
+            const result = await uploadResponse.json();
+            console.log(`Upload successful for ${file.name}:`, result);
+          }
+        }
+      } catch (error) {
+        console.error("Error generating Cloudflare upload URL:", error);
+      }
+    }
   };
+  
 
   /* WebSocket Hooks */
   const helloHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {

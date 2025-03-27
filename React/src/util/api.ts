@@ -165,15 +165,10 @@ class ApiClient {
     }
 
     // generate invite code
-    public async generateInviteCode(serverId: string, token: string): Promise<AxiosResponse> {
+    public async generateFileUrl(token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.get(`/api/server/invite/${serverId}`, {});
+        return this.axiosInstance.get(`/api/content/get-upload-link`, {});
     }
-
-
-
-
-
 }
 
 export default ApiClient
