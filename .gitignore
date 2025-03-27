@@ -131,3 +131,5 @@ dist
 
 # ignore all package-locks
 **/package-lock.json
+
+**/.DS_Store
