@@ -10,6 +10,7 @@ export interface Job {
     location: string;
     salary: string;
     status: string;
+    serverId: string;
     server?: Server;
     applicants?: User[];
 }
