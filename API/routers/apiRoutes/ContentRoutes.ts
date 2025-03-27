@@ -9,7 +9,6 @@ import Cloudflare from 'cloudflare';
 const router: Router = express.Router();
 
 // get cdn url and api key
-const cdnUrl = process.env.CLOUDFLARE_CDN_URL || "";
 const apiToken = process.env.CLOUDFLARE_API_TOKEN || "";
 const userId = process.env.CLOUDFLARE_ACCOUNT_ID || "";
 const email = process.env.CLOUDFLARE_EMAIL || "";
