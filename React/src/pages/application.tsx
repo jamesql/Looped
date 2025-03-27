@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import WebSocketComponent from "@/components/WebSocket";
 import { OpCodeHandler, WebSocketClient } from "@/util/ws";
 import { OPCodes } from "../../../Types/socketTypes";
@@ -33,7 +33,8 @@ const Application: React.FC = () => {
   const [userSettings, setUserSettings] = useState(false);
   const [createChannel, setCreateChannel] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
-
+  const fileInput = useRef<HTMLInputElement>(null);
+  
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
 
@@ -79,6 +80,16 @@ const Application: React.FC = () => {
         document.querySelector("." + classes.message_input) as HTMLInputElement
       ).value = "";
     }
+  };
+
+  // File uploading
+  const handleFileButtonClick = () => {
+    fileInput?.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    console.log(files);
   };
 
   /* WebSocket Hooks */
@@ -514,9 +525,15 @@ const Application: React.FC = () => {
               </div>
 
               <div className={classes.chat_input}>
-                <button className={classes.attach_button}>
+                <button className={classes.attach_button} onClick={handleFileButtonClick}>
                   <img src="/paperclip.svg" alt="Add File" className={classes.char_bar_icon}/>
                 </button>
+                <input
+                  type="file"
+                  ref={fileInput}
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                  ></input>
                 <input
                   className={classes.message_input}
                   onChange={(e) => setCurrentMessage(e.target.value)}
