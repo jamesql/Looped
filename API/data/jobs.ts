@@ -12,7 +12,7 @@ class JobService {
         });
     };
 
-    async getJobById(id: string): Promise<Job | null> {
+    async getJobById(id: string, withApplicants: false): Promise<Job | null> {
         return await prisma.job.findUnique({
             where: { id },
             select: {
@@ -21,11 +21,12 @@ class JobService {
                 description: true,
                 location: true,
                 salary: true,
+                serverId: true,
                 createdAt: true,
                 updatedAt: true,
                 status: true,
                 server: true,
-                applicants: {
+                applicants: withApplicants? {
                     select: {
                         id: true,
                         firstName: true,
@@ -39,7 +40,7 @@ class JobService {
                         createdAt: true,
                         updatedAt: true,
                     }
-                }
+                }: false,
             }
         });
     };
@@ -56,6 +57,19 @@ class JobService {
             where: { id },
         });
     };
+
+    async applyUserToJob(userId: string, jobId: string): Promise<Job> {
+        return await prisma.job.update({
+            where: { id: jobId },
+            data: {
+                applicants: {
+                    connect: {
+                        id: userId,
+                    },
+                },
+            },
+        });
+    }
 
 }
 
