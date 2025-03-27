@@ -11,6 +11,7 @@ router.use("/role", require("./apiRoutes/RoleRoutes"));
 router.use("/server", require("./apiRoutes/ServerRoutes"));
 router.use("/portfolio", require("./apiRoutes/PortfolioRoutes"));
 router.use("/job", require("./apiRoutes/JobRoutes"));
+router.use("/content", require("./apiRoutes/ContentRoutes"));
 
 router.use("/test", require("./apiRoutes/TestRoutes"));
 
