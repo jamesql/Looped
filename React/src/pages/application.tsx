@@ -436,12 +436,9 @@ const Application: React.FC = () => {
               </div>
 
               <div className={classes.channel_list}>
-                <div className={classes.channels_header}>
-                  <h4>Channels: </h4>
-                  {session?.id === selectedServer?.ownerId && (
-                    <button onClick={() => setCreateChannel(true)}>+</button>
-                  )}
-                </div>
+                <div className={[classes.channel, classes.channel_create].join(" ")} onClick={() => setCreateChannel(true)}>
+                  +
+                </div> 
 
                 {selectedServer?.channels?selectedServer.channels.map((channel) => (
                   <div
@@ -518,7 +515,7 @@ const Application: React.FC = () => {
 
               <div className={classes.chat_input}>
                 <button className={classes.attach_button}>
-                  <img src="/paperclip.svg" alt="Add File" />
+                  <img src="/paperclip.svg" alt="Add File" className={classes.char_bar_icon}/>
                 </button>
                 <input
                   className={classes.message_input}
@@ -535,7 +532,7 @@ const Application: React.FC = () => {
                   className={classes.send_button}
                   onClick={() => sendMessage()}
                 >
-                  <img src="/send.svg" alt="Send Message" />
+                  <img src="/send.svg" className={classes.char_bar_icon} alt="Send Message" />
                 </button>
               </div>
             </div>
