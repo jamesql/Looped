@@ -99,6 +99,20 @@ class ServerService {
     });
   }
 
+  async banMember(serverId: string, userId: string): Promise<_Server> {
+    return await prisma.server.update({
+      where: { id: serverId },
+      data: {
+        members: {
+          disconnect: { id: userId },
+        },
+        bannedUsers: {
+          connect: { id: userId },
+        }
+      },
+    });
+  }
+
 }
 
 export default new ServerService();
