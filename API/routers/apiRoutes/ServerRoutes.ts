@@ -343,4 +343,193 @@ router.get("/invite/:serverId", [
     return;
 });
 
+router.post("/kick", [
+    header("Authorization").isString().isLength({min: 1}),
+    body("userId").isString().isLength({min: 1}),
+    body("serverId").isString().isLength({min: 1}),
+], async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // validate access token
+    const token = req.header("Authorization");
+    const result = await validateToken(token);
+    if (!result || !result.valid) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // get user
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);  
+
+    // make sure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // make sure other user exists and is member of server
+    const otherUser = await UserService.getUserById(req.body.userId, UserDatapacks.USER_PUBLIC_DATA);
+    if (!otherUser) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // get server
+    const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
+    // make sure server exists
+    if (!server) {
+        res.status(404).json({ error: "Server not found" });
+        return;
+    }
+
+    // make sure user is either owner or admin and other user is not owner/below
+    if (server.ownerId !== user.id) {
+        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const role = roles.find((role) => role.permissions.includes(Admin));
+
+        // make sure user has the admin role
+        if (!role) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+
+        // make sure other user is not owner
+        if (server.ownerId === otherUser.id) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+
+        // make sure other user is not admin
+        const otherRoles = await RoleService.getRolesByServerId(otherUser.id, server.id);
+        const otherRole = otherRoles.find((role) => role.permissions.includes(Admin));
+
+        if (otherRole) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+    }
+
+    // kick user
+    await ServerService.removeMember(server.id, otherUser.id);
+
+    // send kick to server members
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_MEMBER_DEL,
+        d: {
+            user: otherUser,
+            server: server
+        }
+    }));
+
+    // send kick to user
+    redisInstance.publish(`user:${otherUser.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_DELETE,
+        d: {
+            server: server
+        }
+    }));
+
+    // return success
+    res.status(200).json({ success: true });
+    return;
+});
+
+router.post("/ban", [
+    header("Authorization").isString().isLength({min: 1}),
+    body("userId").isString().isLength({min: 1}),
+    body("serverId").isString().isLength({min: 1}),
+], async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // validate access token
+    const token = req.header("Authorization");
+    const result = await validateToken(token);
+    if (!result || !result.valid) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // get user 
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
+    // make sure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // make sure other user exists and is member of server
+    const otherUser = await UserService.getUserById(req.body.userId, UserDatapacks.USER_PUBLIC_DATA);
+    if (!otherUser) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // get server   
+    const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
+    // make sure server exists
+    if (!server) {
+        res.status(404).json({ error: "Server not found" });
+        return;
+    }
+
+    // make sure user is either owner or admin and other user is not owner/below
+    if (server.ownerId !== user.id) {
+        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const role = roles.find((role) => role.permissions.includes(Admin));
+
+        // make sure user has the admin role
+        if (!role) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+
+        // make sure other user is not owner
+        if (server.ownerId === otherUser.id) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+
+        // make sure other user is not admin
+        const otherRoles = await RoleService.getRolesByServerId(otherUser.id, server.id);
+        const otherRole = otherRoles.find((role) => role.permissions.includes(Admin));
+
+        if (otherRole) {
+            res.status(403).json({ error: "Forbidden" });
+            return;
+        }
+    }
+
+    // ban user
+    const _r = await ServerService.banMember(server.id, otherUser.id);
+
+    // send ban to server members
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_MEMBER_DEL,
+        d: {
+            user: otherUser,
+            server: server
+        }
+    }));
+
+    // send ban to user
+    redisInstance.publish(`user:${otherUser.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_DELETE,
+        d: {
+            server: server
+        }   
+    }));
+
+    // return success
+    res.status(200).json({ success: true });
+    return;
+});
+
 module.exports = router;
