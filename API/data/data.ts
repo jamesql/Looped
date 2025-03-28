@@ -60,6 +60,14 @@ export class UserDatapacks {
                             email: true,
                             password: false
                         }
+                    },
+                    file: {
+                        select: {
+                            id: true,
+                            fileName: true,
+                            contentType: true,
+                            createdAt: true,
+                        }
                     }
                 }
             },
@@ -112,6 +120,14 @@ export class ServerDatapacks {
                         birthday: true,
                         email: true,
                         password: false
+                    }
+                },
+                file: {
+                    select: {
+                        id: true,
+                        fileName: true,
+                        contentType: true,
+                        createdAt: true,
                     }
                 }
             }

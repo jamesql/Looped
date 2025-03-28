@@ -177,9 +177,7 @@ class ApiClient {
     // get file url
     public async getFileById(token: string, fileId : string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.post(`/api/content/files/` + fileId, {
-            id: fileId,
-        });
+        return this.axiosInstance.get(`/api/content/files/` + fileId);
     }
 
     //
