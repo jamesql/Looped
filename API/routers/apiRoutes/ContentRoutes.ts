@@ -87,6 +87,7 @@ router.post("/create", [
     const file = await ContentService.createContent({
         fileName: req.body.fileName,
         contentType: req.body.contentType,
+        userId: user.id
     });
     const url = await generatePresignedUploadUrl(file.id, req.body.contentType);
 
