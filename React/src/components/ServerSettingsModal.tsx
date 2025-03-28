@@ -15,6 +15,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     const [serverDesc, setServerDesc] = React.useState(server.description || "");
     const [serverIcon, setServerIcon] = React.useState(server.icon || "");
     const [serverBanner, setServerBanner] = React.useState(server.banner || "");
+    const [serverWebsite, setServerWebsite] = React.useState(server.website || "");
 
     const handleSubmit = async (e: any) => {
         console.log(serverName);
@@ -26,6 +27,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
             serverDesc,
             serverIcon,
             serverBanner,
+            serverWebsite,
             token
         ).then((response) => {
             console.log(response);
@@ -91,6 +93,15 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                         onChange={(e) => setServerBanner(e.target.value)}
                         placeholder={server.banner}
                     />
+                </label>
+                <label>
+                    Server Website:
+                    <input
+                        type="text"
+                        defaultValue={server.website}
+                        onChange={(e) => setServerWebsite(e.target.value)}
+                        placeholder={server.website}
+                     />
                 </label>
                 <button onClick={(e) => handleGenInvite(e)}>Generate Invite Code</button>
 

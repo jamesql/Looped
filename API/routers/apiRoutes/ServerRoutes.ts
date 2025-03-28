@@ -95,6 +95,7 @@ router.post("/edit", [
     body("description").isString().isLength({min: 0, max: 100}),
     body("icon").isString().isLength({min: 0}),
     body("banner").isString().isLength({min: 0}),
+    body("website").isString().isLength({min: 0, max: 100}),
     body("serverId").isString().isLength({min: 1}),
 ], async(req: Request, res: Response) => {
 
@@ -144,6 +145,7 @@ router.post("/edit", [
         description: req.body.description,
         banner: req.body.banner,
         icon: req.body.icon,
+        website: req.body.website,
         createdAt: undefined,
         updatedAt: undefined
     };
