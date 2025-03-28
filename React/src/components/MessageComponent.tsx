@@ -71,7 +71,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
     }
 
     return (
-      <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+      <a href={fileUrl} download={fileName}  target="_blank" rel="noopener noreferrer">
         <div className={classes.message_attachment_box}>
           <MdDownload className={classes.message_attachment_icon} />
           <div>{fileName}</div>
