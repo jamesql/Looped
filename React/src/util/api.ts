@@ -133,11 +133,12 @@ class ApiClient {
     }
 
     // create message route
-    public async createMessage(channelId: string, content: string, token: string): Promise<AxiosResponse> {
+    public async createMessage(channelId: string, content: string, token: string, fileId?: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/message/create', {
             channelId: channelId,
             content: content,
+            fileId: fileId,
         });
     }
 
@@ -164,16 +165,22 @@ class ApiClient {
         return this.axiosInstance.get(`/api/user/get-user-data`);
     }
 
-    // generate invite code
-    public async generateInviteCode(serverId: string, token: string): Promise<AxiosResponse> {
+    // create new file and get upload url
+    public async generateFileUrl(token: string, fileName : string, contentType: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
-        return this.axiosInstance.get(`/api/server/invite/${serverId}`, {});
+        return this.axiosInstance.post(`/api/content/create`, {
+            contentType: contentType,
+            fileName: fileName,
+        });
     }
 
+    // get file url
+    public async getFileById(token: string, fileId : string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.get(`/api/content/files/` + fileId);
+    }
 
-
-
-
+    //
 }
 
 export default ApiClient

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import WebSocketComponent from "@/components/WebSocket";
 import { OpCodeHandler, WebSocketClient } from "@/util/ws";
 import { OPCodes } from "../../../Types/socketTypes";
@@ -19,7 +19,8 @@ import ServerInfo from "@/components/ServerInfo";
 import ServerIcon from "@/components/ServerIcon";
 import UserSettingsModal from "@/components/UserSettingsModal";
 import { User } from "../../../Types/userTypes";
-
+import { MdAttachFile, MdSend } from "react-icons/md";
+import { ContentCreateResponse, R2File } from "../../../Types/contentTypes";
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
@@ -33,7 +34,8 @@ const Application: React.FC = () => {
   const [userSettings, setUserSettings] = useState(false);
   const [createChannel, setCreateChannel] = useState(false);
   const [currentMessage, setCurrentMessage] = useState("");
-
+  const fileInput = useRef<HTMLInputElement>(null);
+  
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
 
@@ -60,14 +62,15 @@ const Application: React.FC = () => {
   }, [authed, session]);
 
   // Send message function
-  const sendMessage = (): void => {
-    if (currentMessage.trim() !== "") {
+  const sendMessage = (fileId?: string): void => {
+    if (currentMessage.trim() !== "" || fileId !== undefined) {
       console.log("Sending message:", currentMessage);
       ApiClient.getInstance()
         .createMessage(
           selectedChannel?.id || "",
           currentMessage,
-          Cookies.get("access_token") || ""
+          Cookies.get("access_token") || "",
+          fileId
         )
         .then((response) => {
           console.log(response);
@@ -80,6 +83,64 @@ const Application: React.FC = () => {
       ).value = "";
     }
   };
+
+  // File uploading
+  const handleFileButtonClick = () => {
+    fileInput?.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const validFiles: File[] = [];
+  
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`File "${file.name}" is too large (max 5MB).`);
+        } else {
+          validFiles.push(file);
+        }
+      }
+  
+      if (validFiles.length === 0) return;
+  
+      try {
+        for (const file of validFiles) {
+          console.log(file.type);
+          const response = await ApiClient.getInstance().generateFileUrl(
+            Cookies.get("access_token") || "",
+            file.name,
+            file.type 
+          );
+
+          const resp = response.data as ContentCreateResponse;
+  
+          const presignedUrl = resp.url; 
+          console.log(`Uploading ${file.name} to R2 via:`, presignedUrl);
+  
+          const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type,
+            },
+            body: file,
+          });
+  
+          if (!uploadResponse.ok) {
+            console.error(`Upload failed for ${file.name}:`, await uploadResponse.text());
+          } else {
+            console.log(`Upload successful for ${file.name}, id`);
+            sendMessage(resp.r2file.id); // send message with fileId
+          }
+
+        }
+      } catch (error) {
+        console.error("Error uploading to R2:", error);
+      }
+    }
+  };
+  
 
   /* WebSocket Hooks */
   const helloHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
@@ -509,14 +570,21 @@ const Application: React.FC = () => {
                 {[...(selectedChannel?.messages || [])]
                   .reverse()
                   .map((message) => (
-                    <MessageComponent message={message} />
+                     <MessageComponent message={message} />
+                    
                   ))}
               </div>
 
               <div className={classes.chat_input}>
-                <button className={classes.attach_button}>
-                  <img src="/paperclip.svg" alt="Add File" className={classes.char_bar_icon}/>
+                <button className={classes.chat_bar_button} onClick={handleFileButtonClick}>
+                  <MdAttachFile className={classes.chat_bar_icon} />
                 </button>
+                <input
+                  type="file"
+                  ref={fileInput}
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                  ></input>
                 <input
                   className={classes.message_input}
                   onChange={(e) => setCurrentMessage(e.target.value)}
@@ -529,10 +597,10 @@ const Application: React.FC = () => {
                   }}
                 />
                 <button
-                  className={classes.send_button}
+                  className={classes.chat_bar_button}
                   onClick={() => sendMessage()}
                 >
-                  <img src="/send.svg" className={classes.char_bar_icon} alt="Send Message" />
+                  <MdSend className={classes.chat_bar_icon} />
                 </button>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { User } from "./userTypes";
 import { Job } from "./jobTypes";
+import { R2File } from "./contentTypes";
 
 export interface Server {
     id: string;
@@ -41,6 +42,7 @@ export interface Message {
     author?: User;
     channelId: string;
     channel?: Channel;
+    file?: R2File | null;
 }
 
 export interface Role {

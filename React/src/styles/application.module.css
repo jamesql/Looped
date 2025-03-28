@@ -370,29 +370,31 @@
     outline: none;
 }
 
-.attach_button {
-    width: 24px;
-    height: 24px;
-    /* center */
+.chat_bar_button {
+    width: 45px;
+    height: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+    background-color: var(--color-midnight-blue);
+    border-radius: 50%;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
-.send_button {
-    width: 24px;
-    height: 24px;
-        /* center */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* button is to close to the right */
-    margin-right: 0.5rem;
+.chat_bar_button:hover {
+    background-color: var(--color-bright-cyan);
+    transform: scale(1.1);
 }
 
-.char_bar_icon {
-    width: 30px;
-    height: 30px;
+.chat_bar_button:active {
+    transform: scale(0.95); /* Add a pressed effect */
+}
+
+.chat_bar_icon {
+    width: 25px;
+    height: 25px;
+    color: var(--color-full-white);
 }
 
 /* Members and profiles */
