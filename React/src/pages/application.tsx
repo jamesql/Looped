@@ -9,7 +9,7 @@ import ServerInfo from "@/components/ServerInfo";
 import FriendsList from "@/components/FriendsList";
 import { Permissions } from "../../../Types/permissionsTypes";
 import ServerIcon from "@/components/ServerIcon";
-import { checkPermissions } from "@/util/functions";
+import { checkPermissions, getCdnFileUrl } from "@/util/functions";
 import UserCard from "@/components/UserCard";
 import ServerDiscovery from "@/components/ServerDiscovery";
 import DirectChannel from "@/components/DirectChannel";
@@ -425,6 +425,18 @@ const Application: React.FC = () => {
   listeners.set(OPCodes.SERVER_MEMBER_UPDATE, [serverMemberUpdateHandler]);
   listeners.set(OPCodes.SERVER_MEMBER_DEL, [serverMemberDelHandler]);
 
+  const [selfAvatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
+  useEffect(() => { 
+    if (session?.avatar) {
+      getCdnFileUrl(session?.avatar).then(url => {
+        setAvatarUrl(url);
+      });
+    } else {
+      setAvatarUrl("/logo_main.jpg");
+    }
+  }
+  , [session?.avatar]);
+  
   return (
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
@@ -616,7 +628,7 @@ const Application: React.FC = () => {
                   <div className={classes.member_image}>
                     <img
                       className={classes.squircle}
-                      src={session?.avatar ? session.avatar : "/logo_main.jpg"}
+                      src={selfAvatarUrl}
                       alt=""
                     />
                   </div>

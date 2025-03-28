@@ -55,14 +55,15 @@ class ApiClient {
     }
 
     // edit user post request
-    public async editUser(firstName: string, lastName: string, location: string, status: string, avatar: string, token: string): Promise<AxiosResponse> {
+    public async editUser(firstName: string, lastName: string, location: string, status: string, token: string, avatarId?: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/user/edit', {
             firstName: firstName,
             lastName: lastName,
             location: location,
-            avatar: avatar,
-            status: status
+            //avatar: avatar,
+            status: status,
+            avatarId: avatarId
         });
     }
 

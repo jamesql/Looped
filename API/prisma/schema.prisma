@@ -19,7 +19,8 @@ model User {
   lastName     String
   email        String   @unique
   password     String
-  avatar       String
+  avatarId     String?  @unique
+  avatar       R2File?  @relation("AvatarFile", fields: [avatarId], references: [id])
   status       String   @default("New to Looped!")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -168,7 +169,7 @@ model R2File {
 
   iconOf   Server? @relation("IconFile")
   bannerOf Server? @relation("BannerFile")
-
+  avatarOf User? @relation("AvatarFile")
 }
 
 model DirectChannel {
