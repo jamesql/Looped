@@ -9,6 +9,7 @@ import ServerInfo from "@/components/ServerInfo";
 import FriendsList from "@/components/FriendsList";
 import { Permissions } from "../../../Types/permissionsTypes";
 import ServerIcon from "@/components/ServerIcon";
+import { checkPermissions } from "@/util/functions";
 
 const ApplicationNew: React.FC = () => {
   // data states
@@ -24,19 +25,6 @@ const ApplicationNew: React.FC = () => {
   const [createChannel, setCreateChannel] = useState(false);
   const [creatingServer, setCreatingServer] = useState(false);
   const [joiningServer, setJoiningServer] = useState(false);
-
-  // move to different file
-  // check if user has certain permissions
-  const checkPermissions = (serverId: string, userRoles: Role[], permission: number): boolean => {
-    // Check if the user has the required permissions
-    for (const role of userRoles) {
-      // Assuming role.permissions is an array of permissions
-      if (role.permissions.includes(permission.toString())) {
-        return true;
-      }
-    }
-    return false;
-  };
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
