@@ -19,7 +19,13 @@ export const OPCodes = {
     CHANNEL_CREATE: 16,
     CHANNEL_MODIFY: 17,
     CHANNEL_DELETE: 18,
-    
+
+    ROLE_CREATE: 19,
+    ROLE_MODIFY: 20,
+    ROLE_DELETE: 21,
+    ROLE_ADD: 22,
+    ROLE_REMOVE: 23,
+
     RECONNECT: 99,
     UPDATE_VOICE_STATE: 100,
   

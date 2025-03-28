@@ -81,6 +81,7 @@ export class UserDatapacks {
                     location: true,
                     birthday: true,
                     email: true,
+                    roles: true,
                     password: false
                 }
             },

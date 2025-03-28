@@ -45,6 +45,30 @@ class RoleService {
     async getAllRoles(): Promise<Role[]> {
         return prisma.role.findMany();
     }
+
+    async addRoleToUser(userId: string, roleId: string): Promise<Role> {
+        // This method adds a role to a user
+        return prisma.role.update({
+            where: { id: roleId },
+            data: {
+                users: {
+                    connect: { id: userId } // Connects the user to the role
+                }
+            },
+        });
+    }
+
+    async removeRoleFromUser(userId: string, roleId: string): Promise<Role> {
+        // This method removes a role from a user
+        return prisma.role.update({
+            where: { id: roleId },
+            data: {
+                users: {
+                    disconnect: { id: userId } // Disconnects the user from the role
+                }
+            },
+        });
+    }
 }
 
 export default new RoleService();
