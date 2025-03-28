@@ -67,6 +67,19 @@ class UserService {
       },
     });
   }
+
+  async getUsersByRoleId(roleId: string): Promise<User[]> {
+    // This method retrieves users by role ID
+    return await prisma.user.findMany({
+      where: {
+        roles: {
+          some: {
+            id: roleId
+          }
+        }
+      },
+    });
+  }
 }
 
 export default new UserService();
