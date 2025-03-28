@@ -11,6 +11,9 @@ import { Permissions } from "../../../Types/permissionsTypes";
 import ServerIcon from "@/components/ServerIcon";
 import { checkPermissions } from "@/util/functions";
 import UserCard from "@/components/UserCard";
+import ServerDiscovery from "@/components/ServerDiscovery";
+import DirectChannel from "@/components/DirectChannel";
+import ServerChannel from "@/components/ServerChannel";
 
 const ApplicationNew: React.FC = () => {
   // data states
@@ -174,10 +177,19 @@ const ApplicationNew: React.FC = () => {
               </div>
 
                 {/** Server Discovery  */}
+                { !selectedServer && !selectedFriend && (
+                  <ServerDiscovery />
+                  )}
 
                 {/** Friend DM Channel  */}
+                {!selectedServer && selectedFriend && (
+                  <DirectChannel />
+                  )}
 
                 {/** Server Channel */}
+                {selectedServer && selectedChannel && (
+                  <ServerChannel />
+                  )}
 
 
 
