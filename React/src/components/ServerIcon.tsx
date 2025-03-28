@@ -24,7 +24,7 @@ const ServerIcon: React.FC<ServerIconProps> = ({
         className={[classes.squircle, selectedServer?.id===server.id?classes.server_icon_active:""].join(" ")}
         onClick={() => {
           setSelectedServer(server);
-          setSelectedChannel(null);
+          setSelectedChannel(server.channels && server.channels.length > 0 ? server.channels[0] : null); // Set the first channel as selected if available
         }}
       >
         <div className={classes.server_icon}>
