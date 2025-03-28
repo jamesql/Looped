@@ -68,3 +68,17 @@ export const uploadCdnFile = async (
     throw new Error(`Upload failed for ${file.name}.`);
   }
 };
+
+export const getCdnFileUrl = async (file: R2File): Promise<string> => {
+  try {
+    const token = Cookies.get("access_token") ?? "";
+    const fileResp = await ApiClient.getInstance().getFileById(token, file.id);
+
+    if (fileResp.status === 200) {
+      return fileResp.data.url;
+    }
+  } catch (error) {
+    console.error("Error fetching file URL:", error);
+  }
+  return "";
+}

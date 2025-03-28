@@ -13,8 +13,10 @@ export interface Server {
     members?: User[];
     channels?: Channel[];
     invites: string[];
-    icon: string;
-    banner: string;
+    icon?: R2File;
+    iconId?: string;
+    banner?: R2File;
+    bannerId?: string;
     description: string;
     onlineMembers?: User[];
     roles?: Role[];

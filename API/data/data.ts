@@ -46,6 +46,8 @@ export async function MapRMapToPMap<R, P>(
 export class UserDatapacks {
     public static readonly ALL_USER_DATA: RelationMap<User> = {
         servers: {
+            icon:true,
+            banner:true,    
             channels: {
                 messages: {
                     author: {
@@ -163,7 +165,8 @@ export class ServerDatapacks {
                 password: false
             }
         },
-
+        icon: true,
+        banner: true
     }
     public static readonly SERVER_PUBLIC_DATA: RelationMap<Server> = {};
 }
