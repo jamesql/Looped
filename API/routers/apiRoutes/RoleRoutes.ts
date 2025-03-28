@@ -315,4 +315,27 @@ router.post("/delete", [
 
 });
 
+
+router.post("/add-user", [
+    header("Authorization").isString().isLength({ min: 1 }),
+    body("roleId")
+      .isString()
+      .isLength({ min: 1 }),
+    body("userId")
+      .isString()
+      .isLength({ min: 1 })
+], async (req: Request, res: Response) => {
+});
+
+router.post("/remove-user", [
+    header("Authorization").isString().isLength({ min: 1 }),
+    body("roleId")
+      .isString()
+      .isLength({ min: 1 }),
+    body("userId")
+      .isString()
+      .isLength({ min: 1 })
+], async (req: Request, res: Response) => {
+});
+
 module.exports = router;
