@@ -80,7 +80,7 @@ router.post("/edit", [
     body("lastName").isString().isLength({ min: 1 }),
     body("location").isString().isLength({ min: 1 }),
     body("status").isString().isLength({ min: 1 }),
-    body("avatar").isString().isLength({ min: 1 }),
+    body("avatar").isString().isLength({ min: 0 }),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
