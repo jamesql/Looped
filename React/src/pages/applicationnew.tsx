@@ -80,7 +80,12 @@ const ApplicationNew: React.FC = () => {
                 <FriendsList friends={[]} />
               ) : (
                 <div className={classes.channel_list}>
-                  {(selectedServer.ownerId === session?.id || checkPermissions(selectedServer.id, session?.roles?session.roles:[], Permissions.ADMIN)) && (
+                  {(selectedServer.ownerId === session?.id ||
+                    checkPermissions(
+                      selectedServer.id,
+                      session?.roles ? session.roles : [],
+                      Permissions.ADMIN
+                    )) && (
                     <div
                       className={[classes.channel, classes.channel_create].join(
                         " "
@@ -112,8 +117,7 @@ const ApplicationNew: React.FC = () => {
               )}
             </div>
 
-              <div className={classes.application}>
-
+            <div className={classes.application}>
               <div className={classes.server_nav}>
                 <ul className={classes.server_container}>
                   <li className={classes.divider}></li>
@@ -124,7 +128,7 @@ const ApplicationNew: React.FC = () => {
                     onClick={() => {
                       setSelectedServer(null);
                       setSelectedChannel(null);
-                      setSelectedFriend(null); 
+                      setSelectedFriend(null);
                     }}
                   >
                     <div className={classes.popper}>
@@ -156,27 +160,19 @@ const ApplicationNew: React.FC = () => {
                   <li className={classes.divider}></li>
 
                   {session?.servers?.map((s) => (
-                    <ServerIcon server={s} 
-                    setSelectedServer={setSelectedServer} 
-                    setSelectedChannel={setSelectedChannel}
-                    selectedServer={selectedServer}
-                    selectedChannel={selectedChannel}
-                     />
+                    <ServerIcon
+                      server={s}
+                      setSelectedServer={setSelectedServer}
+                      setSelectedChannel={setSelectedChannel}
+                      selectedServer={selectedServer}
+                      selectedChannel={selectedChannel}
+                    />
                   ))}
                 </ul>
               </div>
+            </div>
 
-
-
-              </div>
-
-
-                  <div className={classes.members_profile}>
-
-                  </div>
-
-
-
+            <div className={classes.members_profile}></div>
           </div>
         </div>
       )}
