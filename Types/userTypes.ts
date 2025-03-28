@@ -8,11 +8,16 @@ export interface User {
     email: string;
     password?: string;
     servers?: Server[];
+
     friends?: User[];
-    onlineFriends?: User[];
-    avatar: string;
-    friendsRequests?: User[];
+    friendsOf?: User[];
+    friendRequests?: User[];
     friendRequestsSent?: User[];
+
+    directChannels?: DirectChannel[];
+    directMessages?: DirectMessage[]; // Direct messages sent to this user
+
+    avatar: string;
     createdAt: Date;
     updatedAt: Date;
     status?: string;
@@ -20,4 +25,27 @@ export interface User {
     birthday?: Date;
     roles?: Role[];
     applications?: Job[];
+}
+
+export interface DirectChannel {
+    id: string;
+    createdAt: Date; // Date when the direct channel was created
+    updatedAt: Date; // Date when the direct channel was last updated
+    userIds: String[];
+    users?: User[]; // Users that are part of this direct channel
+    messages?: DirectMessage[]; // Messages in this direct channel
+}
+
+export interface DirectMessage {
+    id: string;
+    directChannelId: string;
+    authorId: string;
+    author?: User;
+
+    content: string;
+    createdAt: Date; // Date when the message was created
+    updatedAt: Date; // Date when the message was last updated
+
+    DirectChannel?: DirectChannel; // The direct channel this message belongs to
+
 }

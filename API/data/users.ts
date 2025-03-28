@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient, User as PrismaUser } from "@prisma/client";
 import { User } from "../../Types/userTypes";
 import { MapRMapToPMap, RelationMap } from "./data";
+import DirectService from "./direct";
 
 const prisma = new PrismaClient();
 
@@ -38,14 +39,11 @@ class UserService {
     });
   }
 
-  async updateUserById(
-    id: string,
-    data: Partial<User>
-  ): Promise<User> {
+  async updateUserById(id: string, data: Partial<User>): Promise<User> {
     return await prisma.user.update({
       where: { id },
       data: {
-        ...data as Partial<PrismaUser>
+        ...(data as Partial<PrismaUser>),
       },
     });
   }
@@ -57,7 +55,10 @@ class UserService {
     return;
   }
 
-  async getUserByEmail(email: string, relation: RelationMap<User>): Promise<User> {
+  async getUserByEmail(
+    email: string,
+    relation: RelationMap<User>
+  ): Promise<User> {
     const inc: Prisma.UserInclude = await MapRMapToPMap(relation);
 
     return await prisma.user.findUnique({
@@ -74,11 +75,93 @@ class UserService {
       where: {
         roles: {
           some: {
-            id: roleId
-          }
-        }
+            id: roleId,
+          },
+        },
       },
     });
+  }
+
+  async sendFriendRequest(fromUserId: string, toUserId: string): Promise<void> {
+    // This method sends a friend request from one user to another
+    await prisma.user.update({
+      where: { id: fromUserId },
+      data: {
+        friendRequestsSent: {
+          connect: { id: toUserId },
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: toUserId },
+      data: {
+        friendRequestsReceived: {
+          connect: { id: fromUserId },
+        },
+      },
+    });
+    return;
+  }
+
+  async acceptFriendRequest(
+    fromUserId: string,
+    toUserId: string
+  ): Promise<void> {
+    // This method accepts a friend request
+    await prisma.user.update({
+      where: { id: fromUserId },
+      data: {
+        friendRequestsSent: {
+          disconnect: { id: toUserId },
+        },
+        friends: {
+          connect: { id: toUserId },
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: toUserId },
+      data: {
+        friendRequestsReceived: {
+          disconnect: { id: fromUserId },
+        },
+        friends: {
+          connect: { id: fromUserId },
+        },
+      },
+    });
+
+    // create a direct channel for the two users if it doesn't already exist
+    await DirectService.createDirectChannel([fromUserId, toUserId]);
+
+    return;
+  }
+
+  async declineFriendRequest(
+    fromUserId: string,
+    toUserId: string
+  ): Promise<void> {
+    // This method declines a friend request
+    await prisma.user.update({
+      where: { id: fromUserId },
+      data: {
+        friendRequestsSent: {
+          disconnect: { id: toUserId },
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: toUserId },
+      data: {
+        friendRequestsReceived: {
+          disconnect: { id: fromUserId },
+        },
+      },
+    });
+    return;
   }
 }
 
