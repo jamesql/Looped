@@ -57,7 +57,7 @@ router.post("/create", [
 
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
-        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const roles = await RoleService.getUserRolesByServerId(user.id, server.id);
         const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
@@ -149,7 +149,7 @@ router.post("/edit", [
 
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
-        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const roles = await RoleService.getUserRolesByServerId(user.id, server.id);
         const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
@@ -234,7 +234,7 @@ router.post("/delete", [
 
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
-        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const roles = await RoleService.getUserRolesByServerId(user.id, server.id);
         const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role

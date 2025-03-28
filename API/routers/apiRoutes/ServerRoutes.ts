@@ -322,7 +322,7 @@ router.get("/invite/:serverId", [
     
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
-        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const roles = await RoleService.getUserRolesByServerId(user.id, server.id);
         const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
@@ -388,7 +388,7 @@ router.post("/kick", [
 
     // make sure user is either owner or admin and other user is not owner/below
     if (server.ownerId !== user.id) {
-        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const roles = await RoleService.getUserRolesByServerId(user.id, server.id);
         const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
@@ -404,7 +404,7 @@ router.post("/kick", [
         }
 
         // make sure other user is not admin
-        const otherRoles = await RoleService.getRolesByServerId(otherUser.id, server.id);
+        const otherRoles = await RoleService.getUserRolesByServerId(otherUser.id, server.id);
         const otherRole = otherRoles.find((role) => role.permissions === Permissions.ADMIN);
 
         if (otherRole) {
@@ -482,7 +482,7 @@ router.post("/ban", [
 
     // make sure user is either owner or admin and other user is not owner/below
     if (server.ownerId !== user.id) {
-        const roles = await RoleService.getRolesByServerId(user.id, server.id);
+        const roles = await RoleService.getUserRolesByServerId(user.id, server.id);
         const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
@@ -498,7 +498,7 @@ router.post("/ban", [
         }
 
         // make sure other user is not admin
-        const otherRoles = await RoleService.getRolesByServerId(otherUser.id, server.id);
+        const otherRoles = await RoleService.getUserRolesByServerId(otherUser.id, server.id);
         const otherRole = otherRoles.find((role) => role.permissions === Permissions.ADMIN);
 
         if (otherRole) {
