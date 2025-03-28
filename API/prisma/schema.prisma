@@ -30,14 +30,14 @@ model User {
 
   messages Message[]
 
-  roles Role[]
-
   portfolios Portfolio[]
 
   bannedFrom Server[]
 
   applications Job[]
   R2File       R2File[]
+
+  roles Role[] @relation("UserRoles")
 }
 
 model Server {
@@ -102,11 +102,11 @@ model Role {
   permissions Int     @default(0) 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  userId      String
   serverId    String
 
   server Server @relation(fields: [serverId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
+
+  users User[] @relation("UserRoles")
 
   channel Channel[]
 }
