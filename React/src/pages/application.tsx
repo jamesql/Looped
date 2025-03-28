@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import LoopedSession from "../../../Types/sessionTypes";
-import { Channel, Server, Role } from "../../../Types/serverTypes";
+import { Channel, Server } from "../../../Types/serverTypes";
 import { User } from "../../../Types/userTypes";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
@@ -20,7 +20,6 @@ import { OPCodes } from "../../../Types/socketTypes";
 import ApiClient from "@/util/api";
 import CreateChannelModal from "@/components/CreateChannelModal";
 import CreareServerModal from "@/components/CreateServerModal";
-import FriendsModal from "@/components/FriendsModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
