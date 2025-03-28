@@ -22,8 +22,20 @@ router.post(
     "/create",
     [
         header("Authorization").isString().isLength({ min: 1 }),
-        body("content").isString().isLength({ min: 1, max: 200 }),
+        body("content")
+        .custom((value : string, { req }) => {
+          const hasFile = typeof req.body.fileId === "string" && req.body.fileId.length > 0;
+          if (!value && !hasFile) {
+            throw new Error("Either content or fileId must be provided.");
+          }
+          if (value && value.length > 200) {
+            throw new Error("Content must be 200 characters or fewer.");
+          }
+          return true;
+        }),
+    
         body("channelId").isString().isLength({ min: 1 }),
+        body("fileId").optional().isString().isLength({ min: 1 }),  
     ],
     async (req: Request, res: Response) => {
         const errors = validationResult(req);
@@ -93,7 +105,7 @@ router.post(
         }
 
         // create message
-        const newMessage = await MessageService.createMessage(req.body.content, user.id, channel.id);
+        const newMessage = await MessageService.createMessage(req.body.content, user.id, channel.id, req.body.fileId);
         
         // add author to message using typecast to type Message
 

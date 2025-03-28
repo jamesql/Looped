@@ -20,6 +20,7 @@ import ServerIcon from "@/components/ServerIcon";
 import UserSettingsModal from "@/components/UserSettingsModal";
 import { User } from "../../../Types/userTypes";
 import { MdAttachFile, MdSend } from "react-icons/md";
+import { ContentCreateResponse, R2File } from "../../../Types/contentTypes";
 const Application: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
@@ -61,14 +62,15 @@ const Application: React.FC = () => {
   }, [authed, session]);
 
   // Send message function
-  const sendMessage = (): void => {
-    if (currentMessage.trim() !== "") {
+  const sendMessage = (fileId?: string): void => {
+    if (currentMessage.trim() !== "" || fileId !== undefined) {
       console.log("Sending message:", currentMessage);
       ApiClient.getInstance()
         .createMessage(
           selectedChannel?.id || "",
           currentMessage,
-          Cookies.get("access_token") || ""
+          Cookies.get("access_token") || "",
+          fileId
         )
         .then((response) => {
           console.log(response);
@@ -104,30 +106,37 @@ const Application: React.FC = () => {
       if (validFiles.length === 0) return;
   
       try {
-        const response = await ApiClient.getInstance().generateFileUrl(Cookies.get("access_token") || "");
-        const url = response.data;
-        console.log("Cloudflare Stream URL generated:", url);
-  
         for (const file of validFiles) {
-          const formData = new FormData();
-          formData.append("file", file);
-          //formData.append("requireSignedURLs", "false");
-          formData.append("allowedOrigins", "*");
+          console.log(file.type);
+          const response = await ApiClient.getInstance().generateFileUrl(
+            Cookies.get("access_token") || "",
+            file.name,
+            file.type 
+          );
+
+          const resp = response.data as ContentCreateResponse;
   
-          const uploadResponse = await fetch(url, {
-            method: "POST",
-            body: formData,
+          const presignedUrl = resp.url; 
+          console.log(`Uploading ${file.name} to R2 via:`, presignedUrl);
+  
+          const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type,
+            },
+            body: file,
           });
   
           if (!uploadResponse.ok) {
             console.error(`Upload failed for ${file.name}:`, await uploadResponse.text());
           } else {
-            const result = await uploadResponse.json();
-            console.log(`Upload successful for ${file.name}:`, result);
+            console.log(`Upload successful for ${file.name}, id`);
+            sendMessage(resp.r2file.id); // send message with fileId
           }
+
         }
       } catch (error) {
-        console.error("Error generating Cloudflare upload URL:", error);
+        console.error("Error uploading to R2:", error);
       }
     }
   };
@@ -561,7 +570,8 @@ const Application: React.FC = () => {
                 {[...(selectedChannel?.messages || [])]
                   .reverse()
                   .map((message) => (
-                    <MessageComponent message={message} />
+                     <MessageComponent message={message} />
+                    
                   ))}
               </div>
 

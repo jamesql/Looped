@@ -13,22 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id  String   @id @default(cuid())
-  firstName String
-  lastName String
-  email String @unique
-  password String
-  avatar String
-  status String @default("New to Looped!")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  location String
-  birthday DateTime
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  password     String
+  avatar       String
+  status       String   @default("New to Looped!")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  location     String
+  birthday     DateTime
   ownedServers Server[] @relation("ServerOwner")
-  servers Server[] @relation("ServerMembers")
-
+  servers      Server[] @relation("ServerMembers")
 
   messages Message[]
 
@@ -39,26 +37,26 @@ model User {
   bannedFrom Server[]
 
   applications Job[]
+  R2File       R2File[]
 }
 
 model Server {
-  id String @id @default(cuid())
-  name String
+  id          String   @id @default(cuid())
+  name        String
   description String
-  icon String
-  banner String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ownerId String
-  website String @default("https://looped.it.com")
-  members User[] @relation("ServerMembers")
+  icon        String
+  banner      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  ownerId     String
+  website     String   @default("https://looped.it.com")
+  members     User[]   @relation("ServerMembers")
 
   owner User @relation("ServerOwner", fields: [ownerId], references: [id])
 
   channels Channel[]
 
   roles Role[]
-
 
   invites String[] @default([])
 
@@ -68,13 +66,13 @@ model Server {
 }
 
 model Channel {
-  id String @id @default(cuid())
-  name String
-  description String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  serverId String
-  type String
+  id                 String   @id @default(cuid())
+  name               String
+  description        String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  serverId           String
+  type               String
   permissionRequired String?
 
   server Server @relation(fields: [serverId], references: [id])
@@ -82,43 +80,44 @@ model Channel {
   messages Message[]
 
   roles Role[]
-
 }
 
 model Message {
-  id String @id @default(cuid())
-  content String
+  id        String   @id @default(cuid())
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  authorId String
+  authorId  String
   channelId String
 
-  author User @relation(fields: [authorId], references: [id])
+  author  User    @relation(fields: [authorId], references: [id])
   channel Channel @relation(fields: [channelId], references: [id])
+
+  file     R2File?
 }
 
 model Role {
-  id String @id @default(cuid())
-  name String
+  id          String   @id @default(cuid())
+  name        String
   permissions String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId String
-  serverId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  serverId    String
 
   server Server @relation(fields: [serverId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   channel Channel[]
 }
 
 model Portfolio {
-  id String @id @default(cuid())
-  name String
+  id          String   @id @default(cuid())
+  name        String
   description String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
 
   user User @relation(fields: [userId], references: [id])
 
@@ -126,17 +125,29 @@ model Portfolio {
 }
 
 model Job {
-  id String @id @default(cuid())
-  title String
+  id          String   @id @default(cuid())
+  title       String
   description String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  location String
-  salary String
-  serverId String
-  status String @default("Accepting Applications")
-  server Server @relation(fields: [serverId], references: [id])
-  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  location    String
+  salary      String
+  serverId    String
+  status      String   @default("Accepting Applications")
+  server      Server   @relation(fields: [serverId], references: [id])
 
   applicants User[]
+}
+
+model R2File {
+  id             String   @id @default(cuid())
+  fileName       String // original name of the uploaded file
+  contentType    String // MIME type like 'image/png' or 'application/pdf'
+  createdAt      DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  message  Message? @relation(fields: [messageId], references: [id])
+  messageId String? @unique
 }

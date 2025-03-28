@@ -1,6 +1,8 @@
 import classes from "../styles/application.module.css";
 import React from "react";
 import { Message } from "../../../Types/serverTypes";
+import ApiClient from "@/util/api";
+import Cookie from 'js-cookie';
 
 interface MessageComponentProps {
   message: Message;
@@ -9,6 +11,10 @@ interface MessageComponentProps {
 const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
     if (!message || !message.author) {
         return null;
+    }
+    if(message.file){
+      const fileResp = await ApiClient.getInstance().getFileById(Cookie.get("access_token") || "", message.file.id);
+      const file = fileResp.data.url;
     }
   return (
     <div className={classes.message}>
@@ -23,6 +29,8 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
 
         <div className={classes.message_content}>
           <p>{message.content}</p>
+          if
+          <p>{message.file?.fileName}</p>
         </div>
       </div>
     </div>
