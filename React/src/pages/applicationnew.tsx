@@ -14,6 +14,16 @@ import UserCard from "@/components/UserCard";
 import ServerDiscovery from "@/components/ServerDiscovery";
 import DirectChannel from "@/components/DirectChannel";
 import ServerChannel from "@/components/ServerChannel";
+import { OpCodeHandler, WebSocketClient } from "@/util/ws";
+import WebSocketComponent from "@/components/WebSocket";
+import { OPCodes } from "../../../Types/socketTypes";
+import ApiClient from "@/util/api";
+import CreateChannelModal from "@/components/CreateChannelModal";
+import CreareServerModal from "@/components/CreateServerModal";
+import FriendsModal from "@/components/FriendsModal";
+import JoinServerModal from "@/components/JoinServerModal";
+import ServerSettingsModal from "@/components/ServerSettingsModal";
+import UserSettingsModal from "@/components/UserSettingsModal";
 
 const ApplicationNew: React.FC = () => {
   // data states
@@ -31,6 +41,9 @@ const ApplicationNew: React.FC = () => {
   const [joiningServer, setJoiningServer] = useState(false);
   const [userSettings, setUserSettings] = useState(false);
 
+  // create the map of listeners
+  const listeners = new Map<number, OpCodeHandler[]>();
+
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
     const refreshToken = Cookies.get("refresh_token");
@@ -47,13 +60,84 @@ const ApplicationNew: React.FC = () => {
 
   useEffect(() => {
     // change back
-    if (authed) {
+    if (authed && session) {
       setLoading(false);
     }
   }, [authed, session]);
 
+  const helloHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
+    console.log("Received data:", data);
+    const token = Cookies.get("access_token");
+
+    if (!token) {
+      console.log("No access token found, redirecting to login");
+      window.location.href = "/login";
+      return;
+    }
+
+    await ApiClient.getInstance().getUserData(token).catch((error) => {
+      console.log(error);
+    }).then((response) => {
+      if (!response) {
+        location.href = "/login";
+        return;
+      }
+      const _s: LoopedSession = response.data as LoopedSession;
+      if (response.status === 200) {
+        setSession(_s);
+      } else {
+        location.href = "/login";
+        return;
+      }
+  
+      client.send({
+        op: OPCodes.AUTH,
+        d: {
+          access_token: Cookies.get("access_token"),
+        },
+      });
+    });
+  };
+
+  listeners.set(OPCodes.HELLO, [helloHandler]);
+
   return (
     <div>
+      <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
+
+
+      {joiningServer && (
+        <JoinServerModal isOpen={true} setClose={setJoiningServer} />
+      )}
+
+      {creatingServer && (
+        <CreareServerModal isOpen={true} setClose={setCreatingServer} />
+      )}
+
+      {serverSettings && (
+        <ServerSettingsModal
+          isOpen={true}
+          setClose={setServerSettings}
+          server={selectedServer!}
+        />
+      )}
+
+      {createChannel && (
+        <CreateChannelModal
+          isOpen={true}
+          setClose={setCreateChannel}
+          server={selectedServer!}
+        />
+      )}
+
+      {userSettings && (
+        <UserSettingsModal
+          isOpen={true}
+          setClose={setUserSettings}
+          user={session as User}
+        />
+      )}
+
       {loading ? (
         <Loader />
       ) : (
@@ -189,7 +273,7 @@ const ApplicationNew: React.FC = () => {
 
                 {/** Server Channel */}
                 {selectedServer && selectedChannel && (
-                  <ServerChannel />
+                  <ServerChannel selectedServer={selectedServer} selectedChannel={selectedChannel} />
                   )}
 
 
