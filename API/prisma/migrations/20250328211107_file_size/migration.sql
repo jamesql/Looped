@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "R2File" ADD COLUMN     "fileSize" INTEGER NOT NULL DEFAULT 0;

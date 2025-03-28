@@ -5,6 +5,7 @@ export interface R2File {
     createdAt: Date;        // ISO date string or Date object
     userId?: string | null;   // Optional owner ID
     messageId?: string | null; // Optional Message ID
+    fileSize: number;      // Size of the file in bytes
 }
   
 

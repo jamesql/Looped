@@ -66,6 +66,7 @@ export class UserDatapacks {
                             id: true,
                             fileName: true,
                             contentType: true,
+                            fileSize: true,
                             createdAt: true,
                         }
                     }
@@ -129,6 +130,7 @@ export class ServerDatapacks {
                         fileName: true,
                         contentType: true,
                         createdAt: true,
+                        fileSize: true,
                     }
                 }
             }

@@ -334,15 +334,21 @@
 }
 
 .message_attachment_box {
-    display: flex;
-    flex-direction: row; 
-    align-items: center; /* Vertically center the icon and text */
     gap: 5px; /* Add spacing between the icon and text */
     padding: 10px;
     background-color: var(--color-midnight-blue);
     border-radius: 5px;
     text-align: left; /* Ensure text is left-aligned */
 }
+
+.message_attachment_row {
+    display: flex;
+    flex-direction: row; 
+    align-items: center; /* Vertically center the icon and text */
+    text-align: left; /* Ensure text is left-aligned */
+    justify-content: space-between;
+}
+
 
 .message_attachment_icon {
     width: 25px;

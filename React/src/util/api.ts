@@ -167,10 +167,11 @@ class ApiClient {
     }
 
     // create new file and get upload url
-    public async generateFileUrl(token: string, fileName : string, contentType: string): Promise<AxiosResponse> {
+    public async generateFileUrl(token: string, fileName : string, contentType: string, contentLen: number): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post(`/api/content/create`, {
             contentType: contentType,
+            contentLength: contentLen,
             fileName: fileName,
         });
     }

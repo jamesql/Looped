@@ -21,11 +21,12 @@ const r2client = new S3Client({
   });
   
 
-async function generatePresignedUploadUrl(fileName: string, contentType: string) {
+async function generatePresignedUploadUrl(fileName: string, contentType: string, contentLength: number) {
     const command = new PutObjectCommand({
         Bucket: "looped-ugc",
         Key: fileName,
         ContentType: contentType,
+        ContentLength: contentLength
     });
 
     const url = await getSignedUrl(r2client, command, { expiresIn: 3600 });
@@ -47,6 +48,7 @@ router.post("/create", [
     header("Authorization").isString().isLength({ min: 1 }),
     body("fileName").isString().isLength({ min: 1 }),
     body("contentType").isString().isLength({ min: 1 }),
+    body("contentLength").isInt({min:1, max: 5 * 1024 * 1024}),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -72,9 +74,10 @@ router.post("/create", [
     const file = await ContentService.createContent({
         fileName: req.body.fileName,
         contentType: req.body.contentType,
-        userId: user.id
+        userId: user.id,
+        fileSize: req.body.contentLength,
     });
-    const url = await generatePresignedUploadUrl(file.id, req.body.contentType);
+    const url = await generatePresignedUploadUrl(file.id, req.body.contentType, req.body.contentLength);
 
     
     res.status(200).json({url: url, r2file: file});

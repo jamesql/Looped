@@ -7,6 +7,7 @@ import classes from "../styles/application.module.css";
 import { ContentCreateResponse } from "../../../Types/contentTypes";
 import MessageComponent from "./MessageComponent";
 import { MdAttachFile, MdSend } from "react-icons/md";
+import { uploadCdnFile } from "@/util/functions";
 
 interface ServerChannelProps {
   selectedServer: Server;
@@ -52,53 +53,10 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
   ) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      const validFiles: File[] = [];
-
-      for (let i = 0; i < files.length; i++) {
+      for(let i = 0; i < files.length; i++) {
         const file = files[i];
-        if (file.size > 5 * 1024 * 1024) {
-          alert(`File "${file.name}" is too large (max 5MB).`);
-        } else {
-          validFiles.push(file);
-        }
-      }
-
-      if (validFiles.length === 0) return;
-
-      try {
-        for (const file of validFiles) {
-          console.log(file.type);
-          const response = await ApiClient.getInstance().generateFileUrl(
-            Cookies.get("access_token") || "",
-            file.name,
-            file.type
-          );
-
-          const resp = response.data as ContentCreateResponse;
-
-          const presignedUrl = resp.url;
-          console.log(`Uploading ${file.name} to R2 via:`, presignedUrl);
-
-          const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
-            headers: {
-              "Content-Type": file.type,
-            },
-            body: file,
-          });
-
-          if (!uploadResponse.ok) {
-            console.error(
-              `Upload failed for ${file.name}:`,
-              await uploadResponse.text()
-            );
-          } else {
-            console.log(`Upload successful for ${file.name}, id`);
-            sendMessage(resp.r2file.id); // send message with fileId
-          }
-        }
-      } catch (error) {
-        console.error("Error uploading to R2:", error);
+        const cdnResp = await uploadCdnFile(file);
+        sendMessage(cdnResp.r2file.id);
       }
     }
   };
@@ -123,6 +81,7 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
           ref={fileInput}
           onChange={handleFileChange}
           style={{ display: "none" }}
+          multiple
         ></input>
         <input
           className={classes.message_input}

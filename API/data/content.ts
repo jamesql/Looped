@@ -18,7 +18,8 @@ class ContentService {
                 fileName: true,
                 contentType: true,
                 createdAt: true,
-                userId: true
+                userId: true,
+                fileSize: true
             }
         });
     };

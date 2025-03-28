@@ -144,6 +144,7 @@ model R2File {
   fileName       String // original name of the uploaded file
   contentType    String // MIME type like 'image/png' or 'application/pdf'
   createdAt      DateTime @default(now())
+  fileSize       Int @default(0)
 
   userId String?
   user   User?   @relation(fields: [userId], references: [id])
