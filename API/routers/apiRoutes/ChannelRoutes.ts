@@ -76,7 +76,7 @@ router.post("/create", [
         createdAt: undefined,
         updatedAt: undefined,
         type: "TEXT",
-        permissionRequired: "MEMBER"
+        permissionRequired: Permissions.MEMBER.toString() // default permission required for the channel, can be changed later by an admin or owner
     }
 
     // create channel
