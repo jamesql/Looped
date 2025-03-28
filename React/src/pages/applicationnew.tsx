@@ -10,6 +10,7 @@ import FriendsList from "@/components/FriendsList";
 import { Permissions } from "../../../Types/permissionsTypes";
 import ServerIcon from "@/components/ServerIcon";
 import { checkPermissions } from "@/util/functions";
+import UserCard from "@/components/UserCard";
 
 const ApplicationNew: React.FC = () => {
   // data states
@@ -25,6 +26,7 @@ const ApplicationNew: React.FC = () => {
   const [createChannel, setCreateChannel] = useState(false);
   const [creatingServer, setCreatingServer] = useState(false);
   const [joiningServer, setJoiningServer] = useState(false);
+  const [userSettings, setUserSettings] = useState(false);
 
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
@@ -170,9 +172,48 @@ const ApplicationNew: React.FC = () => {
                   ))}
                 </ul>
               </div>
+
+                {/** Server Discovery  */}
+
+                {/** Friend DM Channel  */}
+
+                {/** Server Channel */}
+
+
+
             </div>
 
-            <div className={classes.members_profile}></div>
+            <div className={classes.members_profile}>
+
+            <ul className={classes.members_list}>
+                {selectedServer?.members?selectedServer?.members.map((member) => (
+                  <UserCard user={member} is_admin={session?.id === selectedServer?.ownerId} /> // TODO: improve perm checking here.
+                )):("")}
+            </ul>
+
+            <div className={classes.profile_card}>
+                <div className={classes.profile_member}>
+                  <div className={classes.member_image}>
+                    <img
+                      className={classes.squircle}
+                      src={session?.avatar?session.avatar:"/logo_main.jpg"}
+                      alt=""
+                    />
+                  </div>
+                  <div className={classes.member_info}>
+                    <h3>
+                      {session?.firstName} {session?.lastName}
+                    </h3>
+                    <h4>{session?.status}</h4>
+                  </div>
+                </div>
+                <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
+                  <img src="/settings.svg" alt="" />
+                </button>
+              </div>
+            </div>
+
+            
           </div>
         </div>
       )}
