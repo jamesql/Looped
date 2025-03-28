@@ -1,48 +1,45 @@
-import React, { useEffect, useState } from "react";
-import LoopedSession from "../../../Types/sessionTypes";
-import { Channel, Server } from "../../../Types/serverTypes";
-import { User } from "../../../Types/userTypes";
+import React, { useEffect, useRef, useState } from "react";
+import WebSocketComponent from "@/components/WebSocket";
+import { OpCodeHandler, WebSocketClient } from "@/util/ws";
+import { OPCodes } from "../../../Types/socketTypes";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader";
 import classes from "../styles/application.module.css";
-import ServerInfo from "@/components/ServerInfo";
-import FriendsList from "@/components/FriendsList";
-import { Permissions } from "../../../Types/permissionsTypes";
-import ServerIcon from "@/components/ServerIcon";
-import { checkPermissions } from "@/util/functions";
-import UserCard from "@/components/UserCard";
-import ServerDiscovery from "@/components/ServerDiscovery";
-import DirectChannel from "@/components/DirectChannel";
-import ServerChannel from "@/components/ServerChannel";
-import { OpCodeHandler, WebSocketClient } from "@/util/ws";
-import WebSocketComponent from "@/components/WebSocket";
-import { OPCodes } from "../../../Types/socketTypes";
-import ApiClient from "@/util/api";
-import CreateChannelModal from "@/components/CreateChannelModal";
-import CreareServerModal from "@/components/CreateServerModal";
+import LoopedSession from "../../../Types/sessionTypes";
+import { Channel, Server } from "../../../Types/serverTypes";
 import JoinServerModal from "@/components/JoinServerModal";
+import CreareServerModal from "@/components/CreateServerModal";
+import FriendsModal from "@/components/FriendsModal";
+import ApiClient from "@/util/api";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
+import UserCard from "@/components/UserCard";
+import MessageComponent from "@/components/MessageComponent";
+import CreateChannelModal from "@/components/CreateChannelModal";
+import ServerInfo from "@/components/ServerInfo";
+import ServerIcon from "@/components/ServerIcon";
 import UserSettingsModal from "@/components/UserSettingsModal";
-
+import { User } from "../../../Types/userTypes";
+import { MdAttachFile, MdSend } from "react-icons/md";
+import { ContentCreateResponse, R2File } from "../../../Types/contentTypes";
 const Application: React.FC = () => {
-  // data states
   const [loading, setLoading] = useState(true);
   const [authed, setAuthed] = useState(false);
   const [session, setSession] = useState<LoopedSession | null>(null);
   const [selectedServer, setSelectedServer] = useState<Server | null>(null);
   const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
-  const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
-
-  // modal states
-  const [serverSettings, setServerSettings] = useState(false);
-  const [createChannel, setCreateChannel] = useState(false);
-  const [creatingServer, setCreatingServer] = useState(false);
   const [joiningServer, setJoiningServer] = useState(false);
+  const [creatingServer, setCreatingServer] = useState(false);
+  const [friendsPage, setFriendsPage] = useState(false);
+  const [serverSettings, setServerSettings] = useState(false);
   const [userSettings, setUserSettings] = useState(false);
-
+  const [createChannel, setCreateChannel] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState("");
+  const fileInput = useRef<HTMLInputElement>(null);
+  
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
 
+  // check if access and refresh token are in cookie
   useEffect(() => {
     const accessToken = Cookies.get("access_token");
     const refreshToken = Cookies.get("refresh_token");
@@ -57,18 +54,96 @@ const Application: React.FC = () => {
     }
   }, []);
 
+  // done loading after accessToken, refreshToken and authed is true
   useEffect(() => {
-    // change back
     if (authed && session) {
       setLoading(false);
     }
   }, [authed, session]);
 
-  /** WebSocket Handlers  */
-  const helloHandler: OpCodeHandler = async (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  // Send message function
+  const sendMessage = (fileId?: string): void => {
+    if (currentMessage.trim() !== "" || fileId !== undefined) {
+      console.log("Sending message:", currentMessage);
+      ApiClient.getInstance()
+        .createMessage(
+          selectedChannel?.id || "",
+          currentMessage,
+          Cookies.get("access_token") || "",
+          fileId
+        )
+        .then((response) => {
+          console.log(response);
+        });
+
+      setCurrentMessage("");
+      // clear input box with class message_input
+      (
+        document.querySelector("." + classes.message_input) as HTMLInputElement
+      ).value = "";
+    }
+  };
+
+  // File uploading
+  const handleFileButtonClick = () => {
+    fileInput?.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const validFiles: File[] = [];
+  
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.size > 5 * 1024 * 1024) {
+          alert(`File "${file.name}" is too large (max 5MB).`);
+        } else {
+          validFiles.push(file);
+        }
+      }
+  
+      if (validFiles.length === 0) return;
+  
+      try {
+        for (const file of validFiles) {
+          console.log(file.type);
+          const response = await ApiClient.getInstance().generateFileUrl(
+            Cookies.get("access_token") || "",
+            file.name,
+            file.type 
+          );
+
+          const resp = response.data as ContentCreateResponse;
+  
+          const presignedUrl = resp.url; 
+          console.log(`Uploading ${file.name} to R2 via:`, presignedUrl);
+  
+          const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type,
+            },
+            body: file,
+          });
+  
+          if (!uploadResponse.ok) {
+            console.error(`Upload failed for ${file.name}:`, await uploadResponse.text());
+          } else {
+            console.log(`Upload successful for ${file.name}, id`);
+            sendMessage(resp.r2file.id); // send message with fileId
+          }
+
+        }
+      } catch (error) {
+        console.error("Error uploading to R2:", error);
+      }
+    }
+  };
+  
+
+  /* WebSocket Hooks */
+  const helloHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
     console.log("Received data:", data);
     const token = Cookies.get("access_token");
 
@@ -78,31 +153,28 @@ const Application: React.FC = () => {
       return;
     }
 
-    await ApiClient.getInstance()
-      .getUserData(token)
-      .catch((error) => {
-        console.log(error);
-      })
-      .then((response) => {
-        if (!response) {
-          location.href = "/login";
-          return;
-        }
-        const _s: LoopedSession = response.data as LoopedSession;
-        if (response.status === 200) {
-          setSession(_s);
-        } else {
-          location.href = "/login";
-          return;
-        }
-
-        client.send({
-          op: OPCodes.AUTH,
-          d: {
-            access_token: Cookies.get("access_token"),
-          },
-        });
+    const rawData = await ApiClient.getInstance().getUserData(token).catch((error) => {
+      console.log(error);
+    }).then((response) => {
+      if (!response) {
+        location.href = "/login";
+        return;
+      }
+      const _s: LoopedSession = response.data as LoopedSession;
+      if (response.status === 200) {
+        setSession(_s);
+      } else {
+        location.href = "/login";
+        return;
+      }
+  
+      client.send({
+        op: OPCodes.AUTH,
+        d: {
+          access_token: Cookies.get("access_token"),
+        },
       });
+    });
   };
 
   const readyHandler: OpCodeHandler = async (
@@ -112,10 +184,7 @@ const Application: React.FC = () => {
     console.log("Ready data:", data);
   };
 
-  const createServerHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const createServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Create server data:", data);
 
     const newServer: Server = data.server;
@@ -129,14 +198,11 @@ const Application: React.FC = () => {
       }
       return prevSession;
     });
-    setSelectedServer(newServer);
-    setSelectedChannel(null);
+    setSelectedServer(newServer);  
+    setSelectedChannel(null);  
   };
 
-  const createChannelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const createChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Create channel data:", data);
 
     const newChannel: Channel = data.channel;
@@ -171,10 +237,7 @@ const Application: React.FC = () => {
       if (!prev || prev.id !== server.id) {
         return null;
       }
-      const updatedChannels: Channel[] = [
-        ...(prev?.channels || []),
-        newChannel,
-      ];
+      const updatedChannels: Channel[] = [...(prev?.channels || []), newChannel];
       return {
         ...prev,
         channels: updatedChannels,
@@ -182,18 +245,16 @@ const Application: React.FC = () => {
     });
   };
 
-  const createMessageHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const createMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Create message data:", data);
 
     const newMessage = data.message;
-    const server = data.server;
+    const server = data.server; 
     const channel = data.channel;
     // add message to session
     setSession((prevSession) => {
       if (prevSession) {
+
         const updatedServers = prevSession.servers!.map((s) => {
           if (s.id === server.id) {
             if (!s.channels) {
@@ -203,7 +264,7 @@ const Application: React.FC = () => {
               if (c.id === channel.id) {
                 return {
                   ...c,
-                  messages: [...(c.messages ? c.messages : []), newMessage],
+                  messages: [...(c.messages?c.messages:[]), newMessage],
                 };
               }
               return c;
@@ -225,10 +286,11 @@ const Application: React.FC = () => {
       return prevSession;
     });
 
+
     // if server is selected, update the selected channel's messages
     setSelectedChannel((prev: Channel | null) => {
       if (!prev || prev.id !== channel.id) {
-        return prev;
+        return null;
       }
       const updatedMessages = [...(prev?.messages || []), newMessage];
       return {
@@ -237,34 +299,9 @@ const Application: React.FC = () => {
       };
     });
 
-    setSelectedServer((prev: Server | null) => {
-      // if the server is not selected, return prev
-      if (!prev || prev.id !== server.id) {
-        return prev;
-      }
-      // otherwise return the updated server with the new message
-      const updatedChannels = prev.channels?.map((c) => {
-        if (c.id === channel.id) {
-          return {
-            ...c,
-            messages: [...(c.messages || []), newMessage],
-          };
-        }
-        return c;
-      });
-
-      return {
-        ...prev,
-        channels: updatedChannels,
-      };
-    }
-    ); // Update the selected server to reflect the new message
   };
 
-  const editServerHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const editServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Edit server data:", data);
 
     const updatedServer: Server = data.server;
@@ -276,7 +313,7 @@ const Application: React.FC = () => {
           if (s.id === updatedServer.id) {
             return {
               ...s,
-              ...updatedServer,
+              ...updatedServer
             };
           }
           return s;
@@ -297,15 +334,12 @@ const Application: React.FC = () => {
       }
       return {
         ...prev,
-        ...updatedServer,
+        ...updatedServer
       };
     });
   };
 
-  const editChannelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const editChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Edit channel data:", data);
 
     const updatedChannel: Channel = data.channel;
@@ -321,7 +355,7 @@ const Application: React.FC = () => {
               if (c.id === updatedChannel.id) {
                 return {
                   ...c,
-                  ...updatedChannel,
+                  ...updatedChannel
                 };
               }
               return c;
@@ -350,66 +384,46 @@ const Application: React.FC = () => {
       }
       return {
         ...prev,
-        ...updatedChannel,
+        ...updatedChannel
       };
     });
+
   };
 
-  const editMessageHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const editMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Edit message data:", data);
   };
 
-  const deleteServerHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const deleteServerHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Delete server data:", data);
   };
 
-  const deleteChannelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const deleteChannelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Delete channel data:", data);
   };
 
-  const deleteMessageHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const deleteMessageHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Delete message data:", data);
   };
 
-  const serverMemberAddHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const serverMemberAddHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Server member add data:", data);
   };
 
-  const serverMemberUpdateHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const serverMemberUpdateHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Server member update data:", data);
   };
 
-  const serverMemberDelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+  const serverMemberDelHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
     console.log("Server member delete data:", data);
   };
+  
+  const roleCreateHandler: OpCodeHandler = (data: any, client: WebSocketClient) => {
 
-  const roleCreateHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {};
-  /** End Websocket Handlers  */
+  };
+  /* WebSocket Hooks */
 
+  // Add hooks to WebSocket listeners
   listeners.set(OPCodes.HELLO, [helloHandler]);
   listeners.set(OPCodes.READY, [readyHandler]);
   listeners.set(OPCodes.SERVER_CREATE, [createServerHandler]);
@@ -436,6 +450,8 @@ const Application: React.FC = () => {
       {creatingServer && (
         <CreareServerModal isOpen={true} setClose={setCreatingServer} />
       )}
+
+      {friendsPage && <FriendsModal isOpen={true} setClose={setFriendsPage} />}
 
       {serverSettings && (
         <ServerSettingsModal
@@ -467,67 +483,38 @@ const Application: React.FC = () => {
         <div>
           <div className={classes.container}>
             <div className={classes.server_info}>
-              {!selectedServer ? (
-                <div className={classes.server_card}>
-                  <div className={classes.server_card_info}>
-                    <h1>Direct Messages</h1>
+              <div className={classes.server_card}>
+                <ServerInfo selectedServer={selectedServer} />
+
+                {session?.id === selectedServer?.ownerId && (
+                  <button
+                    className={classes.settings_icon}
+                    onClick={() => setServerSettings(true)}
+                  >
+                    <img src="/settings.svg" alt="Settings" />
+                  </button>
+                )}
+              </div>
+
+              <div className={classes.channel_list}>
+                <div className={[classes.channel, classes.channel_create].join(" ")} onClick={() => setCreateChannel(true)}>
+                  +
+                </div> 
+
+                {selectedServer?.channels?selectedServer.channels.map((channel) => (
+                  <div
+                    className={[
+                      classes.channel,
+                      selectedChannel?.id === channel.id
+                        ? classes.channel_active
+                        : "",
+                    ].join(" ")}
+                    onClick={() => setSelectedChannel(channel)}
+                  >
+                    <h2 className={classes.channel_name}># {channel.name.toLowerCase().split(" ").join("-")}</h2>
                   </div>
-                </div>
-              ) : (
-                <div className={classes.server_card}>
-                  <ServerInfo selectedServer={selectedServer} />
-
-                  {checkPermissions(selectedServer, session!.id, session!.roles!, Permissions.ADMIN) && (
-                    <button
-                      className={classes.settings_icon}
-                      onClick={() => setServerSettings(true)}
-                    >
-                      <img src="/settings.svg" alt="Settings" />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {!selectedServer ? (
-                <FriendsList friends={[]} />
-              ) : (
-                <div className={classes.channel_list}>
-                  {(selectedServer.ownerId === session?.id ||
-                    checkPermissions(
-                      selectedServer,
-                      session!.id,
-                      session!.roles!,
-                      Permissions.ADMIN
-                    )) && (
-                    <div
-                      className={[classes.channel, classes.channel_create].join(
-                        " "
-                      )}
-                      onClick={() => setCreateChannel(true)}
-                    >
-                      +
-                    </div>
-                  )}
-
-                  {selectedServer?.channels
-                    ? selectedServer.channels.map((channel) => (
-                        <div
-                          className={[
-                            classes.channel,
-                            selectedChannel?.id === channel.id
-                              ? classes.channel_active
-                              : "",
-                          ].join(" ")}
-                          onClick={() => setSelectedChannel(channel)}
-                        >
-                          <h2 className={classes.channel_name}>
-                            # {channel.name.toLowerCase().split(" ").join("-")}
-                          </h2>
-                        </div>
-                      ))
-                    : ""}
-                </div>
-              )}
+                )):("")}
+              </div>
             </div>
 
             <div className={classes.application}>
@@ -538,14 +525,10 @@ const Application: React.FC = () => {
                     className={[classes.squircle, classes.server_icon].join(
                       " "
                     )}
-                    onClick={() => {
-                      setSelectedServer(null);
-                      setSelectedChannel(null);
-                      setSelectedFriend(null);
-                    }}
+                    onClick={() => setFriendsPage(true)}
                   >
                     <div className={classes.popper}>
-                      <h4 className={classes.popped}>Home</h4>
+                      <h4 className={classes.popped}>Friends</h4>
                     </div>
                   </li>
                   <li className={classes.divider}></li>
@@ -573,50 +556,67 @@ const Application: React.FC = () => {
                   <li className={classes.divider}></li>
 
                   {session?.servers?.map((s) => (
-                    <ServerIcon
-                      server={s}
-                      setSelectedServer={setSelectedServer}
-                      setSelectedChannel={setSelectedChannel}
-                      selectedServer={selectedServer}
-                      selectedChannel={selectedChannel}
-                    />
+                    <ServerIcon server={s} 
+                    setSelectedServer={setSelectedServer} 
+                    setSelectedChannel={setSelectedChannel}
+                    selectedServer={selectedServer}
+                    selectedChannel={selectedChannel}
+                     />
                   ))}
                 </ul>
               </div>
 
-              {/** Server Discovery  */}
-              {!selectedServer && !selectedFriend && <ServerDiscovery />}
+              <div className={classes.messages}>
+                {[...(selectedChannel?.messages || [])]
+                  .reverse()
+                  .map((message) => (
+                     <MessageComponent message={message} />
+                    
+                  ))}
+              </div>
 
-              {/** Friend DM Channel  */}
-              {!selectedServer && selectedFriend && <DirectChannel />}
-
-              {/** Server Channel */}
-              {selectedServer && selectedChannel && (
-                <ServerChannel
-                  selectedServer={selectedServer}
-                  selectedChannel={selectedChannel}
+              <div className={classes.chat_input}>
+                <button className={classes.chat_bar_button} onClick={handleFileButtonClick}>
+                  <MdAttachFile className={classes.chat_bar_icon} />
+                </button>
+                <input
+                  type="file"
+                  ref={fileInput}
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                  ></input>
+                <input
+                  className={classes.message_input}
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  type="text"
+                  placeholder="Type a message..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      sendMessage();
+                    }
+                  }}
                 />
-              )}
+                <button
+                  className={classes.chat_bar_button}
+                  onClick={() => sendMessage()}
+                >
+                  <MdSend className={classes.chat_bar_icon} />
+                </button>
+              </div>
             </div>
 
             <div className={classes.members_profile}>
               <ul className={classes.members_list}>
-                {selectedServer?.members
-                  ? selectedServer?.members.map((member) => (
-                      <UserCard
-                        user={member}
-                        is_admin={session?.id === selectedServer?.ownerId}
-                      /> // TODO: improve perm checking here.
-                    ))
-                  : ""}
+                {selectedServer?.members?selectedServer?.members.map((member) => (
+                  <UserCard user={member} is_admin={session?.id === selectedServer?.ownerId} /> // TODO: improve perm checking here.
+                )):("")}
               </ul>
-
               <div className={classes.profile_card}>
                 <div className={classes.profile_member}>
                   <div className={classes.member_image}>
                     <img
                       className={classes.squircle}
-                      src={session?.avatar ? session.avatar : "/logo_main.jpg"}
+                      src={session?.avatar?session.avatar:"/logo_main.jpg"}
                       alt=""
                     />
                   </div>
@@ -627,10 +627,7 @@ const Application: React.FC = () => {
                     <h4>{session?.status}</h4>
                   </div>
                 </div>
-                <button
-                  className={classes.settings_icon}
-                  onClick={() => setUserSettings(true)}
-                >
+                <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
                   <img src="/settings.svg" alt="" />
                 </button>
               </div>

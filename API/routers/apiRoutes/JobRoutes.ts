@@ -6,7 +6,7 @@ import ServerService from "../../data/servers";
 import JobService from "../../data/jobs";
 import RoleService from "../../data/roles";
 import { UserDatapacks, ServerDatapacks } from "../../data/data";
-import { Admin, Manager } from "../../../Types/permissionsTypes";
+import { Permissions } from "../../../Types/permissionsTypes";
 
 
 const router: Router = express.Router();
@@ -49,7 +49,7 @@ router.post("/create", [
 
     // check if user is owner or admin or manager
     if (server.ownerId !== user.id) {
-        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions.includes(Admin) || role.permissions.includes(Manager));
+        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
         if (roles.length === 0) {
             res.status(401).json({ error: "Unauthorized" });
             return;
@@ -115,7 +115,7 @@ router.post("/modify", [
 
     // check if user is owner or admin or manager
     if (server.ownerId !== user.id) {
-        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions.includes(Admin) || role.permissions.includes(Manager));
+        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
         if (roles.length === 0) {
             res.status(401).json({ error: "Unauthorized" });
             return;
@@ -175,7 +175,7 @@ router.post("/delete", [
 
     // check if user is owner or admin or manager
     if (server.ownerId !== user.id) {
-        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions.includes(Admin) || role.permissions.includes(Manager));
+        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
         if (roles.length === 0) {
             res.status(401).json({ error: "Unauthorized" });
             return;

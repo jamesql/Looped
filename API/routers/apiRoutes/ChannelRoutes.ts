@@ -5,7 +5,7 @@ import ServerService from "../../data/servers";
 import UserService from "../../data/users";
 import ChannelService from "../../data/channels";
 import RoleService from "../../data/roles";
-import { Admin, Permissions } from "../../../Types/permissionsTypes";
+import { Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
@@ -58,7 +58,7 @@ router.post("/create", [
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
         const roles = await RoleService.getRolesByServerId(user.id, server.id);
-        const role = roles.find((role) => role.permissions.includes(Admin));
+        const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
         if (!role) {
@@ -76,7 +76,7 @@ router.post("/create", [
         createdAt: undefined,
         updatedAt: undefined,
         type: "TEXT",
-        permissionRequired: "MEMBER"
+        permissionRequired: Permissions.MEMBER // default permission required for the channel, can be changed later by an admin or owner
     }
 
     // create channel
@@ -150,7 +150,7 @@ router.post("/edit", [
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
         const roles = await RoleService.getRolesByServerId(user.id, server.id);
-        const role = roles.find((role) => role.permissions.includes(Admin));
+        const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
         if (!role) {
@@ -235,7 +235,7 @@ router.post("/delete", [
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
         const roles = await RoleService.getRolesByServerId(user.id, server.id);
-        const role = roles.find((role) => role.permissions.includes(Admin));
+        const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
         if (!role) {

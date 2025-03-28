@@ -6,7 +6,7 @@ import UserService from "../../data/users";
 import ChannelService from "../../data/channels";
 import RoleService from "../../data/roles";
 import MessageService from "../../data/messages";
-import { Member, Permissions } from "../../../Types/permissionsTypes";
+import { Permissions } from "../../../Types/permissionsTypes";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
@@ -97,9 +97,9 @@ router.post(
 
         // make sure user has permission to see channel
         const roles = await RoleService.getRolesByServerId(user.id, channel.serverId);
-        const role = roles.find((role) => role.permissions.includes(channel.permissionRequired));
+        const role = roles.find((role) => role.permissions === channel.permissionRequired);
 
-        if (!role && channel.permissionRequired !== Member) {
+        if (!role && channel.permissionRequired !== Permissions.MEMBER) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }

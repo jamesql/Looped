@@ -84,7 +84,7 @@ class ApiClient {
     }
 
     // edit server info post request
-    public async editServer(serverId: string, name: string, desc: string, icon: string, banner: string, token: string): Promise<AxiosResponse> {
+    public async editServer(serverId: string, name: string, desc: string, icon: string, banner: string, website: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/server/edit', {
             serverId: serverId,
@@ -92,6 +92,7 @@ class ApiClient {
             description: desc,
             icon: icon,
             banner: banner,
+            website: website
         });
     }
 
@@ -180,7 +181,11 @@ class ApiClient {
         return this.axiosInstance.get(`/api/content/files/` + fileId);
     }
 
-    //
+    // generate invite code
+    public async generateInviteCode(serverId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.get(`/api/server/invite/${serverId}`, {});
+    }
 }
 
 export default ApiClient

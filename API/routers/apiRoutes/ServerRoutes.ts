@@ -7,7 +7,7 @@ import UserService from "../../data/users";
 import { validateToken } from "../../data/token";
 import { redisInstance } from "../../data/redis";
 import { OPCodes } from "../../../Types/socketTypes";
-import { Admin, Manager } from "../../../Types/permissionsTypes";
+import { Permissions } from "../../../Types/permissionsTypes";
 import { param } from "express-validator";
 import { ServerDatapacks, UserDatapacks } from "../../data/data";
 import { Server } from "../../../Types/serverTypes";
@@ -95,6 +95,7 @@ router.post("/edit", [
     body("description").isString().isLength({min: 0, max: 100}),
     body("icon").isString().isLength({min: 0}),
     body("banner").isString().isLength({min: 0}),
+    body("website").isString().isLength({min: 0, max: 100}),
     body("serverId").isString().isLength({min: 1}),
 ], async(req: Request, res: Response) => {
 
@@ -144,6 +145,7 @@ router.post("/edit", [
         description: req.body.description,
         banner: req.body.banner,
         icon: req.body.icon,
+        website: req.body.website,
         createdAt: undefined,
         updatedAt: undefined
     };
@@ -321,7 +323,7 @@ router.get("/invite/:serverId", [
     // make sure user is either owner or admin
     if (server.ownerId !== user.id) {
         const roles = await RoleService.getRolesByServerId(user.id, server.id);
-        const role = roles.find((role) => role.permissions.includes(Admin));
+        const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
         if (!role) {
@@ -387,7 +389,7 @@ router.post("/kick", [
     // make sure user is either owner or admin and other user is not owner/below
     if (server.ownerId !== user.id) {
         const roles = await RoleService.getRolesByServerId(user.id, server.id);
-        const role = roles.find((role) => role.permissions.includes(Admin));
+        const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
         if (!role) {
@@ -403,7 +405,7 @@ router.post("/kick", [
 
         // make sure other user is not admin
         const otherRoles = await RoleService.getRolesByServerId(otherUser.id, server.id);
-        const otherRole = otherRoles.find((role) => role.permissions.includes(Admin));
+        const otherRole = otherRoles.find((role) => role.permissions === Permissions.ADMIN);
 
         if (otherRole) {
             res.status(403).json({ error: "Forbidden" });
@@ -481,7 +483,7 @@ router.post("/ban", [
     // make sure user is either owner or admin and other user is not owner/below
     if (server.ownerId !== user.id) {
         const roles = await RoleService.getRolesByServerId(user.id, server.id);
-        const role = roles.find((role) => role.permissions.includes(Admin));
+        const role = roles.find((role) => role.permissions === Permissions.ADMIN);
 
         // make sure user has the admin role
         if (!role) {
@@ -497,7 +499,7 @@ router.post("/ban", [
 
         // make sure other user is not admin
         const otherRoles = await RoleService.getRolesByServerId(otherUser.id, server.id);
-        const otherRole = otherRoles.find((role) => role.permissions.includes(Admin));
+        const otherRole = otherRoles.find((role) => role.permissions === Permissions.ADMIN);
 
         if (otherRole) {
             res.status(403).json({ error: "Forbidden" });

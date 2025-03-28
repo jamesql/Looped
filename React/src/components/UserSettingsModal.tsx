@@ -13,7 +13,6 @@ interface UserSettingsModalProps {
 const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose, user }) => {
     if (!user) return null;
 
-    const [serverId, setServerId] = useState('');
     const [firstName, setFirstName] = useState(user?.firstName || '');
     const [lastName, setLastName] = useState(user.lastName);
     const [location, setLocation] = useState(user?.location || '');

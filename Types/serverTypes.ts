@@ -30,7 +30,7 @@ export interface Channel {
     serverId: string;
     server?: Server;
     messages?: Message[];
-    permissionRequired: string;
+    permissionRequired: number;
 }
 
 export interface Message {
@@ -48,7 +48,7 @@ export interface Message {
 export interface Role {
     id: string;
     name: string;
-    permissions: string[];
+    permissions: number;
     serverId: string;
     createdAt: Date;
     updatedAt: Date;

@@ -1,5 +1,7 @@
-export type Permissions = "OWNER" | "ADMIN" | "MANAGER" | "MEMBER";
-export const Owner: Permissions = "OWNER";
-export const Admin: Permissions = "ADMIN";
-export const Manager: Permissions = "MANAGER";
-export const Member: Permissions = "MEMBER";
+export const Permissions = {
+    MEMBER : 0,
+    MODERATOR: 1,
+    MANAGER: 2,
+    ADMIN: 3,
+    OWNER: 4 
+}
