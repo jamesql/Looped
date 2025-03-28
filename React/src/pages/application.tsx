@@ -576,8 +576,8 @@ const Application: React.FC = () => {
               </div>
 
               <div className={classes.chat_input}>
-                <button className={classes.chat_bar_button} >
-                  <MdAttachFile className={classes.chat_bar_icon} onClick={handleFileButtonClick}/>
+                <button className={classes.chat_bar_button} onClick={handleFileButtonClick}>
+                  <MdAttachFile className={classes.chat_bar_icon} />
                 </button>
                 <input
                   type="file"
