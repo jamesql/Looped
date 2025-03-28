@@ -87,8 +87,9 @@ const ApplicationNew: React.FC = () => {
                 <div className={classes.channel_list}>
                   {(selectedServer.ownerId === session?.id ||
                     checkPermissions(
-                      selectedServer.id,
-                      session?.roles ? session.roles : [],
+                      selectedServer,
+                      session!.id,
+                      session!.roles!,
                       Permissions.ADMIN
                     )) && (
                     <div
