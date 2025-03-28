@@ -33,6 +33,9 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
 
       fetchFileUrl();
     }
+    else {
+      setFileUrl(undefined);
+    }
   }, [message.file]);
 
   return (
