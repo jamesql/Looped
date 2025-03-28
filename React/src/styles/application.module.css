@@ -307,6 +307,49 @@
     justify-items: left;    
 }
 
+.message_image_container {
+    display: flex;
+    flex-direction: column; /* Stack the image and caption vertically */
+    align-items: center; /* Center-align the image and caption */
+    text-align: center;
+    gap: 0.5rem; /* Add spacing between the image and caption */
+  }
+  
+.message_image {
+    display: block;
+    max-width: 20rem;
+    max-height: 20rem;
+    border-radius: 3%;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    background-color: var(--color-bright-cyan);
+}
+
+.message_image_caption {
+    color: var(--color-grey-dark);
+    font-size: 0.775rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 20rem; /* Match the image width */
+}
+
+.message_attachment_box {
+    display: flex;
+    flex-direction: row; 
+    align-items: center; /* Vertically center the icon and text */
+    gap: 5px; /* Add spacing between the icon and text */
+    padding: 10px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 5px;
+    text-align: left; /* Ensure text is left-aligned */
+}
+
+.message_attachment_icon {
+    width: 25px;
+    height: 25px;
+    color: var(--color-full-white);
+}
+
 .author_details {
     display: flex;
     flex-direction: row;
