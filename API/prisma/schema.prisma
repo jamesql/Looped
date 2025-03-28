@@ -73,7 +73,7 @@ model Channel {
   updatedAt          DateTime @updatedAt
   serverId           String
   type               String
-  permissionRequired String?
+  permissionRequired Int      @default(0)
 
   server Server @relation(fields: [serverId], references: [id])
 
@@ -99,7 +99,7 @@ model Message {
 model Role {
   id          String   @id @default(cuid())
   name        String
-  permissions String[]
+  permissions Int     @default(0) 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String

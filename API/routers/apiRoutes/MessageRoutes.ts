@@ -97,9 +97,9 @@ router.post(
 
         // make sure user has permission to see channel
         const roles = await RoleService.getRolesByServerId(user.id, channel.serverId);
-        const role = roles.find((role) => role.permissions.includes(channel.permissionRequired));
+        const role = roles.find((role) => role.permissions === channel.permissionRequired);
 
-        if (!role && channel.permissionRequired !== Permissions.MEMBER.toString()) {
+        if (!role && channel.permissionRequired !== Permissions.MEMBER) {
             res.status(401).json({ error: "Unauthorized" });
             return;
         }
