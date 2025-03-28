@@ -38,6 +38,16 @@ model User {
   R2File       R2File[]
 
   roles Role[] @relation("UserRoles")
+
+  friends User[] @relation("FriendsList")
+  friendsOf User[] @relation("FriendsList")
+
+  friendRequestsSent User[] @relation("FriendRequests")
+  friendRequestsReceived User[] @relation("FriendRequests")
+
+  directChannels DirectChannel[] @relation("DirectChannels") // This will store the direct channels for the user
+
+  directMessages DirectMessage[]
 }
 
 model Server {
@@ -151,4 +161,34 @@ model R2File {
 
   message  Message? @relation(fields: [messageId], references: [id])
   messageId String? @unique
+}
+
+model DirectChannel {
+  id String   @id @default(cuid())
+  // this is a model to store messages between two friends
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // array of users related
+  userIds String[] @default([]) // This will store the user ids of the two users in the direct channel
+  users User[] @relation("DirectChannels") // This will store the users in the direct channel, it will be a many to many relation with the User model
+
+
+  // This will store the messages in the direct channel
+  messages DirectMessage[] // This will store the messages in the direct channel, it will be a one to many relation with the Message model
+
+}
+
+model DirectMessage {
+  id String   @id @default(cuid())
+
+  directChannelId String 
+
+  authorId String
+  author User @relation(fields: [authorId], references: [id])
+
+  content String // The content of the message
+  createdAt DateTime @default(now()) // Timestamp for when the message was sent
+  updatedAt DateTime @updatedAt // Timestamp for when the message was last updated
+
+  DirectChannel DirectChannel @relation(fields: [directChannelId], references: [id])
 }
