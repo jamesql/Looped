@@ -180,7 +180,11 @@ class ApiClient {
         return this.axiosInstance.get(`/api/content/files/` + fileId);
     }
 
-    //
+    // generate invite code
+    public async generateInviteCode(serverId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.get(`/api/server/invite/${serverId}`, {});
+    }
 }
 
 export default ApiClient
