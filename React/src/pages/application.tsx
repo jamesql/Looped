@@ -229,7 +229,7 @@ const Application: React.FC = () => {
     // if server is selected, update the selected channel's messages
     setSelectedChannel((prev: Channel | null) => {
       if (!prev || prev.id !== channel.id) {
-        return null;
+        return prev;
       }
       const updatedMessages = [...(prev?.messages || []), newMessage];
       return {
@@ -237,6 +237,29 @@ const Application: React.FC = () => {
         messages: updatedMessages,
       };
     });
+
+    setSelectedServer((prev: Server | null) => {
+      // if the server is not selected, return prev
+      if (!prev || prev.id !== server.id) {
+        return prev;
+      }
+      // otherwise return the updated server with the new message
+      const updatedChannels = prev.channels?.map((c) => {
+        if (c.id === channel.id) {
+          return {
+            ...c,
+            messages: [...(c.messages || []), newMessage],
+          };
+        }
+        return c;
+      });
+
+      return {
+        ...prev,
+        channels: updatedChannels,
+      };
+    }
+    ); // Update the selected server to reflect the new message
   };
 
   const editServerHandler: OpCodeHandler = (
@@ -455,7 +478,7 @@ const Application: React.FC = () => {
                 <div className={classes.server_card}>
                   <ServerInfo selectedServer={selectedServer} />
 
-                  {session?.id === selectedServer?.ownerId && (
+                  {checkPermissions(selectedServer, session!.id, session!.roles!, Permissions.ADMIN) && (
                     <button
                       className={classes.settings_icon}
                       onClick={() => setServerSettings(true)}
