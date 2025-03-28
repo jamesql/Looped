@@ -49,7 +49,7 @@ router.post("/create", [
 
     // check if user is owner or admin or manager
     if (server.ownerId !== user.id) {
-        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
+        const roles = (await RoleService.getUserRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
         if (roles.length === 0) {
             res.status(401).json({ error: "Unauthorized" });
             return;
@@ -115,7 +115,7 @@ router.post("/modify", [
 
     // check if user is owner or admin or manager
     if (server.ownerId !== user.id) {
-        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
+        const roles = (await RoleService.getUserRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
         if (roles.length === 0) {
             res.status(401).json({ error: "Unauthorized" });
             return;
@@ -175,7 +175,7 @@ router.post("/delete", [
 
     // check if user is owner or admin or manager
     if (server.ownerId !== user.id) {
-        const roles = (await RoleService.getRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
+        const roles = (await RoleService.getUserRolesByServerId(user.id, server.id)).filter(role => role.permissions === Permissions.ADMIN || role.permissions === Permissions.MANAGER);
         if (roles.length === 0) {
             res.status(401).json({ error: "Unauthorized" });
             return;

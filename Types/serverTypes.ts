@@ -53,4 +53,5 @@ export interface Role {
     createdAt: Date;
     updatedAt: Date;
     server?: Server;
+    users?: User[];
 }

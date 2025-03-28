@@ -16,11 +16,15 @@ class RoleService {
         });
     }
 
-    async getRolesByServerId(userId: string, serverId: string): Promise<Role[]> {
+    async getUserRolesByServerId(userId: string, serverId: string): Promise<Role[]> {
         return prisma.role.findMany({
             where: { 
-                serverId,
-                userId,
+                serverId: serverId,
+                users: {
+                    some: {
+                        id: userId
+                    }
+                }
              },
         });
     }
