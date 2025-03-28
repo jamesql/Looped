@@ -65,7 +65,11 @@ const ApplicationNew: React.FC = () => {
     }
   }, [authed, session]);
 
-  const helloHandler: OpCodeHandler = async (data: any, client: WebSocketClient) => {
+  /** WebSocket Handlers  */
+  const helloHandler: OpCodeHandler = async (
+    data: any,
+    client: WebSocketClient
+  ) => {
     console.log("Received data:", data);
     const token = Cookies.get("access_token");
 
@@ -75,36 +79,333 @@ const ApplicationNew: React.FC = () => {
       return;
     }
 
-    await ApiClient.getInstance().getUserData(token).catch((error) => {
-      console.log(error);
-    }).then((response) => {
-      if (!response) {
-        location.href = "/login";
-        return;
-      }
-      const _s: LoopedSession = response.data as LoopedSession;
-      if (response.status === 200) {
-        setSession(_s);
-      } else {
-        location.href = "/login";
-        return;
-      }
-  
-      client.send({
-        op: OPCodes.AUTH,
-        d: {
-          access_token: Cookies.get("access_token"),
-        },
+    await ApiClient.getInstance()
+      .getUserData(token)
+      .catch((error) => {
+        console.log(error);
+      })
+      .then((response) => {
+        if (!response) {
+          location.href = "/login";
+          return;
+        }
+        const _s: LoopedSession = response.data as LoopedSession;
+        if (response.status === 200) {
+          setSession(_s);
+        } else {
+          location.href = "/login";
+          return;
+        }
+
+        client.send({
+          op: OPCodes.AUTH,
+          d: {
+            access_token: Cookies.get("access_token"),
+          },
+        });
       });
+  };
+
+  const readyHandler: OpCodeHandler = async (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Ready data:", data);
+  };
+
+  const createServerHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Create server data:", data);
+
+    const newServer: Server = data.server;
+    // add server to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        return {
+          ...prevSession,
+          servers: [...prevSession.servers!, newServer],
+        };
+      }
+      return prevSession;
+    });
+    setSelectedServer(newServer);
+    setSelectedChannel(null);
+  };
+
+  const createChannelHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Create channel data:", data);
+
+    const newChannel: Channel = data.channel;
+    const server: Server = data.server;
+
+    // add channel in session to server
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === server.id) {
+            if (!s.channels) {
+              return s;
+            }
+            return {
+              ...s,
+              channels: [...s.channels, newChannel],
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
+
+    // if server is selected, update the selected server's channels
+    setSelectedServer((prev: Server | null) => {
+      if (!prev || prev.id !== server.id) {
+        return null;
+      }
+      const updatedChannels: Channel[] = [
+        ...(prev?.channels || []),
+        newChannel,
+      ];
+      return {
+        ...prev,
+        channels: updatedChannels,
+      };
     });
   };
 
+  const createMessageHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Create message data:", data);
+
+    const newMessage = data.message;
+    const server = data.server;
+    const channel = data.channel;
+    // add message to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === server.id) {
+            if (!s.channels) {
+              return s;
+            }
+            const updatedChannels = s.channels.map((c) => {
+              if (c.id === channel.id) {
+                return {
+                  ...c,
+                  messages: [...(c.messages ? c.messages : []), newMessage],
+                };
+              }
+              return c;
+            });
+
+            return {
+              ...s,
+              channels: updatedChannels,
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
+
+    // if server is selected, update the selected channel's messages
+    setSelectedChannel((prev: Channel | null) => {
+      if (!prev || prev.id !== channel.id) {
+        return null;
+      }
+      const updatedMessages = [...(prev?.messages || []), newMessage];
+      return {
+        ...prev,
+        messages: updatedMessages,
+      };
+    });
+  };
+
+  const editServerHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Edit server data:", data);
+
+    const updatedServer: Server = data.server;
+    // update server in session
+    // updated server will only contain the updated fields
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === updatedServer.id) {
+            return {
+              ...s,
+              ...updatedServer,
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
+
+    // if server is selected, update the selected server
+    setSelectedServer((prev: Server | null) => {
+      if (!prev || prev.id !== updatedServer.id) {
+        return null;
+      }
+      return {
+        ...prev,
+        ...updatedServer,
+      };
+    });
+  };
+
+  const editChannelHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Edit channel data:", data);
+
+    const updatedChannel: Channel = data.channel;
+    const server: Server = data.server;
+    // update channel in session
+
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === server.id) {
+            if (!s.channels) return s;
+            const updatedChannels = s.channels.map((c) => {
+              if (c.id === updatedChannel.id) {
+                return {
+                  ...c,
+                  ...updatedChannel,
+                };
+              }
+              return c;
+            });
+
+            return {
+              ...s,
+              channels: updatedChannels,
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
+
+    // if server is selected, update the selected channel
+    setSelectedChannel((prev: Channel | null) => {
+      if (!prev || prev.id !== updatedChannel.id) {
+        return null;
+      }
+      return {
+        ...prev,
+        ...updatedChannel,
+      };
+    });
+  };
+
+  const editMessageHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Edit message data:", data);
+  };
+
+  const deleteServerHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Delete server data:", data);
+  };
+
+  const deleteChannelHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Delete channel data:", data);
+  };
+
+  const deleteMessageHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Delete message data:", data);
+  };
+
+  const serverMemberAddHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Server member add data:", data);
+  };
+
+  const serverMemberUpdateHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Server member update data:", data);
+  };
+
+  const serverMemberDelHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Server member delete data:", data);
+  };
+
+  const roleCreateHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {};
+  /** End Websocket Handlers  */
+
   listeners.set(OPCodes.HELLO, [helloHandler]);
+  listeners.set(OPCodes.READY, [readyHandler]);
+  listeners.set(OPCodes.SERVER_CREATE, [createServerHandler]);
+  listeners.set(OPCodes.CHANNEL_CREATE, [createChannelHandler]);
+  listeners.set(OPCodes.MESSAGE_CREATE, [createMessageHandler]);
+  listeners.set(OPCodes.SERVER_UPDATED, [editServerHandler]);
+  listeners.set(OPCodes.CHANNEL_MODIFY, [editChannelHandler]);
+  listeners.set(OPCodes.MESSAGE_UPDATE, [editMessageHandler]);
+  listeners.set(OPCodes.SERVER_DELETE, [deleteServerHandler]);
+  listeners.set(OPCodes.CHANNEL_DELETE, [deleteChannelHandler]);
+  listeners.set(OPCodes.MESSAGE_DELETE, [deleteMessageHandler]);
+  listeners.set(OPCodes.SERVER_MEMBER_ADD, [serverMemberAddHandler]);
+  listeners.set(OPCodes.SERVER_MEMBER_UPDATE, [serverMemberUpdateHandler]);
+  listeners.set(OPCodes.SERVER_MEMBER_DEL, [serverMemberDelHandler]);
 
   return (
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
-
 
       {joiningServer && (
         <JoinServerModal isOpen={true} setClose={setJoiningServer} />
@@ -261,39 +562,39 @@ const ApplicationNew: React.FC = () => {
                 </ul>
               </div>
 
-                {/** Server Discovery  */}
-                { !selectedServer && !selectedFriend && (
-                  <ServerDiscovery />
-                  )}
+              {/** Server Discovery  */}
+              {!selectedServer && !selectedFriend && <ServerDiscovery />}
 
-                {/** Friend DM Channel  */}
-                {!selectedServer && selectedFriend && (
-                  <DirectChannel />
-                  )}
+              {/** Friend DM Channel  */}
+              {!selectedServer && selectedFriend && <DirectChannel />}
 
-                {/** Server Channel */}
-                {selectedServer && selectedChannel && (
-                  <ServerChannel selectedServer={selectedServer} selectedChannel={selectedChannel} />
-                  )}
-
-
-
+              {/** Server Channel */}
+              {selectedServer && selectedChannel && (
+                <ServerChannel
+                  selectedServer={selectedServer}
+                  selectedChannel={selectedChannel}
+                />
+              )}
             </div>
 
             <div className={classes.members_profile}>
+              <ul className={classes.members_list}>
+                {selectedServer?.members
+                  ? selectedServer?.members.map((member) => (
+                      <UserCard
+                        user={member}
+                        is_admin={session?.id === selectedServer?.ownerId}
+                      /> // TODO: improve perm checking here.
+                    ))
+                  : ""}
+              </ul>
 
-            <ul className={classes.members_list}>
-                {selectedServer?.members?selectedServer?.members.map((member) => (
-                  <UserCard user={member} is_admin={session?.id === selectedServer?.ownerId} /> // TODO: improve perm checking here.
-                )):("")}
-            </ul>
-
-            <div className={classes.profile_card}>
+              <div className={classes.profile_card}>
                 <div className={classes.profile_member}>
                   <div className={classes.member_image}>
                     <img
                       className={classes.squircle}
-                      src={session?.avatar?session.avatar:"/logo_main.jpg"}
+                      src={session?.avatar ? session.avatar : "/logo_main.jpg"}
                       alt=""
                     />
                   </div>
@@ -304,13 +605,14 @@ const ApplicationNew: React.FC = () => {
                     <h4>{session?.status}</h4>
                   </div>
                 </div>
-                <button className={classes.settings_icon} onClick={() => setUserSettings(true)}>
+                <button
+                  className={classes.settings_icon}
+                  onClick={() => setUserSettings(true)}
+                >
                   <img src="/settings.svg" alt="" />
                 </button>
               </div>
             </div>
-
-            
           </div>
         </div>
       )}
