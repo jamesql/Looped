@@ -577,7 +577,7 @@ const Application: React.FC = () => {
                           classes.dock_icon,
                           isHome ? classes.dock_icon_active : "",
                         ].join(" ")}
-                        onMouseEnter={(e) => handleDockMouseEnter(e, "home")}
+                        onMouseEnter={(e) => handleDockMouseEnter(e, "Home")}
                         onMouseLeave={handleMouseLeave}
                         onClick={() => {
                           setSelectedServer(null);
