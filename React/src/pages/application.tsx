@@ -23,6 +23,7 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
+import { MdAdd } from "react-icons/md";
 
 const Application: React.FC = () => {
   // data states
@@ -521,7 +522,7 @@ const Application: React.FC = () => {
                       )}
                       onClick={() => setCreateChannel(true)}
                     >
-                      +
+                      <MdAdd/>
                     </div>
                   )}
 
