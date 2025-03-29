@@ -47,38 +47,6 @@
     transition: transform 180ms;
 }
 
-.divider {
-	min-height: 100%;
-	background: var(--color-full-white);
-	width: 2px;
-	border-radius: 1px;
-	opacity: .06;
-	transform: scale(.75);
-}
-
-.popper {
-    position: relative;
-    top: 150%;
-    transform: translateX(-50%) scale(0);
-    background: var(--color-not-quite-black);
-    color: var(--color-full-white);
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    white-space: nowrap;
-    text-align: center;
-    opacity: 0;
-    transition: opacity 128ms, transform 128ms;
-    z-index: 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 300%;
-}
-
-.popped {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
 
 .settings_icon {
     width: 38px;
@@ -87,6 +55,60 @@
     display: block;    /* Ensure it respects block-level alignment */
   
 }
+
+.macos_dock {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 10px;
+    z-index: 50;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .macos_dock::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .dock_container {
+    display: inline-flex;
+    gap: 16px;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .dock_icon {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0;
+  }
+  
+  .dock_icon:hover {
+    background-color: var(--color-bright-cyan);
+  }
+  
+  .floating_tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: "Open Sans", sans-serif;
+    z-index: 9999;
+  }
+  
+  
 
 
 
@@ -282,6 +304,19 @@
     transform: translateY(-50%) scale(1);
 }
 
+.squircle_label {
+    color: var(--color-full-white);
+    font-size: 0.65rem;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    position: relative;
+    z-index: 1; /* Make sure it's above the ::before background */
+  }
+  
+  
+
 /* More main app stuff */
 
 .messages {
@@ -459,7 +494,7 @@
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    width: 20vw;
+    width: 20vw;    
         /* drop shadow to the left*/
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.25);
 
