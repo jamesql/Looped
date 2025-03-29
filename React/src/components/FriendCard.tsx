@@ -8,9 +8,10 @@ import ApiClient from "@/util/api";
 interface FriendCardProps {
   user: User;
   clickFunc?: (u: User) => void; // Optional onClick prop
+  active : boolean;
 }
 
-const FriendCard: React.FC<FriendCardProps> = ({ user, clickFunc }) => {
+const FriendCard: React.FC<FriendCardProps> = ({ user, clickFunc, active }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
 
@@ -84,31 +85,35 @@ const FriendCard: React.FC<FriendCardProps> = ({ user, clickFunc }) => {
 
   return (
     <li
-      className={classes.member_card}
+      className={[
+      classes.member_card,
+      active ? classes.member_card_active : ""
+      ].join(" ")}
       onContextMenu={handleContextMenu} // Handle right-click
+      onClick={clickFunc ? () => clickFunc(user) : undefined}
     >
-      <div className={classes.member_image} onClick={clickFunc ? () => clickFunc(user) : undefined}>
-        <img
-          className={classes.squircle}
-          src={avatarUrl}
-          alt=""
-        />
+      <div className={classes.member_image}>
+      <img
+        className={classes.squircle}
+        src={avatarUrl}
+        alt=""
+      />
       </div>
       <div className={classes.member_info}>
-        <h3>
-          {user.firstName} {user.lastName}
-        </h3>
-        <h4>{user.status}</h4>
+      <h3>
+        {user.firstName} {user.lastName}
+      </h3>
+      <h4>{user.status}</h4>
       </div>
 
       {/* Custom Dropdown */}
       {dropdownVisible && (
-        <ul
-          className={classes.custom_dropdown}
-          style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
-        >
-          <li onClick={() => handleRemoveFriend()}>Remove Friend</li>
-        </ul>
+      <ul
+        className={classes.custom_dropdown}
+        style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
+      >
+        <li onClick={() => handleRemoveFriend()}>Remove Friend</li>
+      </ul>
       )}
     </li>
   );

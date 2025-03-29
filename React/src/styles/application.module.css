@@ -490,6 +490,19 @@
     gap: 1rem;
     padding: 1rem;
     border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.member_card:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* Makes the background slightly darker */
+}
+
+.member_card:active {
+    background-color: rgba(0, 0, 0, 0.2); /* Makes the background slightly darker */
+}
+
+.member_card_active {
+    background-color: rgba(0, 0, 0, 0.2); /* Makes the background slightly darker */
 }
 
 .member_info {

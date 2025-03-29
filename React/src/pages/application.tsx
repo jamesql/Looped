@@ -505,7 +505,7 @@ const Application: React.FC = () => {
                   setSelectedFriend(u);
                   setSelectedServer(null);
                   setSelectedChannel(null);
-                }} />
+                }} activeUser={selectedFriend}/>
               ) : (
                 <div className={classes.channel_list}>
                   {(selectedServer.ownerId === session?.id ||
