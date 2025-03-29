@@ -1,6 +1,7 @@
 import { User } from "../../../Types/userTypes";
 import React, { useState, useEffect } from "react";
 import classes from "../styles/application.module.css";
+import { getCdnFileUrl } from "@/util/functions";
 
 interface UserCardProps {
   user: User;
@@ -49,6 +50,19 @@ const UserCard: React.FC<UserCardProps> = ({ user, is_admin }) => {
     };
   }, [dropdownVisible]);
 
+    const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
+    useEffect(() => { 
+      if (user.avatar) {
+        getCdnFileUrl(user.avatar).then(url => {
+          setAvatarUrl(url);
+        });
+      } else {
+        setAvatarUrl("/logo_main.jpg");
+      }
+    }
+    , [user.avatar]);
+  
+
   return (
     <li
       className={classes.member_card}
@@ -57,7 +71,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, is_admin }) => {
       <div className={classes.member_image}>
         <img
           className={classes.squircle}
-          src={user.avatar ? user.avatar : "/logo_main.jpg"}
+          src={avatarUrl}
           alt=""
         />
       </div>

@@ -15,7 +15,6 @@ class UserService {
         lastName: user.lastName,
         email: user.email,
         password: user.password,
-        avatar: user.avatar || "",
         status: user.status || "New to Looped!",
         location: user.location || "",
         birthday: user.birthday || undefined,
@@ -34,16 +33,30 @@ class UserService {
       where: { id },
       include: {
         ...inc,
+        avatar: true
       },
       omit: removePassword ? { password: true } : undefined,
     });
   }
+  
 
   async updateUserById(id: string, data: Partial<User>): Promise<User> {
+    const updateData: Prisma.UserUpdateInput = {};
+  
+    if (data.firstName) updateData.firstName = data.firstName;
+    if (data.lastName) updateData.lastName = data.lastName;
+    if (data.location) updateData.location = data.location;
+    if (data.status) updateData.status = data.status;
+  
+    if (data.avatarId !== undefined) {
+      updateData.avatar = { connect: { id: data.avatarId } }
+    }
+
     return await prisma.user.update({
       where: { id },
-      data: {
-        ...(data as Partial<PrismaUser>),
+      data: updateData,
+      include: {
+        avatar: true
       },
     });
   }

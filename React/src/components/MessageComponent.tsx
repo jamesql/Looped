@@ -5,6 +5,7 @@ import ApiClient from "@/util/api";
 import Cookie from "js-cookie";
 import { MdDownload } from "react-icons/md";
 import prettyBytes from 'pretty-bytes';
+import { getCdnFileUrl } from "@/util/functions";
 
 
 interface MessageComponentProps {
@@ -92,11 +93,24 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
     );
   };
 
+  const [authorAvatarUrl, setAuthorAvatarUrl] = useState<string>("/logo_main.jpg");
+  useEffect(() => { 
+    if (message.author?.avatar) {
+      getCdnFileUrl(message.author?.avatar).then(url => {
+        setAuthorAvatarUrl(url);
+      });
+    } else {
+      setAuthorAvatarUrl("/logo_main.jpg");
+    }
+  }
+  , [message.author?.avatar]);
+  
+
   return (
     <div className={classes.message}>
       <img
         className={classes.squircle}
-        src={message.author.avatar ? message.author.avatar : "/logo_main.jpg"}
+        src={authorAvatarUrl}
         alt=""
       />
 

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Server, Channel } from "../../../Types/serverTypes";
 import classes from "../styles/application.module.css";
-
+import {getCdnFileUrl} from "../util/functions";
 interface ServerIconProps {
   server: Server;
   setSelectedServer: (server: Server | null) => void;
@@ -17,6 +17,17 @@ const ServerIcon: React.FC<ServerIconProps> = ({
   selectedServer,
   selectedChannel,
 }) => {
+  const [serverIconUrl, setServerIconUrl] = useState<string>("");
+  useEffect(() => { 
+    if (server.icon) {
+      getCdnFileUrl(server.icon).then(url => {
+        setServerIconUrl(url);
+      });
+    } else {
+      setServerIconUrl("/logo_main.jpg");
+    }
+  }
+  , [server.icon]);
   return (
     <>
       <li
@@ -28,7 +39,7 @@ const ServerIcon: React.FC<ServerIconProps> = ({
         }}
       >
         <div className={classes.server_icon}>
-          <img className={classes.squircle} src={server.icon?server.icon:"/logo_main.jpg"} alt="" />
+          <img className={classes.squircle} src={serverIconUrl} alt="" />
           <span className={classes.tooltip}>{server.name}</span>
         </div>
 

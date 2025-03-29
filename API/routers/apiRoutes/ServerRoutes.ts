@@ -61,8 +61,6 @@ router.post("/create", [
         name: req.body.name,
         ownerId: user.id,
         description: req.body.description,
-        banner: "",
-        icon: "",
         invites: [],
         createdAt: undefined,
         updatedAt: undefined,
@@ -93,8 +91,8 @@ router.post("/edit", [
     header("Authorization").isString().isLength({min: 1}),
     body("name").isString().isLength({min: 3, max: 20}),
     body("description").isString().isLength({min: 0, max: 100}),
-    body("icon").isString().isLength({min: 0}),
-    body("banner").isString().isLength({min: 0}),
+    body("iconId").isString().isLength({min: 0}),
+    body("bannerId").isString().isLength({min: 0}),
     body("website").isString().isLength({min: 0, max: 100}),
     body("serverId").isString().isLength({min: 1}),
 ], async(req: Request, res: Response) => {
@@ -144,14 +142,13 @@ router.post("/edit", [
         name: req.body.name,
         description: req.body.description,
         banner: req.body.banner,
-        icon: req.body.icon,
         website: req.body.website,
         createdAt: undefined,
         updatedAt: undefined
     };
 
     // edit server
-    const newServer: Server = await ServerService.editServerById(server.id, editedServer);
+    const newServer: Server = await ServerService.editServerById(server.id, editedServer, req.body.iconId, req.body.bannerId);
 
     // tell server members server was edited
     redisInstance.publish(`server:${server.id}:events`, JSON.stringify({

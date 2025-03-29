@@ -3,7 +3,7 @@ import { Permissions } from "../../../Types/permissionsTypes";
 import ApiClient from "./api";
 import Cookies from "js-cookie";
 import { ContentCreateResponse, R2File } from "../../../Types/contentTypes";
-
+const fileUrlCache = new Map<string, string>();
 // check if user has certain permissions
 export const checkPermissions = (
   server: Server,
@@ -68,3 +68,29 @@ export const uploadCdnFile = async (
     throw new Error(`Upload failed for ${file.name}.`);
   }
 };
+
+export const getCdnFileUrl = async (file: R2File): Promise<string> => {
+  if (fileUrlCache.has(file.id)) {
+    return fileUrlCache.get(file.id)!; // Return the cached URL
+  }
+
+  try {
+    const token = Cookies.get("access_token") ?? "";
+    const fileResp = await ApiClient.getInstance().getFileById(token, file.id);
+
+    if (fileResp.status === 200) {
+      const url = fileResp.data.url;
+      fileUrlCache.set(file.id, url); // Cache the URL
+      return url;
+    }
+  } catch (error) {
+    console.error("Error fetching file URL:", error);
+  }
+
+  return "";
+};
+
+export const getCdnFileUrlSync = (file: R2File): string | undefined => {
+  return fileUrlCache.get(file.id);
+};
+

@@ -32,6 +32,7 @@ class DirectService {
             firstName: true, // Select the first name
             lastName: true, // Select the last name
             avatar: true, // Select the avatar
+            avatarId: true,
             status: true, // Select the status
             location: true, // Select the location
             birthday: true, // Select the birthday

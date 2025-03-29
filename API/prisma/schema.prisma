@@ -19,7 +19,8 @@ model User {
   lastName     String
   email        String   @unique
   password     String
-  avatar       String
+  avatarId     String?  @unique
+  avatar       R2File?  @relation("AvatarFile", fields: [avatarId], references: [id])
   status       String   @default("New to Looped!")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -54,8 +55,12 @@ model Server {
   id          String   @id @default(cuid())
   name        String
   description String
-  icon        String
-  banner      String
+  iconId      String? @unique
+  icon        R2File?  @relation("IconFile", fields: [iconId], references: [id])
+
+  bannerId      String? @unique
+  banner        R2File?  @relation("BannerFile", fields: [bannerId], references: [id])
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   ownerId     String
@@ -161,6 +166,10 @@ model R2File {
 
   message  Message? @relation(fields: [messageId], references: [id])
   messageId String? @unique
+
+  iconOf   Server? @relation("IconFile")
+  bannerOf Server? @relation("BannerFile")
+  avatarOf User? @relation("AvatarFile")
 }
 
 model DirectChannel {
