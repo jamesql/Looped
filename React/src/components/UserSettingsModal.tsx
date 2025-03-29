@@ -3,6 +3,7 @@ import classes from "../styles/usersettingsmodal.module.css"
 import { User } from '../../../Types/userTypes';
 import ApiClient from '@/util/api';
 import Cookies from 'js-cookie';
+import { uploadCdnFile } from '@/util/functions';
 
 interface UserSettingsModalProps {
     isOpen: boolean;
@@ -17,7 +18,19 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
     const [lastName, setLastName] = useState(user.lastName);
     const [location, setLocation] = useState(user?.location || '');
     const [status, setStatus] = useState(user?.status || '');
-    const [profileImage, setProfileImage] = useState(user?.avatar || '');
+    const [avatarId, setAvatarId] = useState(user?.avatarId || '');
+
+    const userAvatarFileChange = async (
+        event: React.ChangeEvent<HTMLInputElement>
+        ) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const cdnResp = await uploadCdnFile(file);
+            setAvatarId(cdnResp.r2file.id);
+        }
+    };
+    
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -34,8 +47,8 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
             lastName,
             location,
             status,
-            profileImage,
-            token
+            token,
+            avatarId
         )
         setClose(false);
     };
@@ -66,7 +79,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
                     </label>
                     <label>
                         Avatar URL:
-                        <input type="text" name="profileImage" value={profileImage} onChange={(e) => setProfileImage(e.target.value)} />
+                        <input type="file" name="profileImage" onChange={userAvatarFileChange} />
                     </label>
                     <button type="submit">Save Changes</button>
                 </form>

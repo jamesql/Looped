@@ -3,6 +3,7 @@ import classes from "../styles/friendsmodal.module.css"
 import { Server } from '../../../Types/serverTypes';
 import ApiClient from '@/util/api';
 import Cookies from 'js-cookie';
+import { uploadCdnFile } from '@/util/functions';
 
 interface ServerSettingsModalProps {
     isOpen: boolean;
@@ -13,8 +14,8 @@ interface ServerSettingsModalProps {
 const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setClose, server}) => {
     const [serverName, setServerName] = React.useState(server.name);
     const [serverDesc, setServerDesc] = React.useState(server.description || "");
-    const [serverIcon, setServerIcon] = React.useState(server.icon || "");
-    const [serverBanner, setServerBanner] = React.useState(server.banner || "");
+    const [serverIconId, setServerIconId] = React.useState(server.iconId || "");
+    const [serverBannerId, setServerBannerId] = React.useState(server.bannerId || "");
     const [serverWebsite, setServerWebsite] = React.useState(server.website || "");
 
     const handleSubmit = async (e: any) => {
@@ -25,10 +26,10 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
             server.id,
             serverName,
             serverDesc,
-            serverIcon,
-            serverBanner,
             serverWebsite,
-            token
+            token,
+            serverIconId,
+            serverBannerId
         ).then((response) => {
             console.log(response);
         }
@@ -50,6 +51,29 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
 
         alert(`Invite Code: ${inviteCode}, copied to clipboard!`);
     };
+
+    const serverIconFileChange = async (
+        event: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const cdnResp = await uploadCdnFile(file);
+            setServerIconId(cdnResp.r2file.id);
+        }
+      };
+    
+    const serverBannerFileChange = async (
+        event: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const cdnResp = await uploadCdnFile(file);
+            setServerBannerId(cdnResp.r2file.id);
+        }
+      };
+
 
     if (!isOpen) return null;
 
@@ -79,19 +103,15 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                 <label>
                     Server Icon:
                     <input
-                        type="text"
-                        defaultValue={server.icon}
-                        onChange={(e) => setServerIcon(e.target.value)}
-                        placeholder={server.icon}
-                    />
+                        type="file"
+                        onChange={serverIconFileChange}
+                     ></input>
                 </label>
                 <label>
                     Server Banner:
                     <input
-                        type="text"
-                        defaultValue={server.banner}
-                        onChange={(e) => setServerBanner(e.target.value)}
-                        placeholder={server.banner}
+                        type="file"
+                        onChange={serverBannerFileChange}
                     />
                 </label>
                 <label>

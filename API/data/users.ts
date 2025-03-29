@@ -15,7 +15,6 @@ class UserService {
         lastName: user.lastName,
         email: user.email,
         password: user.password,
-        avatar: user.avatar || "",
         status: user.status || "New to Looped!",
         location: user.location || "",
         birthday: user.birthday || undefined,
@@ -34,16 +33,30 @@ class UserService {
       where: { id },
       include: {
         ...inc,
+        avatar: true
       },
       omit: removePassword ? { password: true } : undefined,
     });
   }
+  
 
   async updateUserById(id: string, data: Partial<User>): Promise<User> {
+    const updateData: Prisma.UserUpdateInput = {};
+  
+    if (data.firstName) updateData.firstName = data.firstName;
+    if (data.lastName) updateData.lastName = data.lastName;
+    if (data.location) updateData.location = data.location;
+    if (data.status) updateData.status = data.status;
+  
+    if (data.avatarId !== undefined) {
+      updateData.avatar = { connect: { id: data.avatarId } }
+    }
+
     return await prisma.user.update({
       where: { id },
-      data: {
-        ...(data as Partial<PrismaUser>),
+      data: updateData,
+      include: {
+        avatar: true
       },
     });
   }
@@ -163,6 +176,53 @@ class UserService {
     });
     return;
   }
+
+  async isFriends(
+    userId: string,
+    otherUserId: string
+  ): Promise<boolean> {
+    // This method checks if two users are friends
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        friends: true, // Include the friends relation
+      },
+    });
+
+    if (!user) {
+      return false; // User not found
+    }
+
+    // Check if the otherUserId is in the user's friends list
+    const isFriend = user.friends.some((friend) => friend.id === otherUserId);
+    return isFriend; // Return true if they are friends, false otherwise
+  }
+
+  async removeFriend(
+    userId: string,
+    otherUserId: string
+  ): Promise<void> {
+    // This method removes a friend from the user's friend list
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friends: {
+          disconnect: { id: otherUserId }, // Disconnect the friend
+        },
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: otherUserId },
+      data: {
+        friends: {
+          disconnect: { id: userId }, // Disconnect the user from the other user's friend list
+        },
+      },
+    });
+    return;
+  }
+  
 }
 
 export default new UserService();

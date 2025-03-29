@@ -1,3 +1,5 @@
+import { Server } from "./serverTypes";
+
 export interface R2File {
     id: string;
     fileName: string;         // Original file name uploaded by user

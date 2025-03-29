@@ -55,14 +55,15 @@ class ApiClient {
     }
 
     // edit user post request
-    public async editUser(firstName: string, lastName: string, location: string, status: string, avatar: string, token: string): Promise<AxiosResponse> {
+    public async editUser(firstName: string, lastName: string, location: string, status: string, token: string, avatarId?: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/user/edit', {
             firstName: firstName,
             lastName: lastName,
             location: location,
-            avatar: avatar,
-            status: status
+            //avatar: avatar,
+            status: status,
+            avatarId: avatarId
         });
     }
 
@@ -84,14 +85,14 @@ class ApiClient {
     }
 
     // edit server info post request
-    public async editServer(serverId: string, name: string, desc: string, icon: string, banner: string, website: string, token: string): Promise<AxiosResponse> {
+    public async editServer(serverId: string, name: string, desc: string, website: string, token: string, iconId?: string, bannerId?: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/server/edit', {
             serverId: serverId,
             name: name,
             description: desc,
-            icon: icon,
-            banner: banner,
+            iconId: iconId,
+            bannerId: bannerId,
             website: website
         });
     }

@@ -1,5 +1,6 @@
 import { Role, Server } from "./serverTypes";
 import { Job } from "./jobTypes";
+import { R2File } from "./contentTypes";
 
 export interface User {
     id: string;
@@ -17,7 +18,8 @@ export interface User {
     directChannels?: DirectChannel[];
     directMessages?: DirectMessage[]; // Direct messages sent to this user
 
-    avatar: string;
+    avatarId?: string;
+    avatar?: R2File;
     createdAt: Date;
     updatedAt: Date;
     status?: string;
