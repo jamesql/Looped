@@ -12,7 +12,7 @@ export interface User {
 
     friends?: User[];
     friendsOf?: User[];
-    friendRequests?: User[];
+    friendRequestsReceived?: User[];
     friendRequestsSent?: User[];
 
     directChannels?: DirectChannel[];
