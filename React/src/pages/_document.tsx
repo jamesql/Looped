@@ -8,6 +8,7 @@ export default class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <div id="dock-tooltip-root"></div>
         </body>
       </Html>
     )
