@@ -188,6 +188,38 @@ class ApiClient {
         this.addAuthHeader(token);
         return this.axiosInstance.get(`/api/server/invite/${serverId}`, {});
     }
+
+    // send friend request
+    public async sendFriendRequest(userId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post(`/api/direct/add-friend`, {
+            friendId: userId,
+        });
+    }
+
+    // accept friend request
+    public async acceptFriendRequest(requestId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post(`/api/direct/accept-friend`, {
+            friendId: requestId,
+        });
+    }
+
+    // decline friend request
+    public async declineFriendRequest(requestId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post(`/api/direct/decline-friend`, {
+            friendId: requestId,
+        });
+    }
+
+    // remove friend
+    public async removeFriend(friendId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post(`/api/direct/remove-friend`, {
+            friendId: friendId,
+        });
+    }
 }
 
 export default ApiClient
