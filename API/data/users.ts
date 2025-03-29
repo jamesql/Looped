@@ -169,6 +169,9 @@ class UserService {
         friendRequestsSent: {
           disconnect: { id: toUserId },
         },
+        friendRequestsReceived: {
+          disconnect: { id: toUserId }
+        }
       },
     });
 
@@ -178,6 +181,9 @@ class UserService {
         friendRequestsReceived: {
           disconnect: { id: fromUserId },
         },
+        friendRequestsSent: {
+          disconnect: { id: fromUserId },
+        }
       },
     });
     return;
