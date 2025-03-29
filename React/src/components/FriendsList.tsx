@@ -1,16 +1,19 @@
-import React from 'react';
-import { User } from '../../../Types/userTypes';
+import React from "react";
+import { User } from "../../../Types/userTypes";
+import FriendCard from "./FriendCard";
 
 interface FriendsListProps {
-    friends: User[];
+  friends: User[];
 }
 
 const FriendsList: React.FC<FriendsListProps> = ({ friends }) => {
-    return (
-        <div>
-            
-        </div>
-    );
+  return (
+    <>
+      {friends.map((friend) => (
+        <FriendCard user={friend} />
+      ))}
+    </>
+  );
 };
 
 export default FriendsList;
