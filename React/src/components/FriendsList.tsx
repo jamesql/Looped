@@ -4,13 +4,14 @@ import FriendCard from "./FriendCard";
 
 interface FriendsListProps {
   friends: User[];
+  clickFunc?: (u: User) => void;
 }
 
-const FriendsList: React.FC<FriendsListProps> = ({ friends }) => {
+const FriendsList: React.FC<FriendsListProps> = ({ friends, clickFunc }) => {
   return (
     <>
       {friends.map((friend) => (
-        <FriendCard user={friend} />
+        <FriendCard user={friend} clickFunc={clickFunc} />
       ))}
     </>
   );

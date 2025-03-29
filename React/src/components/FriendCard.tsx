@@ -7,9 +7,10 @@ import ApiClient from "@/util/api";
 
 interface FriendCardProps {
   user: User;
+  clickFunc?: (u: User) => void; // Optional onClick prop
 }
 
-const FriendCard: React.FC<FriendCardProps> = ({ user }) => {
+const FriendCard: React.FC<FriendCardProps> = ({ user, clickFunc }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
 
@@ -86,7 +87,7 @@ const FriendCard: React.FC<FriendCardProps> = ({ user }) => {
       className={classes.member_card}
       onContextMenu={handleContextMenu} // Handle right-click
     >
-      <div className={classes.member_image}>
+      <div className={classes.member_image} onClick={clickFunc ? () => clickFunc(user) : undefined}>
         <img
           className={classes.squircle}
           src={avatarUrl}

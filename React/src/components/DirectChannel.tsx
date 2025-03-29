@@ -1,14 +1,15 @@
 import React from 'react';
-import { User } from '../../../Types/userTypes';
+import { DirectChannel as DChannel, User } from '../../../Types/userTypes';
 
 interface DirectChannelProps {
-
+    friend : User;
 }
 
-const DirectChannel: React.FC<DirectChannelProps> = ({  }) => {
+const DirectChannel: React.FC<DirectChannelProps> = ({ friend }) => {
     return (
         <div>
-            
+            <h1>Direct Channel</h1>
+            <p>{friend.firstName}</p>
         </div>
     );
 };

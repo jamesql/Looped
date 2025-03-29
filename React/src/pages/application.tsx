@@ -501,7 +501,11 @@ const Application: React.FC = () => {
               )}
 
               {!selectedServer ? (
-                <FriendsList friends={session?.friends?session?.friends:[]} />
+                <FriendsList friends={session?.friends ? session?.friends : []} clickFunc={(u) => {
+                  setSelectedFriend(u);
+                  setSelectedServer(null);
+                  setSelectedChannel(null);
+                }} />
               ) : (
                 <div className={classes.channel_list}>
                   {(selectedServer.ownerId === session?.id ||
@@ -600,7 +604,7 @@ const Application: React.FC = () => {
               {!selectedServer && !selectedFriend && <ServerDiscovery />}
 
               {/** Friend DM Channel  */}
-              {!selectedServer && selectedFriend && <DirectChannel />}
+              {!selectedServer && selectedFriend && <DirectChannel friend={selectedFriend} />}
 
               {/** Server Channel */}
               {selectedServer && selectedChannel && (
