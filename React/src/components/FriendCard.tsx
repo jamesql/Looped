@@ -2,6 +2,8 @@ import { User } from "../../../Types/userTypes";
 import React, { useState, useEffect } from "react";
 import classes from "../styles/application.module.css";
 import { getCdnFileUrl } from "@/util/functions";
+import Cookies from "js-cookie";
+import ApiClient from "@/util/api";
 
 interface FriendCardProps {
   user: User;
@@ -36,6 +38,23 @@ const FriendCard: React.FC<FriendCardProps> = ({ user }) => {
   const handleClickOutside = () => {
     setDropdownVisible(false);
   };
+
+  const handleRemoveFriend = async () => {
+    // Function to remove a friend
+    const access_token = Cookies.get("access_token");
+    if (!access_token) {
+      console.error("No access token found");
+      return;
+    }
+    try {
+      await ApiClient.getInstance().removeFriend(user.id, access_token);
+      setDropdownVisible(false); // Close the dropdown after removing the friend
+      console.log("Friend removed:", user.firstName, user.lastName);
+    } catch (error) {
+      // Handle error
+      console.error("Failed to remove friend:", error);
+    }
+  }
 
   useEffect(() => {
     if (dropdownVisible) {
@@ -87,7 +106,7 @@ const FriendCard: React.FC<FriendCardProps> = ({ user }) => {
           className={classes.custom_dropdown}
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
-          <li onClick={() => console.log("Remove Friend")}>Remove Friend</li>
+          <li onClick={() => handleRemoveFriend()}>Remove Friend</li>
         </ul>
       )}
     </li>
