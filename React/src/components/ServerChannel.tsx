@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
-import { User } from "../../../Types/userTypes";
 import { Channel, Server } from "../../../Types/serverTypes";
 import Cookies from "js-cookie";
 import ApiClient from "@/util/api";
 import classes from "../styles/application.module.css";
-import { ContentCreateResponse } from "../../../Types/contentTypes";
 import MessageComponent from "./MessageComponent";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import { uploadCdnFile } from "@/util/functions";
