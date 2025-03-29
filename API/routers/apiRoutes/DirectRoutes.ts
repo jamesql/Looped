@@ -548,7 +548,101 @@ router.post(
     header("Authorization").isString().isLength({ min: 1 }),
     body("friendId").isString().isLength({ min: 1 }), // The ID of the friend to add
   ],
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    // validate access token
+    const token = req.header("Authorization");
+    const result = await validateToken(token);
+    if (!result || !result.valid) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    // get user from token
+    const user = await UserService.getUserById(
+      result.userId,
+      UserDatapacks.USER_PUBLIC_DATA
+    );
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // get the friend to add
+    const friendId = req.body.friendId;
+    const friend = await UserService.getUserById(
+      friendId,
+      UserDatapacks.USER_PUBLIC_DATA
+    );
+    if (!friend) {
+      res.status(404).json({ error: "Friend not found" });
+      return;
+    }
+
+    // Check if the user is friends with the friend
+    const isFriend = await UserService.isFriends(user.id, friendId);
+    if (!isFriend) {
+      // If not friends, return an error
+      res.status(400).json({ error: "Not friends with the specified user" });
+      return;
+    }
+
+    // get direct channel
+    const channel = await DirectService.getDirectChannelByUserIds([
+      user.id, // The ID of the user sending the message
+      friendId, // The ID of the friend receiving the message
+    ]);
+
+    if (!channel) {
+      // If no direct channel exists, return an error
+      res.status(404).json({ error: "Direct channel not found" });
+      return;
+    }
+
+    // Delete the message
+    const messageId = req.body.messageId; // The ID of the message to delete
+    const deletedMessage = await DirectService.deleteDirectMessage(
+      messageId // The ID of the message to delete
+    );
+    if (!deletedMessage) {
+      // If the message could not be deleted, return an error
+      res.status(500).json({ error: "Failed to delete message" });
+      return;
+    }
+    // Notify the friend that the message was deleted
+    redisInstance.publish(
+      `user:${friendId}:events`,
+      JSON.stringify({
+        op: OPCodes.FRIEND_MESSAGE_DELETE,
+        d: {
+          user: user, // The user who deleted the message
+          channel: channel, // The direct channel where the message was sent
+          messageId: deletedMessage.id, // The ID of the deleted message
+        },
+      })
+    );
+    // Notify the sender that their message was deleted
+    redisInstance.publish(
+      `user:${user.id}:events`,
+      JSON.stringify({
+        op: OPCodes.FRIEND_MESSAGE_DELETE,
+        d: {
+          friend: friend, // The friend who received the message
+          channel: channel, // The direct channel where the message was sent
+          messageId: deletedMessage.id, // The ID of the deleted message
+        },
+      })
+    );
+
+    // send response
+    res.status(200).json(deletedMessage);
+    return;
+  }
 );
 
 router.get(
@@ -557,7 +651,9 @@ router.get(
     header("Authorization").isString().isLength({ min: 1 }),
     body("friendId").isString().isLength({ min: 1 }), // The ID of the friend to add
   ],
-  async (req: Request, res: Response) => {}
+  async (req: Request, res: Response) => {
+    
+  }
 );
 
 module.exports = router;
