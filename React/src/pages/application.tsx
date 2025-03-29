@@ -501,7 +501,7 @@ const Application: React.FC = () => {
               )}
 
               {!selectedServer ? (
-                <FriendsList friends={[]} />
+                <FriendsList friends={session?.friends?session?.friends:[]} />
               ) : (
                 <div className={classes.channel_list}>
                   {(selectedServer.ownerId === session?.id ||
@@ -618,7 +618,11 @@ const Application: React.FC = () => {
                       <UserCard
                         user={member}
                         is_admin={session?.id === selectedServer?.ownerId}
-                      /> // TODO: improve perm checking here.
+                        is_self={session?.id === member.id} // Check if the user is the same as the session user
+                        is_friend={session?.friends?session?.friends?.some(u => u.id === member.id):false}
+                        incoming_request={session?.friendRequestsReceived?session?.friendRequestsReceived.some((request) => request.id === member.id) : false} // Check if the user has sent a friend request to this member
+                        outgoing_request={session?.friendRequestsSent?session?.friendRequestsSent.some((request) => request.id === member.id) : false} // Check if this member has sent a friend request to the user
+                      />
                     ))
                   : ""}
               </ul>
