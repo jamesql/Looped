@@ -46,6 +46,45 @@ export async function MapRMapToPMap<R, P>(
 export class UserDatapacks {
     public static readonly ALL_USER_DATA: RelationMap<User> = {
         avatar:true,
+        friendRequestsSent: {
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true, // Include avatar
+                status: true, // Include status
+                location: true, // Include location
+                birthday: true, // Include birthday
+                email: true, // Include email
+                password: false, // Exclude password for security
+            }
+        },
+        friendRequestsReceived: {
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true, // Include avatar
+                status: true, // Include status
+                location: true, // Include location
+                birthday: true, // Include birthday
+                email: true, // Include email
+                password: false, // Exclude password for security
+            }
+        },
+        friends: {
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                avatar: true, // Include avatar
+                status: true, // Include status
+                location: true, // Include location
+                birthday: true, // Include birthday
+                email: true, // Include email
+                password: false, // Exclude password for security
+            }
+        },
         servers: {
             icon:true,
             banner:true,    

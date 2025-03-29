@@ -128,6 +128,9 @@ class UserService {
         friendRequestsSent: {
           disconnect: { id: toUserId },
         },
+        friendRequestsReceived: {
+          disconnect: { id: toUserId }
+        },
         friends: {
           connect: { id: toUserId },
         },
@@ -139,6 +142,9 @@ class UserService {
       data: {
         friendRequestsReceived: {
           disconnect: { id: fromUserId },
+        },
+        friendRequestsSent: {
+          disconnect: { id: fromUserId }
         },
         friends: {
           connect: { id: fromUserId },
@@ -163,6 +169,9 @@ class UserService {
         friendRequestsSent: {
           disconnect: { id: toUserId },
         },
+        friendRequestsReceived: {
+          disconnect: { id: toUserId }
+        }
       },
     });
 
@@ -172,6 +181,9 @@ class UserService {
         friendRequestsReceived: {
           disconnect: { id: fromUserId },
         },
+        friendRequestsSent: {
+          disconnect: { id: fromUserId },
+        }
       },
     });
     return;
@@ -222,7 +234,7 @@ class UserService {
     });
     return;
   }
-  
+
 }
 
 export default new UserService();
