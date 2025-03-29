@@ -55,8 +55,7 @@
     display: block;    /* Ensure it respects block-level alignment */
   
 }
-
-.macos_dock {
+.server_dock {
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
@@ -64,39 +63,70 @@
     z-index: 50;
     scrollbar-width: none;
     -ms-overflow-style: none;
-  }
-  .macos_dock::-webkit-scrollbar {
+}
+
+.server_dock::-webkit-scrollbar {
     display: none;
-  }
-  
-  .dock_container {
+}
+
+.dock_container {
     display: inline-flex;
     gap: 16px;
     background-color: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     align-items: center;
     padding: 10px;
+}
+
+.dock_icon_wrapper {
+  position: relative;
+  overflow: visible; /* Allow tooltips or indicators to extend beyond the container */
+}
+
+.dock_icon {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background-color: var(--color-midnight-blue);
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+  overflow: hidden; /* Ensure the image respects the rounded corners */
+}
+
+.dock_icon:hover {
+  background-color: var(--color-bright-cyan);
+  border-radius: 25%;
+}
+
+.dock_icon_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image fits properly */
+}
+
+.dock_icon_active {
+  background-color: var(--color-bright-cyan);
+  border-radius: 25%;
+}
+
+.selected_indicator {
+    position: absolute;
+    top: -15px; /* Position the indicator above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px; /* Size of the indicator (dot) */
+    height: 10px; /* Size of the indicator (dot) */
+    background-color: var(--color-bright-cyan); /* Color of the indicator */
+    border-radius: 100%; /* Make it circular */
+    z-index: 1; /* Ensure it appears above other elements */
   }
-  
-  .dock_icon {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background-color: var(--color-midnight-blue);
-    border-radius: 50%;
-    transition: all 0.2s ease-in-out;
-    flex-shrink: 0;
-  }
-  
-  .dock_icon:hover {
-    background-color: var(--color-bright-cyan);
-  }
-  
-  .floating_tooltip {
+
+.floating_tooltip {
     background: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 4px 8px;
@@ -106,8 +136,7 @@
     pointer-events: none;
     font-family: "Open Sans", sans-serif;
     z-index: 9999;
-  }
-  
+}
   
 
 
@@ -278,6 +307,7 @@
 
 .server_icon:hover {
 	background: var(--color-bright-cyan);
+    border-radius: 30%;
 }
 
 .server_icon .tooltip {

@@ -46,6 +46,8 @@ const Application: React.FC = () => {
   const [tooltipX, setTooltipX] = useState(0)
   const [tooltipY, setTooltipY] = useState(0)
 
+  const isHome = selectedServer === null && selectedChannel === null && selectedFriend === null;
+
   const handleDockMouseEnter = (
     e: React.MouseEvent<HTMLDivElement>,
     str: string
@@ -566,58 +568,73 @@ const Application: React.FC = () => {
             </div>
 
             <div className={classes.application}>
-            <div className={classes.macos_dock}>
-              <div className={classes.dock_container}>
-                  <div
-                        className={classes.dock_icon}
-                        onMouseEnter={(e) => handleDockMouseEnter(e, "Home")}
+              <div className={classes.server_dock}>
+                <div className={classes.dock_container}>
+                    <div className={classes.dock_icon_wrapper}>
+                      {isHome && <div className={classes.selected_indicator}></div>}
+                      <div
+                        className={[
+                          classes.dock_icon,
+                          isHome ? classes.dock_icon_active : "",
+                        ].join(" ")}
+                        onMouseEnter={(e) => handleDockMouseEnter(e, "home")}
                         onMouseLeave={handleMouseLeave}
+                        onClick={() => {
+                          setSelectedServer(null);
+                          setSelectedChannel(null);
+                          setSelectedFriend(null);
+                        }}
                       >
                         <MdHome/>
-                  </div>
-                  <div
-                        className={classes.dock_icon}
-                        onMouseEnter={(e) => handleDockMouseEnter(e, "Create Server")}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <MdAdd/>
-                  </div>
-                  <div
-                        className={classes.dock_icon}
-                        onMouseEnter={(e) => handleDockMouseEnter(e, "Join Server")}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <MdGroupAdd/>
-                  </div>
+                      </div>
+                    </div>
+                    <div
+                          className={classes.dock_icon}
+                          onMouseEnter={(e) => handleDockMouseEnter(e, "Create Server")}
+                          onMouseLeave={handleMouseLeave}
+                          onClick={() => setCreatingServer(true)}
+                        >
+                          <MdAdd/>
+                    </div>
+                    <div
+                          className={classes.dock_icon}
+                          onMouseEnter={(e) => handleDockMouseEnter(e, "Join Server")}
+                          onMouseLeave={handleMouseLeave}
+                          onClick={() => setJoiningServer(true)}
 
-                  {session?.servers?.map((server) => (
-                      <ServerIcon 
-                        server={server}
-                        setSelectedServer={setSelectedServer}
-                        setSelectedChannel={setSelectedChannel}
-                        selectedServer={selectedServer}
-                        handleMouseLeave={handleMouseLeave}
-                        handleDockMouseEnter={handleDockMouseEnter}
-                      />
-                  ))}
+                        >
+                          <MdGroupAdd/>
+                    </div>
+
+                    {session?.servers?.map((server) => (
+                        <ServerIcon 
+                          server={server}
+                          setSelectedServer={setSelectedServer}
+                          setSelectedChannel={setSelectedChannel}
+                          selectedServer={selectedServer}
+                          handleMouseLeave={handleMouseLeave}
+                          handleDockMouseEnter={handleDockMouseEnter}
+                          selectedChannel={selectedChannel}
+                        />
+                    ))}
+                </div>
               </div>
-            </div>
 
-            {hoveredIconCaption !== null &&
-              createPortal(
-                <div
-                  className={classes.floating_tooltip}
-                  style={{
-                    position: "fixed",
-                    top: tooltipY + 8, // space below icon
-                    left: tooltipX,
-                    transform: "translateX(-50%)",
-                  }}
-                >
-                  {hoveredIconCaption}
-                  </div>,
-                  document.getElementById("dock-tooltip-root")!
-                )}
+              {hoveredIconCaption !== null &&
+                createPortal(
+                  <div
+                    className={classes.floating_tooltip}
+                    style={{
+                      position: "fixed",
+                      top: tooltipY + 8, // space below icon
+                      left: tooltipX,
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    {hoveredIconCaption}
+                    </div>,
+                    document.getElementById("dock-tooltip-root")!
+                  )}
 
               {/** Server Discovery  */}
               {!selectedServer && !selectedFriend && <ServerDiscovery />}
