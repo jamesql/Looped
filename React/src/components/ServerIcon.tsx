@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Server, Channel } from "../../../Types/serverTypes";
 import classes from "../styles/application.module.css";
-import {getCdnFileUrl} from "../util/functions";
+import { getCdnFileUrl } from "../util/functions";
 interface ServerIconProps {
   server: Server;
   setSelectedServer: (server: Server | null) => void;
   setSelectedChannel: (channel: Channel | null) => void;
   selectedServer: Server | null;
   selectedChannel: Channel | null;
+  handleDockMouseEnter: (
+    e: React.MouseEvent<HTMLDivElement>,
+    str: string
+  ) => void;
+  handleMouseLeave: () => void;
 }
 
 const ServerIcon: React.FC<ServerIconProps> = ({
@@ -15,36 +20,48 @@ const ServerIcon: React.FC<ServerIconProps> = ({
   setSelectedServer,
   setSelectedChannel,
   selectedServer,
-  selectedChannel,
+  handleDockMouseEnter,
+  handleMouseLeave,
 }) => {
   const [serverIconUrl, setServerIconUrl] = useState<string>("");
-  useEffect(() => { 
+  useEffect(() => {
     if (server.icon) {
-      getCdnFileUrl(server.icon).then(url => {
+      getCdnFileUrl(server.icon).then((url) => {
         setServerIconUrl(url);
       });
     } else {
       setServerIconUrl("/logo_main.jpg");
     }
-  }
-  , [server.icon]);
+  }, [server.icon]);
+
+  const isActive = selectedServer && selectedServer.id === server.id;
   return (
     <>
-      <li
-        key={server.id}
-        className={[classes.squircle, selectedServer?.id===server.id?classes.server_icon_active:""].join(" ")}
-        onClick={() => {
-          setSelectedServer(server);
-          setSelectedChannel(server.channels && server.channels.length > 0 ? server.channels[0] : null); // Set the first channel as selected if available
-        }}
-      >
-        <div className={classes.server_icon}>
-          <img className={classes.squircle} src={serverIconUrl} alt="" />
-          <span className={classes.tooltip}>{server.name}</span>
+      <div className={classes.dock_icon_wrapper}>
+        {isActive && <div className={classes.selected_indicator}></div>}
+        <div
+          className={[
+            classes.dock_icon,
+            isActive ? classes.dock_icon_active : "",
+          ].join(" ")}
+          onMouseEnter={(e) => handleDockMouseEnter(e, server.name)}
+          onMouseLeave={handleMouseLeave}
+          onClick={() => {
+            setSelectedServer(server);
+            setSelectedChannel(
+              server.channels && server.channels.length > 0
+                ? server.channels[0]
+                : null
+            );
+          }}
+        >
+          <img
+            src={serverIconUrl}
+            className={classes.dock_icon_img}
+            alt={server.name}
+          />
         </div>
-
-      </li>
-      <li className={classes.divider}></li>
+      </div>
     </>
   );
 };

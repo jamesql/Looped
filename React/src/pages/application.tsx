@@ -23,7 +23,8 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
-import { MdAdd } from "react-icons/md";
+import { MdAdd, MdGroupAdd, MdHome } from "react-icons/md";
+import { createPortal } from "react-dom";
 
 const Application: React.FC = () => {
   // data states
@@ -40,6 +41,29 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [joiningServer, setJoiningServer] = useState(false);
   const [userSettings, setUserSettings] = useState(false);
+
+  const [hoveredIconCaption, setHoveredIconCaption] = useState<string | null>(null);
+  const [tooltipX, setTooltipX] = useState(0)
+  const [tooltipY, setTooltipY] = useState(0)
+
+  const isHome = selectedServer === null && selectedChannel === null && selectedFriend === null;
+
+  const handleDockMouseEnter = (
+    e: React.MouseEvent<HTMLDivElement>,
+    str: string
+  ) => {
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipX(rect.left + rect.width / 2);
+    setTooltipY(rect.bottom); // bottom of icon
+    setHoveredIconCaption(str);
+  }
+
+  const handleMouseLeave = () => {
+    setHoveredIconCaption(null);
+  }
+
+
 
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
@@ -548,58 +572,73 @@ const Application: React.FC = () => {
             </div>
 
             <div className={classes.application}>
-              <div className={classes.server_nav}>
-                <ul className={classes.server_container}>
-                  <li className={classes.divider}></li>
-                  <li
-                    className={[classes.squircle, classes.server_icon].join(
-                      " "
-                    )}
-                    onClick={() => {
-                      setSelectedServer(null);
-                      setSelectedChannel(null);
-                      setSelectedFriend(null);
+              <div className={classes.server_dock}>
+                <div className={classes.dock_container}>
+                    <div className={classes.dock_icon_wrapper}>
+                      {isHome && <div className={classes.selected_indicator}></div>}
+                      <div
+                        className={[
+                          classes.dock_icon,
+                          isHome ? classes.dock_icon_active : "",
+                        ].join(" ")}
+                        onMouseEnter={(e) => handleDockMouseEnter(e, "Home")}
+                        onMouseLeave={handleMouseLeave}
+                        onClick={() => {
+                          setSelectedServer(null);
+                          setSelectedChannel(null);
+                          setSelectedFriend(null);
+                        }}
+                      >
+                        <MdHome/>
+                      </div>
+                    </div>
+                    <div
+                          className={classes.dock_icon}
+                          onMouseEnter={(e) => handleDockMouseEnter(e, "Create Server")}
+                          onMouseLeave={handleMouseLeave}
+                          onClick={() => setCreatingServer(true)}
+                        >
+                          <MdAdd/>
+                    </div>
+                    <div
+                          className={classes.dock_icon}
+                          onMouseEnter={(e) => handleDockMouseEnter(e, "Join Server")}
+                          onMouseLeave={handleMouseLeave}
+                          onClick={() => setJoiningServer(true)}
+
+                        >
+                          <MdGroupAdd/>
+                    </div>
+
+                    {session?.servers?.map((server) => (
+                        <ServerIcon 
+                          server={server}
+                          setSelectedServer={setSelectedServer}
+                          setSelectedChannel={setSelectedChannel}
+                          selectedServer={selectedServer}
+                          handleMouseLeave={handleMouseLeave}
+                          handleDockMouseEnter={handleDockMouseEnter}
+                          selectedChannel={selectedChannel}
+                        />
+                    ))}
+                </div>
+              </div>
+
+              {hoveredIconCaption !== null &&
+                createPortal(
+                  <div
+                    className={classes.floating_tooltip}
+                    style={{
+                      position: "fixed",
+                      top: tooltipY + 8, // space below icon
+                      left: tooltipX,
+                      transform: "translateX(-50%)",
                     }}
                   >
-                    <div className={classes.popper}>
-                      <h4 className={classes.popped}>Home</h4>
-                    </div>
-                  </li>
-                  <li className={classes.divider}></li>
-                  <li
-                    className={[classes.squircle, classes.server_icon].join(
-                      " "
-                    )}
-                    onClick={() => setJoiningServer(true)}
-                  >
-                    <div className={classes.popper}>
-                      <h4 className={classes.popped}>Join Server</h4>
-                    </div>
-                  </li>
-                  <li className={classes.divider}></li>
-                  <li
-                    className={[classes.squircle, classes.server_icon].join(
-                      " "
-                    )}
-                    onClick={() => setCreatingServer(true)}
-                  >
-                    <div className={classes.popper}>
-                      <h4 className={classes.popped}>Create Server</h4>
-                    </div>
-                  </li>
-                  <li className={classes.divider}></li>
-
-                  {session?.servers?.map((s) => (
-                    <ServerIcon
-                      server={s}
-                      setSelectedServer={setSelectedServer}
-                      setSelectedChannel={setSelectedChannel}
-                      selectedServer={selectedServer}
-                      selectedChannel={selectedChannel}
-                    />
-                  ))}
-                </ul>
-              </div>
+                    {hoveredIconCaption}
+                    </div>,
+                    document.getElementById("dock-tooltip-root")!
+                  )}
 
               {/** Server Discovery  */}
               {!selectedServer && !selectedFriend && <ServerDiscovery />}
