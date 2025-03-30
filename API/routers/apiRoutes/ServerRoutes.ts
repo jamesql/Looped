@@ -96,6 +96,7 @@ router.post("/edit", [
     body("bannerId").isString().isLength({min: 0}),
     body("website").isString().isLength({min: 0, max: 100}),
     body("serverId").isString().isLength({min: 1}),
+    body("tags").isArray(),
 ], async(req: Request, res: Response) => {
 
     const errors = validationResult(req);
@@ -145,7 +146,8 @@ router.post("/edit", [
         banner: req.body.banner,
         website: req.body.website,
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
+        tags: req.body.tags,
     };
 
     // edit server
