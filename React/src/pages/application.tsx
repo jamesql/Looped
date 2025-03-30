@@ -27,6 +27,7 @@ import { MdAdd, MdGroupAdd, MdHome, MdMessage, MdPersonAdd } from "react-icons/m
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";
+import UserProfileModal from "@/components/UserProfileModal";
 
 const Application: React.FC = () => {
   // data states
@@ -651,7 +652,7 @@ const Application: React.FC = () => {
 
               {/** Server Discovery  */}
               {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery />}
-
+              
               {/** Friend DM Channel  */}
               {!selectedServer && selectedFriend && <DirectChannel friend={selectedFriend} />}
 
