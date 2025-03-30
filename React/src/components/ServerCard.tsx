@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Server } from '../../../Types/serverTypes';
 import discoveryClasses from "../styles/serverdiscovery.module.css"
 import { getCdnFileUrl } from '@/util/functions';
+import ServerDiscoveryModal from './ServerDiscoveryModal';
 
 interface ServerCardProps {
     server: Server;
@@ -9,8 +10,9 @@ interface ServerCardProps {
 }
 
 const ServerCard: React.FC<ServerCardProps> = ({ server }) => {
-    const [bannerUrl, setBannerUrl] = useState<string>("/looped_main.jpg");
-    const [iconUrl, setIconUrl] = useState<string>("/looped_main.jpg");
+    const [bannerUrl, setBannerUrl] = useState<string>("/logo_main.jpg");
+    const [iconUrl, setIconUrl] = useState<string>("/logo_main.jpg");
+    const [modalActive, setModalActive] = useState<boolean>(false);
 
     useEffect(() => {
       if(server.banner)
@@ -27,7 +29,8 @@ const ServerCard: React.FC<ServerCardProps> = ({ server }) => {
       }, [server.icon]);
     
       return (
-        <div className={discoveryClasses.server_card}>
+        <>
+        <div className={discoveryClasses.server_card} onClick={(e) => setModalActive(true)}>
           <img src={bannerUrl} className={discoveryClasses.server_card_banner_img} />
           <div className={discoveryClasses.server_card_icon_container}>
             <img src={iconUrl} className={discoveryClasses.server_card_icon} />
@@ -37,6 +40,8 @@ const ServerCard: React.FC<ServerCardProps> = ({ server }) => {
             <p>{server.description}</p>
           </div>
         </div>
+        {modalActive && <ServerDiscoveryModal isOpen={modalActive} setClose={setModalActive} server={server} />}
+        </>
       );
 };
 

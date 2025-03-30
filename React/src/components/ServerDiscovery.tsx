@@ -1,23 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Server } from '../../../Types/serverTypes';
-import discoveryClasses from "../styles/serverdiscovery.module.css"
+import discoveryClasses from "../styles/serverdiscovery.module.css";
 import ServerCard from './ServerCard';
-interface ServerDiscoveryProps {
-    discoverable? : Server[];
-}
+import ApiClient from '@/util/api';
+import Cookies from "js-cookie";
+import ServerDiscoveryModal from './ServerDiscoveryModal';
 
-const ServerDiscovery: React.FC<ServerDiscoveryProps> = ({ discoverable }) => {
+const ServerDiscovery: React.FC = () => {
+    const [discoverable, setDiscoverable] = useState<Server[]>([]);
+
+    useEffect(() => {
+        const fetchDiscoveryServers = async () => {
+            try {
+                const response = await ApiClient.getInstance().getDiscoveryServers(Cookies.get("access_token") || "");
+                setDiscoverable(response.data);
+            } catch (error) {
+                console.error("Error fetching discovery servers:", error);
+            }
+        };
+
+        fetchDiscoveryServers();
+    }, []);
+
     return (
-        <div className={discoveryClasses.server_discovery_container}>
-            <h1>Server Discovery</h1>
-            <h2>Discoverable Servers:</h2>
-            <ul>
-                {discoverable && discoverable.map((server, index) => (
-                    <ServerCard key={index} server={server}/>
-                ))}
-            </ul>
+        <>
+            <div className={discoveryClasses.server_discovery_container}>
+                <h1>Server Discovery</h1>
+                <div className={discoveryClasses.server_discovery_grid}>
+                    {discoverable.map((server, index) => (
+                        <ServerCard key={index} server={server} />
+                    ))}
+                </div>
+            </div>
             
-        </div>
+        </>
     );
 };
 

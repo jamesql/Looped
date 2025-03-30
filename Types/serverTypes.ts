@@ -22,6 +22,7 @@ export interface Server {
     roles?: Role[];
     jobListings?: Job[];
     tags: string[];
+    private: boolean;
 }
 
 export interface Channel {

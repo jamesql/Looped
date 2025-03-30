@@ -76,6 +76,13 @@ class ApiClient {
         });
     }
 
+    public async joinServerPublic(serverId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/api/server/join-public', {
+            serverId: serverId,
+        });
+    }
+
     // create server post request
     public async createServer(name: string, desc: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
@@ -86,7 +93,7 @@ class ApiClient {
     }
 
     // edit server info post request
-    public async editServer(serverId: string, name: string, desc: string, website: string, tags: string[], token: string, iconId?: string, bannerId?: string): Promise<AxiosResponse> {
+    public async editServer(serverId: string, name: string, desc: string, website: string, tags: string[], token: string, iconId?: string, bannerId?: string, privateSetting?: boolean): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/server/edit', {
             serverId: serverId,
@@ -96,6 +103,7 @@ class ApiClient {
             bannerId: bannerId,
             website: website,
             tags: tags,
+            private: privateSetting,
         });
     }
 
@@ -221,6 +229,12 @@ class ApiClient {
         return this.axiosInstance.post(`/api/direct/remove-friend`, {
             friendId: friendId,
         });
+    }
+
+    // get discoveyr servers
+    public async getDiscoveryServers(token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.get(`/api/server/get-discovery-servers`);
     }
 }
 

@@ -18,6 +18,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     const [serverBannerId, setServerBannerId] = React.useState(server.bannerId || "");
     const [serverWebsite, setServerWebsite] = React.useState(server.website || "");
     const [serverTags, setServerTags] = React.useState(server.tags || []);
+    const [serverPrivate, setServerPrivate] = React.useState(server.private);
 
     const handleSubmit = async (e: any) => {
         console.log(serverName);
@@ -31,7 +32,8 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
             serverTags,
             token,
             serverIconId,
-            serverBannerId
+            serverBannerId,
+            serverPrivate
         ).then((response) => {
             console.log(response);
         }
@@ -159,6 +161,14 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                             </div>
                         </div>
                     </label>
+                <label>
+                    Private:
+                    <input
+                        type="checkbox"
+                        checked={serverPrivate}
+                        onChange={(e) => setServerPrivate(e.target.checked)}
+                    />
+                </label>
                 <button onClick={(e) => handleGenInvite(e)}>Generate Invite Code</button>
 
 

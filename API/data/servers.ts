@@ -40,6 +40,7 @@ class ServerService {
     if (data.description) updateData.description = data.description;
     if (data.website) updateData.website = data.website;
     if (data.tags) updateData.tags = data.tags;
+    if (data.private !== undefined) updateData.private = data.private; // Handle private field
   
     if (iconId !== undefined) {
       updateData.icon = iconId
@@ -158,6 +159,20 @@ class ServerService {
     });
   }
 
+  async getPublicServersUserNotIn(userId: string): Promise<_Server[]> {
+    return await prisma.server.findMany({
+      where: {
+        private: false,
+        members: {
+          none: { id: userId }, // Exclude servers where the user is already a member
+        },
+      },
+      include: {
+        icon: true,
+        banner: true,
+      },
+    });
+  }
 }
 
 export default new ServerService();
