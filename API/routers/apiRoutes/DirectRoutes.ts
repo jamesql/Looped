@@ -69,7 +69,7 @@ router.post(
     redisInstance.publish(
       `user:${friendId}:events`,
       JSON.stringify({
-        op: OPCodes.FRIEND_MESSAGE_CREATE,
+        op: OPCodes.FRIEND_REQUEST_CREATE,
         d: {
           user: user,
         },

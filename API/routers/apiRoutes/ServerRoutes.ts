@@ -275,7 +275,7 @@ router.post("/join", [
     redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
             op: OPCodes.SERVER_CREATE,
             d: {
-                server: server
+                server: await ServerService.getServerByInviteCode(req.body.code, ServerDatapacks.ALL_SERVER_DATA)
             }
         }));
     
