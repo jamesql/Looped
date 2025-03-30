@@ -416,6 +416,50 @@ const Application: React.FC = () => {
     client: WebSocketClient
   ) => {
     console.log("Server member add data:", data);
+
+    const newMember: User = data.user;
+    const server: Server = data.server;
+
+    // add member to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === server.id) {
+            if (!s.members) {
+              return s;
+            }
+            return {
+              ...s,
+              members: [...s.members, newMember],
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    }
+    ); // Update the session with the new member
+    // if server is selected, update the selected server's members
+    setSelectedServer((prev: Server | null) => {
+      if (!prev || prev.id !== server.id) {
+        return null;
+      }
+      const updatedMembers = [
+        ...(prev?.members ? prev?.members : []),
+        newMember,
+      ];
+      return {
+        ...prev,
+        members: updatedMembers,
+      };
+    }
+    ); // Update the selected server to reflect the new member
+
   };
 
   const serverMemberUpdateHandler: OpCodeHandler = (
@@ -423,6 +467,57 @@ const Application: React.FC = () => {
     client: WebSocketClient
   ) => {
     console.log("Server member update data:", data);
+
+    const updatedMember: User = data.user;
+    const server: Server = data.server;
+
+    // update member in session
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === server.id) {
+            if (!s.members) return s;
+            const updatedMembers = s.members.map((m) => {
+              if (m.id === updatedMember.id) {
+                return {
+                  ...m,
+                  ...updatedMember,
+                };
+              }
+              return m;
+            });
+
+            return {
+              ...s,
+              members: updatedMembers,
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    }
+    ); // Update the session with the updated member
+    // if server is selected, update the selected server's members
+    setSelectedServer((prev: Server | null) => {
+      if (!prev || prev.id !== server.id) {
+        return null;
+      }
+      const updatedMembers = [
+        ...(prev?.members ? prev?.members : []),
+        updatedMember,
+      ];
+      return {
+        ...prev,
+        members: updatedMembers,
+      };
+    }
+    ); // Update the selected server to reflect the updated member
   };
 
   const serverMemberDelHandler: OpCodeHandler = (
@@ -430,7 +525,190 @@ const Application: React.FC = () => {
     client: WebSocketClient
   ) => {
     console.log("Server member delete data:", data);
+
+    const deletedMember: User = data.user;
+    const server: Server = data.server;
+
+    // remove member from session
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.map((s) => {
+          if (s.id === server.id) {
+            if (!s.members) return s;
+            const updatedMembers = s.members.filter((m) => m.id !== deletedMember.id);
+
+            return {
+              ...s,
+              members: updatedMembers,
+            };
+          }
+          return s;
+        });
+
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    }
+    ); // Update the session with the deleted member
+    // if server is selected, update the selected server's members
+    setSelectedServer((prev: Server | null) => {
+      if (!prev || prev.id !== server.id) {
+        return null;
+      }
+      const updatedMembers = [
+        ...(prev?.members ? prev?.members : []),
+        deletedMember,
+      ];
+      return {
+        ...prev,
+        members: updatedMembers,
+      };
+    }
+    ); // Update the selected server to reflect the deleted member
   };
+
+  /** Friend Handlers */
+  const friendRequestSentHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Friend request sent data:", data);
+
+    const fr: User = data.friend;
+    // add friend request to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        return {
+          ...prevSession,
+          friendRequestsSent: [...prevSession.friendRequestsSent!, fr],
+        };
+      }
+      return prevSession;
+    });
+  }
+  const friendRequestReceivedHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Friend request received data:", data);
+
+    const fr: User = data.user;
+    // add friend request to session
+    setSession((prevSession) => {
+      if (prevSession) {
+        return {
+          ...prevSession,
+          friendRequestsReceived: [
+            ...(prevSession.friendRequestsReceived ? prevSession.friendRequestsReceived : []),
+            fr,
+          ],
+        };
+      }
+      return prevSession;
+    }
+    ); // Update the session with the new friend request
+  }
+  const friendRequestAcceptedHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Friend request accepted data:", data);
+
+    const user: User = data.user;
+    const friend: User = data.friend;
+
+    if (!user && friend) {
+      // add friend to session and remove from friend request received
+      setSession((prevSession) => {
+        if (prevSession) {
+          return {
+            ...prevSession,
+            friends: [...prevSession.friends!, friend],
+            friendRequestsReceived: prevSession.friendRequestsReceived!.filter((f) => f.id !== friend.id),
+          };
+        }
+        return prevSession;
+      }
+    );
+    } else if (user && !friend) {
+      // add friend to session and remove from friend request sent
+      setSession((prevSession) => {
+        if (prevSession) {
+          return {
+            ...prevSession,
+            friends: [...prevSession.friends!, user],
+            friendRequestsSent: prevSession.friendRequestsSent!.filter((f) => f.id !== user.id),
+          };
+        }
+        return prevSession;
+      }
+    );
+    }
+      
+
+  }
+  const friendRequestDeclinedHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Friend request declined data:", data);
+
+    const user: User = data.user;
+    const friend: User = data.friend;
+    if (!user && friend) {
+      // remove friend from session and remove from friend request received
+      setSession((prevSession) => {
+        if (prevSession) {
+          return {
+            ...prevSession,
+            friendRequestsReceived: prevSession.friendRequestsReceived!.filter((f) => f.id !== friend.id),
+          };
+        }
+        return prevSession;
+      }
+    );
+    }
+    else if (user && !friend) {
+      // remove friend from session and remove from friend request sent
+      setSession((prevSession) => {
+        if (prevSession) {
+          return {
+            ...prevSession,
+            friendRequestsSent: prevSession.friendRequestsSent!.filter((f) => f.id !== user.id),
+          };
+        }
+        return prevSession;
+      }
+    );
+    }
+  }
+
+  const friendRemoveHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("Friend removed data:", data);
+
+    let user: User = data.user;
+    let friend: User = data.friend;
+    user = user ? user : friend;
+
+    // remove user as a friend
+    setSession((prevSession) => {
+      if (prevSession) {
+        return {
+          ...prevSession,
+          friends: prevSession.friends!.filter((f) => f.id !== user.id),
+        };
+      }
+      return prevSession;
+    }
+    ); // Update the session with the new friend request
+
+  }
 
   const roleCreateHandler: OpCodeHandler = (
     data: any,
@@ -452,6 +730,12 @@ const Application: React.FC = () => {
   listeners.set(OPCodes.SERVER_MEMBER_ADD, [serverMemberAddHandler]);
   listeners.set(OPCodes.SERVER_MEMBER_UPDATE, [serverMemberUpdateHandler]);
   listeners.set(OPCodes.SERVER_MEMBER_DEL, [serverMemberDelHandler]);
+  listeners.set(OPCodes.FRIEND_REQUEST_SENT, [friendRequestSentHandler]);
+  listeners.set(OPCodes.FRIEND_REQUEST_CREATE, [friendRequestReceivedHandler]);
+  listeners.set(OPCodes.FRIEND_REQUEST_ACCEPT, [friendRequestAcceptedHandler]);
+  listeners.set(OPCodes.FRIEND_REQUEST_REJECT, [friendRequestDeclinedHandler]);
+  listeners.set(OPCodes.FRIEND_REMOVED, [friendRemoveHandler]);
+
 
   const [selfAvatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
   useEffect(() => { 
