@@ -24,7 +24,6 @@ const ServerDiscovery: React.FC = () => {
     return (
         <div className={discoveryClasses.server_discovery_container}>
             <h1>Server Discovery</h1>
-            <h2>Discoverable Servers:</h2>
             <div className={discoveryClasses.server_discovery_grid}>
                 {discoverable.map((server, index) => (
                     <ServerCard key={index} server={server} />
