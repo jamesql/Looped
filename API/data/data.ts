@@ -57,6 +57,7 @@ export class UserDatapacks {
                 birthday: true, // Include birthday
                 email: true, // Include email
                 password: false, // Exclude password for security
+                skills: true,
             }
         },
         friendRequestsReceived: {
@@ -70,6 +71,7 @@ export class UserDatapacks {
                 birthday: true, // Include birthday
                 email: true, // Include email
                 password: false, // Exclude password for security
+                skills: true,
             }
         },
         friends: {
@@ -83,6 +85,7 @@ export class UserDatapacks {
                 birthday: true, // Include birthday
                 email: true, // Include email
                 password: false, // Exclude password for security
+                skills: true,
             }
         },
         servers: {
@@ -101,6 +104,7 @@ export class UserDatapacks {
                             birthday: true,
                             email: true,
                             password: false,
+                            skills: true,
                         }
                     },
                     file: {
@@ -125,7 +129,8 @@ export class UserDatapacks {
                     birthday: true,
                     email: true,
                     roles: true,
-                    password: false
+                    password: false,
+                    skills: true,
                 }
             },
             owner: {
@@ -138,13 +143,13 @@ export class UserDatapacks {
                     location: true,
                     birthday: true,
                     email: true,
-                    password: false
+                    password: false,
+                    skills: true,
                 }
             },
         },
         roles: true,
-     
-
+    
     }
     public static readonly USER_PUBLIC_DATA: RelationMap<User> = {}
 }
