@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { User } from "../../../Types/userTypes";
-import FriendCard from "./FriendCard";
 import UserProfileModal from "./UserProfileModal";
+import UserCard from "./UserCard";
+import { Server } from "../../../Types/serverTypes";
+import classes from "../styles/application.module.css";
 
-interface FriendsListProps {
-  friends: User[];
-  clickFunc?: (u: User) => void;
-  activeUser?: User | null;
+interface MembersListProps {
+  session?: User | null;
+  selectedServer?: Server | null;
 }
 
-const FriendsList: React.FC<FriendsListProps> = ({
-  friends,
-  clickFunc,
-  activeUser,
+const MembersList: React.FC<MembersListProps> = ({
+  session,
+  selectedServer,
 }) => {
   const [cardVisible, setCardVisible] = useState(false);
   const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
@@ -24,7 +24,7 @@ const FriendsList: React.FC<FriendsListProps> = ({
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const dropdownWidth = 250; // Approximate width of the dropdown
-    const dropdownHeight = 250; // Approximate height of the dropdown
+    const dropdownHeight = 500; // Approximate height of the dropdown
 
     let x = e.pageX;
     let y = e.pageY;
@@ -58,14 +58,35 @@ const FriendsList: React.FC<FriendsListProps> = ({
 
   return (
     <>
-      {friends.map((friend) => (
-        <FriendCard
-          user={friend}
-          clickFunc={clickFunc}
-          active={activeUser?.id == friend.id}
-          handleProfileCard={handleProfileCard}
-        />
-      ))}
+      <ul className={classes.members_list}>
+        {selectedServer?.members?.map((member) => (
+          <UserCard
+            user={member}
+            isAdmin={session?.id === selectedServer?.ownerId}
+            isSelf={session?.id === member.id} // Check if the user is the same as the session user
+            isFriend={
+              session?.friends
+                ? session?.friends?.some((u) => u.id === member.id)
+                : false
+            }
+            incomingRequest={
+              session?.friendRequestsReceived
+                ? session?.friendRequestsReceived.some(
+                    (request) => request.id === member.id
+                  )
+                : false
+            } // Check if the user has sent a friend request to this member
+            outgoingRequest={
+              session?.friendRequestsSent
+                ? session?.friendRequestsSent.some(
+                    (request) => request.id === member.id
+                  )
+                : false
+            } // Check if this member has sent a friend request to the user
+            handleProfileCard={handleProfileCard}
+          />
+        ))}
+      </ul>
       {/* Profile Card */}
       {cardVisible && (
         <UserProfileModal
@@ -78,4 +99,4 @@ const FriendsList: React.FC<FriendsListProps> = ({
   );
 };
 
-export default FriendsList;
+export default MembersList;

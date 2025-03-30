@@ -8,6 +8,9 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: min-content;
     gap: 10px;
+    position: absolute;
+    z-index: 1000;
+    min-width: 100px;
 }
 
 .user_main_info {

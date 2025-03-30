@@ -7,9 +7,11 @@ import { MdClose, MdMessage, MdPersonAdd } from "react-icons/md";
 
 interface UserProfileModalProps {
   user: User | null;
+  x: number;
+  y: number;
 }
 
-const UserProfileModal: React.FC<UserProfileModalProps> = ({ user }) => {
+const UserProfileModal: React.FC<UserProfileModalProps> = ({ user , x, y}) => {
   const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
   useEffect(() => {
     if (user?.avatar) {
@@ -22,10 +24,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user }) => {
   }, [user?.avatar]);
 
   const skills = ["JavaScript", "React", "Node.js", "CSS", "HTML"];
-
+  console.log("lmao");
   return (
     <>
-      <div className={modalClasses.user_profile_card}>
+      <div className={modalClasses.user_profile_card} style={{ top: y, left: x }}>
         <div className={modalClasses.user_main_info}>
           <img className={classes.squircle} src={avatarUrl} alt="" />
           <div className={modalClasses.user_sub_info}>

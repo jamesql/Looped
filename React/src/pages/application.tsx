@@ -10,7 +10,6 @@ import FriendsList from "@/components/FriendsList";
 import { Permissions } from "../../../Types/permissionsTypes";
 import ServerIcon from "@/components/ServerIcon";
 import { checkPermissions, getCdnFileUrl } from "@/util/functions";
-import UserCard from "@/components/UserCard";
 import ServerDiscovery from "@/components/ServerDiscovery";
 import DirectChannel from "@/components/DirectChannel";
 import ServerChannel from "@/components/ServerChannel";
@@ -27,7 +26,7 @@ import { MdAdd, MdGroupAdd, MdHome, MdMessage, MdPersonAdd } from "react-icons/m
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";
-import UserProfileModal from "@/components/UserProfileModal";
+import MembersList from "@/components/MembersList";
 
 const Application: React.FC = () => {
   // data states
@@ -669,21 +668,7 @@ const Application: React.FC = () => {
             </div>
 
             <div className={classes.members_profile}>
-              <ul className={classes.members_list}>
-                {selectedServer?.members
-                  ? selectedServer?.members.map((member) => (
-                      <UserCard
-                        user={member}
-                        is_admin={session?.id === selectedServer?.ownerId}
-                        is_self={session?.id === member.id} // Check if the user is the same as the session user
-                        is_friend={session?.friends?session?.friends?.some(u => u.id === member.id):false}
-                        incoming_request={session?.friendRequestsReceived?session?.friendRequestsReceived.some((request) => request.id === member.id) : false} // Check if the user has sent a friend request to this member
-                        outgoing_request={session?.friendRequestsSent?session?.friendRequestsSent.some((request) => request.id === member.id) : false} // Check if this member has sent a friend request to the user
-                      />
-                    ))
-                  : ""}
-              </ul>
-
+              <MembersList session={session} selectedServer={selectedServer}/>
               <div className={classes.profile_card}>
                 <div className={classes.profile_member}>
                   <div className={classes.member_image}>

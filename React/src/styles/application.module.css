@@ -682,17 +682,17 @@
     padding: 0.5rem 0;
     z-index: 1000;
     min-width: 150px;
-  }
-  
-  .custom_dropdown li {
+}
+
+.custom_dropdown li {
     padding: 0.5rem 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
-  }
-  
-  .custom_dropdown li:hover {
+}
+
+.custom_dropdown li:hover {
     background-color: var(--color-bright-cyan);
-  }
+}
 
 .profile_member {
     display: flex;
