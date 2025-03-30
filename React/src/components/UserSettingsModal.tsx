@@ -43,8 +43,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
             return;
         }
 
-        console.log(skills);
-
         await ApiClient.getInstance().editUser(
             firstName, 
             lastName,
