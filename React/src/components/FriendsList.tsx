@@ -7,54 +7,15 @@ interface FriendsListProps {
   friends: User[];
   clickFunc?: (u: User) => void;
   activeUser?: User | null;
+  handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
 const FriendsList: React.FC<FriendsListProps> = ({
   friends,
   clickFunc,
   activeUser,
+  handleProfileCard
 }) => {
-  const [cardVisible, setCardVisible] = useState(false);
-  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
-  const [cardUser, setCardUser] = useState<User | null>(null);
-  const handleProfileCard = (e: React.MouseEvent, u: User) => {
-    e.stopPropagation(); // Stop the event from bubbling up to the document
-    e.preventDefault(); // Prevent the default click
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const dropdownWidth = 250; // Approximate width of the dropdown
-    const dropdownHeight = 250; // Approximate height of the dropdown
-
-    let x = e.pageX;
-    let y = e.pageY;
-
-    if (x + dropdownWidth > viewportWidth) {
-      x = viewportWidth - dropdownWidth - 10; // Add some padding
-    }
-    if (y + dropdownHeight > viewportHeight) {
-      y = viewportHeight - dropdownHeight - 10; // Add some padding
-    }
-    setCardPosition({ x, y });
-    setCardUser(u);
-    setCardVisible(true);
-  };
-
-  const handleClickOutsideCard = () => {
-    setCardVisible(false);
-  };
-
-  useEffect(() => {
-    if (cardVisible) {
-      document.addEventListener("click", handleClickOutsideCard);
-    } else {
-      document.removeEventListener("click", handleClickOutsideCard);
-    }
-
-    return () => {
-      document.removeEventListener("click", handleClickOutsideCard);
-    };
-  }, [cardVisible]);
 
   return (
     <>
@@ -66,14 +27,7 @@ const FriendsList: React.FC<FriendsListProps> = ({
           handleProfileCard={handleProfileCard}
         />
       ))}
-      {/* Profile Card */}
-      {cardVisible && (
-        <UserProfileModal
-          user={cardUser}
-          x={cardPosition.x}
-          y={cardPosition.y}
-        ></UserProfileModal>
-      )}
+      
     </>
   );
 };
