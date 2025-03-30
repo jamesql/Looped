@@ -449,6 +449,11 @@
     align-items: start;
     gap: .5rem;
     padding: .75rem;
+    transition-duration: 0.2s;
+}
+
+.message:hover {
+    background-color: rgba(0, 0, 0, 0.025); /* Makes the background slightly darker */
 }
 
 .message_details {
@@ -463,6 +468,7 @@
     align-items: center; /* Center-align the image and caption */
     text-align: center;
     gap: 0.5rem; /* Add spacing between the image and caption */
+    cursor: pointer;
   }
   
 .message_image {
@@ -472,6 +478,7 @@
     border-radius: 3%;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     background-color: var(--color-bright-cyan);
+    
 }
 
 .message_image_caption {
@@ -718,8 +725,6 @@
     white-space: nowrap;
 }
 
-/* Image Zoom Modal */
-
 .image_zoom_overlay {
   position: fixed;
   top: 0;
@@ -738,5 +743,27 @@
   max-height: 90%;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.zoom_controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 1000;
+}
+
+.zoom_button {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
   cursor: pointer;
+  font-size: 16px;
+}
+
+.zoom_button:hover {
+  background-color: rgba(0, 0, 0, 0.9);
 }
