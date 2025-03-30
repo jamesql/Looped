@@ -32,22 +32,10 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, handleProf
   };
 
   useEffect(() => {
-    const fetchFileUrl = async () => {
-      if (!message.file) return;
-
-      try {
-        const token = Cookie.get("access_token") ?? "";
-        const fileResp = await ApiClient.getInstance().getFileById(token, message.file.id);
-
-        if (fileResp.status === 200) {
-          setFileUrl(fileResp.data.url);
-        }
-      } catch (error) {
-        console.error("Error fetching file URL:", error);
-      }
-    };
-
-    fetchFileUrl();
+    if(message.file)
+      getCdnFileUrl(message.file).then(url => {
+        setFileUrl(url);
+      });
   }, [message.file]);
 
   if (!message?.author) return null;
