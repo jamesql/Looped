@@ -55,6 +55,7 @@
     display: block;    /* Ensure it respects block-level alignment */
   
 }
+
 .server_dock {
     overflow-x: auto;
     overflow-y: hidden;
@@ -361,6 +362,64 @@
     max-height: 80vh;
 }
 
+.friend_requests_container {
+    padding: 20px;
+    color: var(--color-actually-black);
+}
+
+.friend_request_card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--color-full-white);
+    background-color: var(--color-midnight-blue);
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.friend_request_card_info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    color: var(--color-full-white);
+    background-color: var(--color-midnight-blue);
+}
+
+.friend_request_button_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.friend_request_response_button {
+    background-color: var(--color-bright-cyan);
+    color: var(--color-full-white);
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center the icon or text inside the button */
+    transition: background-color 0.2s, transform 0.2s; /* Add hover and click effects */
+}
+
+.friend_request_response_button:hover {
+    background-color: var(--color-not-quite-black); /* Change background on hover */
+}
+
+.friend_request_response_button:active {
+    transform: scale(0.9); /* Add a pressed effect */
+}
+
+
 .message {
     display: flex;
     flex-direction: row;
@@ -512,6 +571,9 @@
     width: 25px;
     height: 25px;
     color: var(--color-full-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Members and profiles */

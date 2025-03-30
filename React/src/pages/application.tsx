@@ -23,8 +23,9 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
-import { MdAdd, MdGroupAdd, MdHome } from "react-icons/md";
+import { MdAdd, MdGroupAdd, MdHome, MdMessage, MdPersonAdd } from "react-icons/md";
 import { createPortal } from "react-dom";
+import FriendRequestsList from "@/components/FriendRequestsList";
 
 const Application: React.FC = () => {
   // data states
@@ -41,6 +42,7 @@ const Application: React.FC = () => {
   const [creatingServer, setCreatingServer] = useState(false);
   const [joiningServer, setJoiningServer] = useState(false);
   const [userSettings, setUserSettings] = useState(false);
+  const [friendRequestPanelActive, setFriendRequestPanelActive] = useState(false);
 
   const [hoveredIconCaption, setHoveredIconCaption] = useState<string | null>(null);
   const [tooltipX, setTooltipX] = useState(0)
@@ -506,9 +508,13 @@ const Application: React.FC = () => {
             <div className={classes.server_info}>
               {!selectedServer ? (
                 <div className={classes.server_card}>
-                  <div className={classes.server_card_info}>
                     <h1>Direct Messages</h1>
-                  </div>
+                    <button className={classes.chat_bar_button} onClick={() => {
+                      setSelectedFriend(null)
+                      setFriendRequestPanelActive(true);
+                    }}>
+                      <MdPersonAdd className={classes.chat_bar_icon}/>
+                    </button>
                 </div>
               ) : (
                 <div className={classes.server_card}>
@@ -530,6 +536,7 @@ const Application: React.FC = () => {
                   setSelectedFriend(u);
                   setSelectedServer(null);
                   setSelectedChannel(null);
+                  setFriendRequestPanelActive(false);
                 }} activeUser={selectedFriend}/>
               ) : (
                 <div className={classes.channel_list}>
@@ -587,6 +594,7 @@ const Application: React.FC = () => {
                           setSelectedServer(null);
                           setSelectedChannel(null);
                           setSelectedFriend(null);
+                          setFriendRequestPanelActive(false);
                         }}
                       >
                         <MdHome/>
@@ -641,10 +649,13 @@ const Application: React.FC = () => {
                   )}
 
               {/** Server Discovery  */}
-              {!selectedServer && !selectedFriend && <ServerDiscovery />}
+              {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery />}
 
               {/** Friend DM Channel  */}
               {!selectedServer && selectedFriend && <DirectChannel friend={selectedFriend} />}
+
+              {/** Friend Invites  */}
+              {!selectedServer && friendRequestPanelActive &&  <FriendRequestsList friends={session?.friendRequestsReceived} />}
 
               {/** Server Channel */}
               {selectedServer && selectedChannel && (
