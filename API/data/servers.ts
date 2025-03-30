@@ -39,6 +39,7 @@ class ServerService {
     if (data.name) updateData.name = data.name;
     if (data.description) updateData.description = data.description;
     if (data.website) updateData.website = data.website;
+    if (data.tags) updateData.tags = data.tags;
   
     if (iconId !== undefined) {
       updateData.icon = iconId
