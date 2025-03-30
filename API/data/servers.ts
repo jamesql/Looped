@@ -144,6 +144,19 @@ class ServerService {
     });
   }
 
+  async getServerIdsByUserId(userId: string): Promise<{id: string}[]> {
+    return await prisma.server.findMany({
+      where: {
+        members: {
+          some: { id: userId },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+  }
+
 }
 
 export default new ServerService();
