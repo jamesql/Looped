@@ -27,6 +27,8 @@ export interface User {
     birthday?: Date;
     roles?: Role[];
     applications?: Job[];
+
+    skills: string[];
 }
 
 export interface DirectChannel {

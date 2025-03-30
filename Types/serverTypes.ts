@@ -21,6 +21,7 @@ export interface Server {
     onlineMembers?: User[];
     roles?: Role[];
     jobListings?: Job[];
+    tags: string[];
 }
 
 export interface Channel {
