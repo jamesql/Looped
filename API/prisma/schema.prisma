@@ -136,7 +136,7 @@ model Portfolio {
 
   user User @relation(fields: [userId], references: [id])
 
-  files String[]
+  files R2File[] // one to many relation
 }
 
 model Job {
@@ -170,6 +170,9 @@ model R2File {
   iconOf   Server? @relation("IconFile")
   bannerOf Server? @relation("BannerFile")
   avatarOf User? @relation("AvatarFile")
+
+  portfolioId String?
+  portfolioOf Portfolio? @relation(fields: [portfolioId], references: [id])
 }
 
 model DirectChannel {
