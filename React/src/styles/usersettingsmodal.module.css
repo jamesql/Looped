@@ -50,3 +50,9 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
+.skills {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
