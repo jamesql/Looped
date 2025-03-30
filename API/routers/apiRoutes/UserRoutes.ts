@@ -105,8 +105,6 @@ router.post("/edit", [
         return;
     }
 
-    console.log(req.body.skills);
-
     const updatedUser = await UserService.updateUserById(result.userId, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
