@@ -317,7 +317,6 @@ router.post("/join-public", [
     // get server by invite code
 
     const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.ALL_SERVER_DATA);
-    console.log(server);
     // make sure server exists
     if (!server || server.private) {
         res.status(404).json({ error: "Server not found" });
