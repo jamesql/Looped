@@ -17,6 +17,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     const [serverIconId, setServerIconId] = React.useState(server.iconId || "");
     const [serverBannerId, setServerBannerId] = React.useState(server.bannerId || "");
     const [serverWebsite, setServerWebsite] = React.useState(server.website || "");
+    const [serverTags, setServerTags] = React.useState(server.tags || []);
 
     const handleSubmit = async (e: any) => {
         console.log(serverName);
@@ -27,6 +28,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
             serverName,
             serverDesc,
             serverWebsite,
+            serverTags,
             token,
             serverIconId,
             serverBannerId
@@ -123,6 +125,40 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                         placeholder={server.website}
                      />
                 </label>
+                <label>
+                        Tags:
+                        <div>
+                            <div className={classes.tags}>
+                            {serverTags.map((tag, index) => (
+                                <div key={index} className={classes.tag}>
+                                    {tag}
+                                    <button type="button" onClick={() => setServerTags(serverTags.filter((_, i) => i !== index))}>
+                                        &times;
+                                    </button>
+                                </div>
+                            ))}
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Enter a tag"
+                                    id="newTagInput"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const input = document.getElementById('newTagInput') as HTMLInputElement;
+                                        if (input && input.value.trim()) {
+                                            setServerTags([...serverTags, input.value.trim()]);
+                                            input.value = '';
+                                        }
+                                    }}
+                                >
+                                    Add Tag
+                                </button>
+                            </div>
+                        </div>
+                    </label>
                 <button onClick={(e) => handleGenInvite(e)}>Generate Invite Code</button>
 
 
