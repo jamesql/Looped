@@ -23,7 +23,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user , x, y}) => {
     }
   }, [user?.avatar]);
 
-  const skills = ["JavaScript", "React", "Node.js", "CSS", "HTML"];
+  const skills = user?.skills || [];
   console.log("lmao"); // lmao
   return (
     <>
