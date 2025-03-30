@@ -24,7 +24,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user , x, y}) => {
   }, [user?.avatar]);
 
   const skills = ["JavaScript", "React", "Node.js", "CSS", "HTML"];
-  console.log("lmao");
+  console.log("lmao"); // lmao
   return (
     <>
       <div className={modalClasses.user_profile_card} style={{ top: y, left: x }}>
