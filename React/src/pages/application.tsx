@@ -22,7 +22,7 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
-import { MdAdd, MdGroupAdd, MdHome, MdMessage, MdPersonAdd } from "react-icons/md";
+import { MdAdd, MdGroupAdd, MdHome } from "react-icons/md";
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";
@@ -1024,7 +1024,7 @@ const Application: React.FC = () => {
                   )}
 
               {/** Server Discovery  */}
-              {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery />}
+              {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery discoverable={session?.servers} />}
               
               {/** Friend DM Channel  */}
               {!selectedServer && selectedFriend && <DirectChannel friend={selectedFriend} />}

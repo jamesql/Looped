@@ -1,15 +1,21 @@
 import React from 'react';
-import { User } from '../../../Types/userTypes';
-import UserProfileModal from './UserProfileModal';
-
+import { Server } from '../../../Types/serverTypes';
+import discoveryClasses from "../styles/serverdiscovery.module.css"
+import ServerCard from './ServerCard';
 interface ServerDiscoveryProps {
-
+    discoverable? : Server[];
 }
 
-const ServerDiscovery: React.FC<ServerDiscoveryProps> = ({  }) => {
+const ServerDiscovery: React.FC<ServerDiscoveryProps> = ({ discoverable }) => {
     return (
-        <div>
-            <h1>SERVER DISCOVERY / JOB DISCOVERY PAGE</h1>
+        <div className={discoveryClasses.server_discovery_container}>
+            <h1>Server Discovery</h1>
+            <h2>Discoverable Servers:</h2>
+            <ul>
+                {discoverable && discoverable.map((server, index) => (
+                    <ServerCard key={index} server={server}/>
+                ))}
+            </ul>
             
         </div>
     );

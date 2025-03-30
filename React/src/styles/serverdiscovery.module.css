@@ -1,0 +1,56 @@
+.server_discovery_container {
+    display:flex;
+    flex-direction: column;
+    padding: 20px;
+    color: var(--color-actually-black);
+    gap: 2px;
+}
+
+.server_discovery_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.server_card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    background-color: var(--color-midnight-blue);
+    color: var(--color-full-white);
+    width: 350px;
+    height: 200px;
+}
+
+.server_card_banner_img {
+    height: 40%;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: 2px var(--color-bright-cyan) solid;
+    border-color: var(--color-bright-cyan);
+    width: 100%;
+    object-fit: cover;
+}
+
+.server_card_icon_container {
+    position: absolute;
+    top: 40%;  /* Adjust vertical placement as needed */
+    left: 85%; /* Shifts the icon more to the right */
+    transform: translate(-50%, -50%);
+}
+
+.server_card_icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+    border: 2px var(--color-bright-cyan) solid;
+    background-color: var(--color-midnight-blue);
+}
+
+.server_card_info {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 5px;
+}
