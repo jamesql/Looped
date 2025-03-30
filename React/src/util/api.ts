@@ -76,6 +76,13 @@ class ApiClient {
         });
     }
 
+    public async joinServerPublic(serverId: string, token: string): Promise<AxiosResponse> {
+        this.addAuthHeader(token);
+        return this.axiosInstance.post('/api/server/join-public', {
+            serverId: serverId,
+        });
+    }
+
     // create server post request
     public async createServer(name: string, desc: string, token: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);

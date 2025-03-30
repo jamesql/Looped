@@ -4,6 +4,7 @@ import discoveryClasses from "../styles/serverdiscovery.module.css";
 import ServerCard from './ServerCard';
 import ApiClient from '@/util/api';
 import Cookies from "js-cookie";
+import ServerDiscoveryModal from './ServerDiscoveryModal';
 
 const ServerDiscovery: React.FC = () => {
     const [discoverable, setDiscoverable] = useState<Server[]>([]);
@@ -22,14 +23,17 @@ const ServerDiscovery: React.FC = () => {
     }, []);
 
     return (
-        <div className={discoveryClasses.server_discovery_container}>
-            <h1>Server Discovery</h1>
-            <div className={discoveryClasses.server_discovery_grid}>
-                {discoverable.map((server, index) => (
-                    <ServerCard key={index} server={server} />
-                ))}
+        <>
+            <div className={discoveryClasses.server_discovery_container}>
+                <h1>Server Discovery</h1>
+                <div className={discoveryClasses.server_discovery_grid}>
+                    {discoverable.map((server, index) => (
+                        <ServerCard key={index} server={server} />
+                    ))}
+                </div>
             </div>
-        </div>
+            
+        </>
     );
 };
 
