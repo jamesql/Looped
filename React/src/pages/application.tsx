@@ -469,13 +469,13 @@ const Application: React.FC = () => {
     console.log("Server member update data:", data);
 
     const updatedMember: User = data.user;
-    const server: Server = data.server;
+    const serverId = data.serverId;
 
     // update member in session
     setSession((prevSession) => {
       if (prevSession) {
         const updatedServers = prevSession.servers!.map((s) => {
-          if (s.id === server.id) {
+          if (s.id === serverId) {
             if (!s.members) return s;
             const updatedMembers = s.members.map((m) => {
               if (m.id === updatedMember.id) {
@@ -505,13 +505,19 @@ const Application: React.FC = () => {
     ); // Update the session with the updated member
     // if server is selected, update the selected server's members
     setSelectedServer((prev: Server | null) => {
-      if (!prev || prev.id !== server.id) {
-        return null;
+      if (!prev || prev.id !== serverId) {
+        return prev;
       }
-      const updatedMembers = [
-        ...(prev?.members ? prev?.members : []),
-        updatedMember,
-      ];
+      const updatedMembers = prev?.members?.map((m) => {
+        if (m.id === updatedMember.id) {
+          return {
+            ...m,
+            ...updatedMember,
+          };
+        }
+        return m;
+      });
+
       return {
         ...prev,
         members: updatedMembers,
@@ -710,6 +716,34 @@ const Application: React.FC = () => {
 
   }
 
+  const userUpdateHandler: OpCodeHandler = (
+    data: any,
+    client: WebSocketClient
+  ) => {
+    console.log("User update data:", data);
+
+    const updatedUser: User = data.user;
+
+    // update user in session
+    setSession((prevSession) => {
+      if (prevSession) {
+        return {
+          ...prevSession,
+          id: updatedUser.id,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          status: updatedUser.status,
+          location: updatedUser.location,
+          birthday: updatedUser.birthday,
+          email: updatedUser.email,
+          avatar: updatedUser.avatar,
+        };
+      }
+      return prevSession;
+    }
+    ); // Update the session with the new user data
+  }
+
   const roleCreateHandler: OpCodeHandler = (
     data: any,
     client: WebSocketClient
@@ -735,6 +769,7 @@ const Application: React.FC = () => {
   listeners.set(OPCodes.FRIEND_REQUEST_ACCEPT, [friendRequestAcceptedHandler]);
   listeners.set(OPCodes.FRIEND_REQUEST_REJECT, [friendRequestDeclinedHandler]);
   listeners.set(OPCodes.FRIEND_REMOVED, [friendRemoveHandler]);
+  listeners.set(OPCodes.USER_UPDATE, [userUpdateHandler]);
 
 
   const [selfAvatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
