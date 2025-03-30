@@ -62,6 +62,7 @@ router.post("/create", [
         location: req.body.location,
         salary: req.body.salary,
         status: "Accepting Applications",
+        tags: [],
         serverId: req.body.serverId,
     });
 

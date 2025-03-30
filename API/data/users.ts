@@ -18,6 +18,7 @@ class UserService {
         status: user.status || "New to Looped!",
         location: user.location || "",
         birthday: user.birthday || undefined,
+        skills: user.skills || [],
       },
     });
   }

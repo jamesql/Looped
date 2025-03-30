@@ -29,6 +29,8 @@ model User {
   ownedServers Server[] @relation("ServerOwner")
   servers      Server[] @relation("ServerMembers")
 
+  skills String[] @default([])
+
   messages Message[]
 
   portfolios Portfolio[]
@@ -78,6 +80,8 @@ model Server {
   bannedUsers User[]
 
   jobListings Job[]
+
+  tags String[] @default([]) // Tags for the server
 }
 
 model Channel {
@@ -136,7 +140,7 @@ model Portfolio {
 
   user User @relation(fields: [userId], references: [id])
 
-  files String[]
+  files R2File[] // one to many relation
 }
 
 model Job {
@@ -150,6 +154,8 @@ model Job {
   serverId    String
   status      String   @default("Accepting Applications")
   server      Server   @relation(fields: [serverId], references: [id])
+
+  tags String[] @default([]) // Tags for the job listing
 
   applicants User[]
 }
@@ -170,6 +176,9 @@ model R2File {
   iconOf   Server? @relation("IconFile")
   bannerOf Server? @relation("BannerFile")
   avatarOf User? @relation("AvatarFile")
+
+  portfolioId String?
+  portfolioOf Portfolio? @relation(fields: [portfolioId], references: [id])
 }
 
 model DirectChannel {

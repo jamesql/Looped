@@ -26,6 +26,7 @@ class JobService {
                 updatedAt: true,
                 status: true,
                 server: true,
+                tags: true,
                 applicants: withApplicants? {
                     select: {
                         id: true,
@@ -39,6 +40,7 @@ class JobService {
                         password: false,
                         createdAt: true,
                         updatedAt: true,
+                        skills: true,
                     }
                 }: false,
             }

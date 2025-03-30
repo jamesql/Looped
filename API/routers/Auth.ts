@@ -48,7 +48,8 @@ router.post(
         avatarId: "",
         createdAt: undefined,
         updatedAt: undefined,
-        status: undefined
+        status: undefined,
+        skills: undefined
       };
       const newUser = await users.createUser(user);
 

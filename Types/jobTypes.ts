@@ -13,4 +13,5 @@ export interface Job {
     serverId: string;
     server?: Server;
     applicants?: User[];
+    tags: string[];
 }
