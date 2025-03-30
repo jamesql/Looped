@@ -22,6 +22,7 @@
     color: var(--color-full-white);
     width: 23rem;
     height: 15rem;
+    cursor: pointer;
 }
 
 .server_card_banner_img {
