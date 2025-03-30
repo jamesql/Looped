@@ -1024,7 +1024,7 @@ const Application: React.FC = () => {
                   )}
 
               {/** Server Discovery  */}
-              {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery discoverable={session?.servers} />}
+              {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery />}
               
               {/** Friend DM Channel  */}
               {!selectedServer && selectedFriend && <DirectChannel friend={selectedFriend} />}

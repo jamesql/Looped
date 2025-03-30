@@ -4,7 +4,6 @@ import discoveryClasses from "../styles/serverdiscovery.module.css";
 import ServerCard from './ServerCard';
 import ApiClient from '@/util/api';
 import Cookies from "js-cookie";
-import ServerDiscoveryModal from './ServerDiscoveryModal';
 
 const ServerDiscovery: React.FC = () => {
     const [discoverable, setDiscoverable] = useState<Server[]>([]);
