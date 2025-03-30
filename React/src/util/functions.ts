@@ -3,8 +3,17 @@ import { Permissions } from "../../../Types/permissionsTypes";
 import ApiClient from "./api";
 import Cookies from "js-cookie";
 import { ContentCreateResponse, R2File } from "../../../Types/contentTypes";
-const fileUrlCache = new Map<string, string>();
-// check if user has certain permissions
+
+
+if (!global.__FILE_URL_CACHE) {
+  global.__FILE_URL_CACHE = new Map<string, CacheEntry>();
+}
+
+const fileUrlCache = global.__FILE_URL_CACHE;
+
+// TTL value in milliseconds (3600 seconds = 1 hour)
+const TTL = 3500 * 1000;
+
 export const checkPermissions = (
   server: Server,
   userId: string,
@@ -61,17 +70,24 @@ export const uploadCdnFile = async (
     body: file,
   });
 
-  if(uploadResponse.ok) {
-    return {r2file: resp.r2file};
-  }
-  else {
+  if (uploadResponse.ok) {
+    return { r2file: resp.r2file };
+  } else {
     throw new Error(`Upload failed for ${file.name}.`);
   }
 };
 
 export const getCdnFileUrl = async (file: R2File): Promise<string> => {
-  if (fileUrlCache.has(file.id)) {
-    return fileUrlCache.get(file.id)!; // Return the cached URL
+  // Check if the file exists in cache and is not expired
+  const cachedEntry = fileUrlCache.get(file.id);
+  if (cachedEntry) {
+    const isExpired = Date.now() - cachedEntry.timestamp > TTL;
+    if (!isExpired) {
+      return cachedEntry.url;
+    } else {
+      // If expired, remove it from the cache
+      fileUrlCache.delete(file.id);
+    }
   }
 
   try {
@@ -80,7 +96,8 @@ export const getCdnFileUrl = async (file: R2File): Promise<string> => {
 
     if (fileResp.status === 200) {
       const url = fileResp.data.url;
-      fileUrlCache.set(file.id, url); // Cache the URL
+      // Cache the URL with the current timestamp
+      fileUrlCache.set(file.id, { url, timestamp: Date.now() });
       return url;
     }
   } catch (error) {
@@ -91,6 +108,9 @@ export const getCdnFileUrl = async (file: R2File): Promise<string> => {
 };
 
 export const getCdnFileUrlSync = (file: R2File): string | undefined => {
-  return fileUrlCache.get(file.id);
+  const cachedEntry = fileUrlCache.get(file.id);
+  if (cachedEntry && Date.now() - cachedEntry.timestamp <= TTL) {
+    return cachedEntry.url;
+  }
+  return undefined;
 };
-
