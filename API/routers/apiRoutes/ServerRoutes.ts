@@ -65,6 +65,7 @@ router.post("/create", [
         createdAt: undefined,
         updatedAt: undefined,
         website: "https://looped.it.com",
+        tags: [],
     };
 
     // create server

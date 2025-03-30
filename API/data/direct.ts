@@ -40,6 +40,7 @@ class DirectService {
             createdAt: true, // Select the createdAt
             updatedAt: true, // Select the updatedAt
             password: false,
+            skills: true, // Select the skills
           },
         }, // Include users in the result
         messages: true, // Include messages in the result
@@ -72,6 +73,7 @@ class DirectService {
             location: true,
             birthday: true,
             email: true,
+            skills: true,
             password: false,
             createdAt: true, // Include createdAt for users
             updatedAt: true, // Include updatedAt for users
