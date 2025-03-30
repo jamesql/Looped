@@ -86,7 +86,7 @@ class ApiClient {
     }
 
     // edit server info post request
-    public async editServer(serverId: string, name: string, desc: string, website: string, token: string, iconId?: string, bannerId?: string): Promise<AxiosResponse> {
+    public async editServer(serverId: string, name: string, desc: string, website: string, tags: string[], token: string, iconId?: string, bannerId?: string): Promise<AxiosResponse> {
         this.addAuthHeader(token);
         return this.axiosInstance.post('/api/server/edit', {
             serverId: serverId,
@@ -94,7 +94,8 @@ class ApiClient {
             description: desc,
             iconId: iconId,
             bannerId: bannerId,
-            website: website
+            website: website,
+            tags: tags,
         });
     }
 
