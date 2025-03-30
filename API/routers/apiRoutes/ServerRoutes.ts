@@ -22,7 +22,7 @@ router.post("/create", [
     header("Authorization").isString().isLength({min: 1}),
     body("name").isString().isLength({min: 3, max: 20}),
     body("description").isString().isLength({min: 0, max: 100}),
-], async (req: Request, res: Response) => {
+], async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });
@@ -66,6 +66,7 @@ router.post("/create", [
         updatedAt: undefined,
         website: "https://looped.it.com",
         tags: [],
+        private: true
     };
 
     // create server
@@ -97,6 +98,7 @@ router.post("/edit", [
     body("website").isString().isLength({min: 0, max: 100}),
     body("serverId").isString().isLength({min: 1}),
     body("tags").isArray(),
+    body("private").isBoolean(), // Add validation for private field
 ], async(req: Request, res: Response) => {
 
     const errors = validationResult(req);
@@ -148,6 +150,7 @@ router.post("/edit", [
         createdAt: undefined,
         updatedAt: undefined,
         tags: req.body.tags,
+        private: req.body.private,
     };
 
     // edit server
@@ -171,9 +174,8 @@ router.post("/edit", [
 router.post("/delete", [
     header("Authorization").isString().isLength({min: 1}),
     body("serverId").isString().isLength({min: 1}),
-], async (req: Request, res: Response) => {
+], async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
-
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });
         return;
@@ -363,7 +365,7 @@ router.post("/kick", [
     }
 
     // get user
-    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);  
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 
     // make sure user exists
     if (!user) {
@@ -436,6 +438,48 @@ router.post("/kick", [
     // return success
     res.status(200).json({ success: true });
     return;
+});
+
+router.get("/get-discovery-servers", [
+    header("Authorization").isString().isLength({ min: 1 }),
+], async (req: Request, res: Response): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    try {
+        // Validate access token
+        const token = req.header("Authorization");
+        const result = await validateToken(token);
+
+        if (!result || !result.valid) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        // get user
+        const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
+
+        // make sure user exists
+        if (!user) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+
+        // Fetch public servers
+        const publicServers = await ServerService.getPublicServersUserNotIn(user.id);
+        // TODO: Probably best not to return all the servers, this is probably for testing purposes
+
+        // Return public servers
+        res.status(200).json(publicServers);
+        return;
+    } catch (error) {
+        console.error("Error fetching discovery servers:", error);
+        res.status(500).json({ error: "Internal server error" });
+        return;
+    }
 });
 
 router.post("/ban", [

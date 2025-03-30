@@ -8,8 +8,9 @@
 
 .server_discovery_grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 5px;
+    column-gap: 5px;
 }
 
 .server_card {
@@ -19,8 +20,8 @@
     border-radius: 5px;
     background-color: var(--color-midnight-blue);
     color: var(--color-full-white);
-    width: 350px;
-    height: 200px;
+    width: 23rem;
+    height: 15rem;
 }
 
 .server_card_banner_img {

@@ -9,8 +9,8 @@ interface ServerCardProps {
 }
 
 const ServerCard: React.FC<ServerCardProps> = ({ server }) => {
-    const [bannerUrl, setBannerUrl] = useState<string>("/looped_main.jpg");
-    const [iconUrl, setIconUrl] = useState<string>("/looped_main.jpg");
+    const [bannerUrl, setBannerUrl] = useState<string>("/logo_main.jpg");
+    const [iconUrl, setIconUrl] = useState<string>("/logo_main.jpg");
 
     useEffect(() => {
       if(server.banner)

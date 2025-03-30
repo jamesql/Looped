@@ -82,6 +82,8 @@ model Server {
   jobListings Job[]
 
   tags String[] @default([]) // Tags for the server
+
+  private     Boolean  @default(true) // Indicates if the server is private
 }
 
 model Channel {
