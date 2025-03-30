@@ -6,10 +6,12 @@ import Cookie from "js-cookie";
 import { MdDownload } from "react-icons/md";
 import prettyBytes from 'pretty-bytes';
 import { getCdnFileUrl } from "@/util/functions";
+import { User } from "../../../Types/userTypes";
 
 
 interface MessageComponentProps {
   message: Message;
+  handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
 const supportedImageTypes = new Set([
@@ -19,7 +21,7 @@ const supportedImageTypes = new Set([
   "image/webp",
 ]);
 
-const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
+const MessageComponent: React.FC<MessageComponentProps> = ({ message, handleProfileCard }) => {
   const [fileUrl, setFileUrl] = useState<string>();
   const truncateFileName = (fileName: string, maxLength: number = 20): string => {
     if (fileName.length <= maxLength) return fileName;
@@ -112,6 +114,9 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message }) => {
         className={classes.squircle}
         src={authorAvatarUrl}
         alt=""
+        onClick={(e) => {
+          handleProfileCard && message.author && handleProfileCard(e, message.author); // Call the function if provided
+        }}
       />
 
 

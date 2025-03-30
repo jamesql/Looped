@@ -1,0 +1,108 @@
+.user_profile_card {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    padding: 15px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: min-content;
+    gap: 10px;
+    position: absolute;
+    z-index: 1000;
+    min-width: 100px;
+}
+
+.user_main_info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    color: var(--color-full-white);
+    background-color: var(--color-midnight-blue);
+}
+
+.user_sub_info {
+    display: flex;
+    flex-direction: column;
+    justify-items: space-around;
+    gap: 0.25rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.action_button_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    gap: 5px;
+}
+
+.icon_button {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: var(--color-bright-cyan);
+    border-radius: 10%;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.icon_button:hover {
+    background-color: var(--color-bright-cyan-darker);
+}
+
+.icon_button:active {
+    background-color: var(--color-bright-cyan-darkerer); /* Replace with a darker shade */
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-full-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portfolio_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.portfolio_image {
+    width: 100px;
+    height: 100px;
+    border-radius: 10%;
+    background-color: var(--color-bright-cyan);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.skill_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--color-midnight-blue);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.skill_tag {
+    background-color: var(--color-bright-cyan);
+    color: var(--color-full-white);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}

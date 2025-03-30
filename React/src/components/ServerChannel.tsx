@@ -6,15 +6,18 @@ import classes from "../styles/application.module.css";
 import MessageComponent from "./MessageComponent";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import { uploadCdnFile } from "@/util/functions";
+import { User } from "../../../Types/userTypes";
 
 interface ServerChannelProps {
   selectedServer: Server;
   selectedChannel: Channel;
+  handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
 const ServerChannel: React.FC<ServerChannelProps> = ({
   selectedServer,
   selectedChannel,
+  handleProfileCard
 }) => {
   const [currentMessage, setCurrentMessage] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
@@ -63,7 +66,7 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
     <>
       <div className={classes.messages}>
         {[...(selectedChannel?.messages || [])].reverse().map((message) => (
-          <MessageComponent message={message} />
+          <MessageComponent message={message} handleProfileCard={handleProfileCard} />
         ))}
       </div>
 

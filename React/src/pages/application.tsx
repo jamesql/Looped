@@ -10,7 +10,6 @@ import FriendsList from "@/components/FriendsList";
 import { Permissions } from "../../../Types/permissionsTypes";
 import ServerIcon from "@/components/ServerIcon";
 import { checkPermissions, getCdnFileUrl } from "@/util/functions";
-import UserCard from "@/components/UserCard";
 import ServerDiscovery from "@/components/ServerDiscovery";
 import DirectChannel from "@/components/DirectChannel";
 import ServerChannel from "@/components/ServerChannel";
@@ -27,6 +26,8 @@ import { MdAdd, MdGroupAdd, MdHome, MdMessage, MdPersonAdd } from "react-icons/m
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";
+import MembersList from "@/components/MembersList";
+import UserProfileModal from "@/components/UserProfileModal";
 
 const Application: React.FC = () => {
   // data states
@@ -50,6 +51,49 @@ const Application: React.FC = () => {
   const [tooltipY, setTooltipY] = useState(0)
 
   const isHome = selectedServer === null && selectedChannel === null && selectedFriend === null;
+
+  const [cardVisible, setCardVisible] = useState(false);
+  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
+  const [cardUser, setCardUser] = useState<User | null>(null);
+  const handleProfileCard = (e: React.MouseEvent, u: User) => {
+    e.stopPropagation(); // Stop the event from bubbling up to the document
+    e.preventDefault(); // Prevent the default click
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const dropdownWidth = 250; // Approximate width of the dropdown
+    const dropdownHeight = 500; // Approximate height of the dropdown
+
+    let x = e.pageX;
+    let y = e.pageY;
+
+    if (x + dropdownWidth > viewportWidth) {
+      x = viewportWidth - dropdownWidth - 10; // Add some padding
+    }
+    if (y + dropdownHeight > viewportHeight) {
+      y = viewportHeight - dropdownHeight - 10; // Add some padding
+    }
+    setCardPosition({ x, y });
+    setCardUser(u);
+    setCardVisible(true);
+  };
+
+  const handleClickOutsideCard = () => {
+    setCardVisible(false);
+  };
+
+  useEffect(() => {
+    if (cardVisible) {
+      document.addEventListener("click", handleClickOutsideCard);
+    } else {
+      document.removeEventListener("click", handleClickOutsideCard);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutsideCard);
+    };
+  }, [cardVisible]);
+
 
   const handleDockMouseEnter = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -787,7 +831,8 @@ const Application: React.FC = () => {
   return (
     <div>
       <WebSocketComponent url={"ws://127.0.0.1:444"} listeners={listeners} />
-
+      
+      
       {joiningServer && (
         <JoinServerModal isOpen={true} setClose={setJoiningServer} />
       )}
@@ -825,6 +870,15 @@ const Application: React.FC = () => {
       ) : (
         <div>
           <div className={classes.container}>
+            {/* Profile Card */}
+            {cardVisible && (
+              <UserProfileModal
+                user={cardUser}
+                x={cardPosition.x}
+                y={cardPosition.y}
+              ></UserProfileModal>
+            )}
+
             <div className={classes.server_info}>
               {!selectedServer ? (
                 <div className={classes.server_card}>
@@ -857,7 +911,7 @@ const Application: React.FC = () => {
                   setSelectedServer(null);
                   setSelectedChannel(null);
                   setFriendRequestPanelActive(false);
-                }} activeUser={selectedFriend}/>
+                }} activeUser={selectedFriend} handleProfileCard={handleProfileCard}/>
               ) : (
                 <div className={classes.channel_list}>
                   {(selectedServer.ownerId === session?.id ||
@@ -970,7 +1024,7 @@ const Application: React.FC = () => {
 
               {/** Server Discovery  */}
               {!selectedServer && !selectedFriend && !friendRequestPanelActive && <ServerDiscovery />}
-
+              
               {/** Friend DM Channel  */}
               {!selectedServer && selectedFriend && <DirectChannel friend={selectedFriend} />}
 
@@ -982,26 +1036,13 @@ const Application: React.FC = () => {
                 <ServerChannel
                   selectedServer={selectedServer}
                   selectedChannel={selectedChannel}
+                  handleProfileCard={handleProfileCard}
                 />
               )}
             </div>
 
             <div className={classes.members_profile}>
-              <ul className={classes.members_list}>
-                {selectedServer?.members
-                  ? selectedServer?.members.map((member) => (
-                      <UserCard
-                        user={member}
-                        is_admin={session?.id === selectedServer?.ownerId}
-                        is_self={session?.id === member.id} // Check if the user is the same as the session user
-                        is_friend={session?.friends?session?.friends?.some(u => u.id === member.id):false}
-                        incoming_request={session?.friendRequestsReceived?session?.friendRequestsReceived.some((request) => request.id === member.id) : false} // Check if the user has sent a friend request to this member
-                        outgoing_request={session?.friendRequestsSent?session?.friendRequestsSent.some((request) => request.id === member.id) : false} // Check if this member has sent a friend request to the user
-                      />
-                    ))
-                  : ""}
-              </ul>
-
+              <MembersList session={session} selectedServer={selectedServer} handleProfileCard={handleProfileCard}/>
               <div className={classes.profile_card}>
                 <div className={classes.profile_member}>
                   <div className={classes.member_image}>

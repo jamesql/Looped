@@ -7,14 +7,15 @@ import Cookies from "js-cookie";
 
 interface UserCardProps {
   user: User;
-  is_admin : boolean;
-  is_self: boolean; 
-  is_friend: boolean;
-  incoming_request: boolean;
-  outgoing_request: boolean;
+  isAdmin : boolean;
+  isSelf: boolean; 
+  isFriend: boolean;
+  incomingRequest: boolean;
+  outgoingRequest: boolean;
+  handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, is_admin, is_self, is_friend, incoming_request, outgoing_request }) => {
+const UserCard: React.FC<UserCardProps> = ({ user, isAdmin, isSelf, isFriend, incomingRequest, outgoingRequest, handleProfileCard }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
 
@@ -141,6 +142,9 @@ const UserCard: React.FC<UserCardProps> = ({ user, is_admin, is_self, is_friend,
     <li
       className={classes.member_card}
       onContextMenu={handleContextMenu} // Handle right-click
+      onClick={(e)=>{
+        handleProfileCard && handleProfileCard(e, user); // Call the function if provided
+      }}
     >
       <div className={classes.member_image}>
         <img
@@ -166,15 +170,15 @@ const UserCard: React.FC<UserCardProps> = ({ user, is_admin, is_self, is_friend,
 
 
           {/** Friend Request Buttons  */}
-          {!is_self && is_friend && <li onClick={() => handleRemoveFriend()}>Remove Friend</li>}
-          {!is_self && incoming_request && <li onClick={() => handleAccept()}>Accept Request</li>}
-          {!is_self && incoming_request && <li onClick={() => handleDecline()}>Deny Request</li>}          
-          {!is_self && !is_friend && (!incoming_request && !outgoing_request) && <li onClick={() => handleAddFriend()}>Add Friend</li>}
+          {!isSelf && isFriend && <li onClick={() => handleRemoveFriend()}>Remove Friend</li>}
+          {!isSelf && incomingRequest && <li onClick={() => handleAccept()}>Accept Request</li>}
+          {!isSelf && incomingRequest && <li onClick={() => handleDecline()}>Deny Request</li>}          
+          {!isSelf && !isFriend && (!incomingRequest && !outgoingRequest) && <li onClick={() => handleAddFriend()}>Add Friend</li>}
 
           {/** Moderation tools  */}
-          {!is_self && <li onClick={() => console.log({incoming_request, outgoing_request, is_friend})}>Report</li>}
-          {is_admin && !is_self && <li onClick={() => console.log("Ban")}>Ban</li>}
-          {is_admin && !is_self && <li onClick={() => console.log("Kick")}>Kick</li>}
+          {!isSelf && <li onClick={() => console.log({incoming_request: incomingRequest, outgoing_request: outgoingRequest, is_friend: isFriend})}>Report</li>}
+          {isAdmin && !isSelf && <li onClick={() => console.log("Ban")}>Ban</li>}
+          {isAdmin && !isSelf && <li onClick={() => console.log("Kick")}>Kick</li>}
         </ul>
       )}
     </li>
