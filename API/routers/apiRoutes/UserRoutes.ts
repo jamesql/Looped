@@ -82,6 +82,7 @@ router.post("/edit", [
     body("lastName").isString().isLength({ min: 1 }),
     body("location").isString().isLength({ min: 1 }),
     body("status").isString().isLength({ min: 1 }),
+    body("skills").isArray(),
     body("avatarId").isString().isLength({ min: 0 }).optional(),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -103,12 +104,16 @@ router.post("/edit", [
         res.status(404).json({ error: "User not found" });
         return;
     }
+
+    console.log(req.body.skills);
+
     const updatedUser = await UserService.updateUserById(result.userId, {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         location: req.body.location,
         status: req.body.status,
         avatarId: req.body.avatarId? req.body.avatarId : undefined,
+        skills: req.body.skills,
     });
 
     const newUser = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
