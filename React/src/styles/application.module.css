@@ -419,6 +419,29 @@
     transform: scale(0.9); /* Add a pressed effect */
 }
 
+.badge_icon_wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.notification_badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: red;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px white;
+    pointer-events: none;
+  }
+  
 
 .message {
     display: flex;

@@ -26,6 +26,7 @@ import UserSettingsModal from "@/components/UserSettingsModal";
 import { MdAdd, MdGroupAdd, MdHome, MdMessage, MdPersonAdd } from "react-icons/md";
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
+import RequestsIconNumbered from "@/components/RequestsIconNumbered";
 
 const Application: React.FC = () => {
   // data states
@@ -513,7 +514,7 @@ const Application: React.FC = () => {
                       setSelectedFriend(null)
                       setFriendRequestPanelActive(true);
                     }}>
-                      <MdPersonAdd className={classes.chat_bar_icon}/>
+                      <RequestsIconNumbered inviteCount={session?.friendRequestsReceived?.length}/>
                     </button>
                 </div>
               ) : (

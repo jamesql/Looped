@@ -20,6 +20,7 @@ const FriendRequestsList: React.FC<FriendsListProps> = ({ friends = [] }) => {
       {friendList.map((friend) => (
         <FriendRequestCard key={friend.id} user={friend} onAction={removeUserFromList} />
       ))}
+      {friendList.length === 0 && <p>No friend requests available.</p>}
     </div>
   );
 };
