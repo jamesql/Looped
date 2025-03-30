@@ -19,6 +19,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
     const [location, setLocation] = useState(user?.location || '');
     const [status, setStatus] = useState(user?.status || '');
     const [avatarId, setAvatarId] = useState(user?.avatarId || '');
+    const [skills, setSkills] = useState(user?.skills || []);
 
     const userAvatarFileChange = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -42,13 +43,16 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
             return;
         }
 
+        console.log(skills);
+
         await ApiClient.getInstance().editUser(
             firstName, 
             lastName,
             location,
             status,
             token,
-            avatarId
+            skills,
+            avatarId,
         )
         setClose(false);
     };
@@ -76,6 +80,40 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
                     <label>
                         Status:
                         <input type="text" name="status" value={status} onChange={(e) => setStatus(e.target.value)} />
+                    </label>
+                    <label>
+                        Skills:
+                        <div>
+                            <div className={classes.skills}>
+                            {skills.map((skill, index) => (
+                                <div key={index} className={classes.skill}>
+                                    {skill}
+                                    <button type="button" onClick={() => setSkills(skills.filter((_, i) => i !== index))}>
+                                        &times;
+                                    </button>
+                                </div>
+                            ))}
+                            </div>
+                            <div>
+                                <input
+                                    type="text"
+                                    placeholder="Enter a skill"
+                                    id="newSkillInput"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const input = document.getElementById('newSkillInput') as HTMLInputElement;
+                                        if (input && input.value.trim()) {
+                                            setSkills([...skills, input.value.trim()]);
+                                            input.value = '';
+                                        }
+                                    }}
+                                >
+                                    Add Skill
+                                </button>
+                            </div>
+                        </div>
                     </label>
                     <label>
                         Avatar URL:

@@ -781,6 +781,7 @@ const Application: React.FC = () => {
           birthday: updatedUser.birthday,
           email: updatedUser.email,
           avatar: updatedUser.avatar,
+          skills: updatedUser.skills,
         };
       }
       return prevSession;

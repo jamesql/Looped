@@ -48,6 +48,8 @@ class UserService {
     if (data.lastName) updateData.lastName = data.lastName;
     if (data.location) updateData.location = data.location;
     if (data.status) updateData.status = data.status;
+    if (data.skills) updateData.skills = data.skills;
+    if (data.birthday) updateData.birthday = data.birthday;
   
     if (data.avatarId !== undefined) {
       updateData.avatar = { connect: { id: data.avatarId } }
