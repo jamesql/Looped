@@ -530,7 +530,7 @@ router.get("/get-discovery-servers", [
         }
 
         // Fetch public servers
-        const publicServers = await ServerService.getPublicServersUserNotIn(user.id);
+        const publicServers = await ServerService.getServerDiscovery(user.id, user.skills);
         // TODO: Probably best not to return all the servers, this is probably for testing purposes
 
         // Return public servers
