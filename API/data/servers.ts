@@ -173,6 +173,24 @@ class ServerService {
       },
     });
   }
+
+  async getServerDiscovery(userId: string, skills: string[]) {
+    return await prisma.server.findMany({
+      where: {
+        private: false,
+        members: {
+          none: { id: userId }, // Exclude servers where the user is already a member
+        },
+        tags: {
+          hasSome: skills, // Include servers with similar tags
+        },
+      },
+      include: {
+        icon: true,
+        banner: true,
+      },
+    });
+  }
 }
 
 export default new ServerService();
