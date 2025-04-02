@@ -107,6 +107,11 @@
   border-radius: 25%;
 }
 
+.dock_icon_lib {
+    width: 25px;
+    height: 25px;
+}
+
 .dock_icon_img {
   width: 100%;
   height: 100%;

@@ -972,7 +972,7 @@ const Application: React.FC = () => {
                           setFriendRequestPanelActive(false);
                         }}
                       >
-                        <MdHome/>
+                        <MdHome className={classes.dock_icon_lib}/>
                       </div>
                     </div>
                     <div
@@ -981,7 +981,7 @@ const Application: React.FC = () => {
                           onMouseLeave={handleMouseLeave}
                           onClick={() => setCreatingServer(true)}
                         >
-                          <MdAdd/>
+                          <MdAdd className={classes.dock_icon_lib}/>
                     </div>
                     <div
                           className={classes.dock_icon}
@@ -990,7 +990,7 @@ const Application: React.FC = () => {
                           onClick={() => setJoiningServer(true)}
 
                         >
-                          <MdGroupAdd/>
+                          <MdGroupAdd className={classes.dock_icon_lib}/>
                     </div>
 
                     {session?.servers?.map((server) => (
