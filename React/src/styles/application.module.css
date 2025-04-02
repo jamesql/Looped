@@ -22,6 +22,8 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	overflow: hidden; /* Ensure content respects rounded corners */
+	object-fit: cover; /* Ensure images fit properly */
 }
 .squircle:hover {
 	border-radius: 36%;
@@ -70,7 +72,7 @@
 }
 
 .server_dock::-webkit-scrollbar {
-    display: none;
+    display: none; /* Ensure scrollbars are hidden across all browsers */
 }
 
 .dock_container {
@@ -421,7 +423,7 @@
 }
 
 .friend_request_response_button:active {
-    transform: scale(0.9); /* Add a pressed effect */
+    transform: scale(0.95); /* Adjust scale for smoother effect */
 }
 
 .badge_icon_wrapper {
@@ -774,10 +776,10 @@
 }
 
 .self_buttons {
-    width:100%;
+    width: 100%;
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    justify-content: right;
+    justify-content: flex-end; /* Corrected value */
     align-items: center;
 }
