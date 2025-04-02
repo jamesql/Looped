@@ -1,5 +1,5 @@
 .modal {
-    display: block;
+    display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -10,9 +10,18 @@
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    font-family: "Open Sans", sans-serif;
+}
+
+.modal_header {
+    display:flex;
+    justify-content: space-between;
 }
 
 .modal_content {
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -55,4 +64,56 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+    align-items: center;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 10px;
+    transition: background-color 0.2s, transform 0.2s;
+    color: var(--color-full-white)
+}
+
+.button:hover {
+    background-color: var(--color-bright-cyan-darker);
+}
+
+.button:active {
+    background-color: var(--color-bright-cyan); /* Replace with a darker shade */
+}
+
+  
+.custom_file_upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.skill_tag {
+    background-color: var(--color-bright-cyan);
+    color: var(--color-full-white);
+    padding: 5px 10px;
+    border-radius: 5px;
+    
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.skill_input_bar {
+    display:flex;
+    gap: 5px;
+}
+
+
+.skill_input {
+    width:20%;
 }
