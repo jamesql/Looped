@@ -108,4 +108,29 @@ const Signup: React.FC = () => {
     );
 };
 
+export const getServerSideProps = async (context: any) => {
+    const { req, res } = context;
+    const cookies = req.headers.cookie || "";
+  
+    // Check for access_token or refresh_token in cookies
+    const hasAccessToken = cookies.includes("access_token");
+    const hasRefreshToken = cookies.includes("refresh_token");
+  
+    if (hasAccessToken || hasRefreshToken) {
+      // Redirect to /application if tokens are present
+      return {
+        redirect: {
+          destination: "/application",
+          permanent: false,
+        },
+      };
+    }
+  
+    // If no tokens are found, render the login page
+    return {
+      props: {}, // No additional props needed
+    };
+  };
+  
+
 export default Signup;
