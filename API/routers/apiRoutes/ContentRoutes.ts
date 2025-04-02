@@ -7,6 +7,7 @@ import { UserDatapacks } from "../../data/data";
 import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { param } from "express-validator";
+import content from "../../data/content";
 
 const router: Router = express.Router();
 
@@ -70,6 +71,10 @@ router.post("/create", [
         res.status(404).json({ error: "User not found" });
         return;
     }
+    let contentType = req.body.contentType;
+    const blacklistedTypes = ["text/html", "application/xhtml+xml", "text/xml", "image/svg+xml", "text/javascript", "application/javascript"];
+    if(blacklistedTypes.includes(contentType))
+        contentType = "text/plain"; // prevent XSS when opening file
 
     const file = await ContentService.createContent({
         fileName: req.body.fileName,
