@@ -133,11 +133,11 @@ router.post(
 });
 
 // refresh token post route
+// TODO: When global bans are implemented, check global ban before allowing refresh.
 router.post(
   "/refresh",
   [
     header("Authorization").isString().isLength({ min: 1 }),
-    body("refreshToken").isString().isLength({ min: 1 }),
   ],
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -147,7 +147,7 @@ router.post(
     }
 
     // get refresh token
-    const refreshToken = req.body.refreshToken;
+    const refreshToken = req.header("Authorization");
 
     // validate refresh token
     const decode = tokenUtil.validateRefreshToken(refreshToken);
@@ -166,11 +166,52 @@ router.post(
     }
 
     // generate new access token
-    const access_token = tokenUtil.generateAccessToken(decode["userId"]);
+    const accessToken = tokenUtil.generateAccessToken(decode["userId"]);
 
-    res.status(200).json({ accessToken: access_token });
+    res.status(200).json({ accessToken: accessToken });
     return;
   }
 );
+
+// refreshes the refresh token if it's near expiry.
+router.post(
+  "/refresh-trade",
+  [
+    header("Authorization").isString().isLength({ min: 1 }),
+  ],
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    // get refresh token
+    const refreshToken = req.header("Authorization");
+
+    // validate refresh token
+    const decode = tokenUtil.validateRefreshToken(refreshToken);
+
+    // check if token is valid
+    if (!decode) {
+      res.status(400).json({ error: "Invalid token" });
+      return;
+    }
+
+    // check if token is expired
+    const isExpired = Date.now() / 1000 > decode["exp"];
+    if (isExpired) {
+      res.status(400).json({ error: "Token expired" });
+      return;
+    }
+
+    // generate new access token
+    const newToken = tokenUtil.generateRefreshToken(decode["userId"]);
+
+    res.status(200).json({ refreshToken: newToken });
+    return;
+  }
+);
+
 
 module.exports = router;

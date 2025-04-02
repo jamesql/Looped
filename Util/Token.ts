@@ -8,7 +8,7 @@ class TokenUtil {
 
     constructor(
         accessTokenExpiry: string = "15m",
-        refreshTokenExpiry: string = "7d"
+        refreshTokenExpiry: string = "14d"
     ) {
         this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || '';
         this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || '';

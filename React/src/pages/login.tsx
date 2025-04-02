@@ -5,44 +5,30 @@ import ApiClient from "../util/api";
 import Cookie from "js-cookie";
 
 const Login: React.FC = () => {
-  // state for username and password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // make sure email and password are not null
     if (email && password) {
-      // send a request to the server to login
-      console.log(
-        "Logging in with email: ",
-        email,
-        " and password: ",
-        password
-      );
-
       ApiClient.getInstance()
         .login(email, password)
         .then((response) => {
-          console.log(response);
-
           if (response.status === 200) {
-            //save access and refresh token in cookie
+            // Save access and refresh token in cookies
             Cookie.set("access_token", response.data.accessToken);
             Cookie.set("refresh_token", response.data.refreshToken);
 
-            // redirect to app page
+            // Redirect to app page
             window.location.href = "/application";
           } else {
-            // handle error here
             console.log("Error logging in");
             alert("Error logging in. Please try again.");
           }
         })
         .catch((error) => {
           console.log(error);
-          // handle error here
         });
     }
   };
@@ -101,6 +87,30 @@ const Login: React.FC = () => {
       </div>
     </div>
   );
+};
+
+export const getServerSideProps = async (context: any) => {
+  const { req, res } = context;
+  const cookies = req.headers.cookie || "";
+
+  // Check for access_token or refresh_token in cookies
+  const hasAccessToken = cookies.includes("access_token");
+  const hasRefreshToken = cookies.includes("refresh_token");
+
+  if (hasAccessToken || hasRefreshToken) {
+    // Redirect to /application if tokens are present
+    return {
+      redirect: {
+        destination: "/application",
+        permanent: false,
+      },
+    };
+  }
+
+  // If no tokens are found, render the login page
+  return {
+    props: {}, // No additional props needed
+  };
 };
 
 export default Login;
