@@ -299,18 +299,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                         Save Changes
                     </button>
                 </form>
-                <div>
-                    <button
-                        onClick={async () => {
-                            Cookies.remove("refresh_token");
-                            Cookies.remove("access_token");
-                            window.location.href = "/login";
-                        }}
-                        className={classes.button}
-                    >
-                        Sign Out
-                    </button>
-                </div>
             </div>
         </div>
     );
