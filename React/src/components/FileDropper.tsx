@@ -5,9 +5,10 @@ import classes from "../styles/filedropper.module.css";
 interface FileDropperProps {
     onFilesDropped: (files: FileList) => void;
     accept?: string; // Specify accepted file types (e.g., ".png,.jpg,.jpeg,.pdf")
+    children?: React.ReactNode; // Allow custom content inside the dropper
 }
 
-const FileDropper: React.FC<FileDropperProps> = ({ onFilesDropped, accept }) => {
+const FileDropper: React.FC<FileDropperProps> = ({ onFilesDropped, accept, children }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -34,6 +35,24 @@ const FileDropper: React.FC<FileDropperProps> = ({ onFilesDropped, accept }) => 
         }
     };
 
+    const handleCustomContent = (content: string) => {
+        console.log("Custom content:", content);
+    };
+    if(children)
+        return <> 
+            <div onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={handleClick}>
+                {children}
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    accept={accept || ''} // Ensure the accept prop is passed correctly
+                    onChange={handleFileInputChange}
+                />
+            </div>
+        </>
     return (
         <div
             onDrop={handleDrop}

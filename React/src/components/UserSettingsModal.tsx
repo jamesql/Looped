@@ -4,7 +4,7 @@ import { User } from "../../../Types/userTypes";
 import ApiClient from "@/util/api";
 import Cookies from "js-cookie";
 import { getCdnFileUrl, uploadCdnFile } from "@/util/functions";
-import { MdClose } from "react-icons/md";
+import { MdClose, MdCloudUpload } from "react-icons/md";
 import FileDropper from "./FileDropper";
 
 interface UserSettingsModalProps {
@@ -25,6 +25,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [avatarFile, setAvatarFile] = useState(user?.avatar || null);
     const [skills, setSkills] = useState(user?.skills || []);
     const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
+    const [imgHover, setImgHover] = useState<boolean>(false);
 
     useEffect(() => {
         if (avatarFile) {
@@ -189,19 +190,33 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     </label>
                     <label>
                         Avatar:
-                        <FileDropper onFilesDropped={userAvatarFileChangeNew} accept=".png,.jpg,.jpeg,.gif"></FileDropper>
+                        <FileDropper onFilesDropped={userAvatarFileChangeNew} accept=".png,.jpg,.jpeg,.gif">
+                            <div className={classes.user_avatar_container}>
+                                <div 
+                                    className={classes.user_avatar} 
+                                    onMouseEnter={() => setImgHover(true)} 
+                                    onMouseLeave={() => setImgHover(false)}
+                                >
+                                    <img
+                                        src={avatarUrl}
+                                        alt="User Avatar"
+                                        className={classes.user_avatar_img}
+                                    />
+                                    {imgHover && (
+                                        <div className={classes.overlay_icon}>
+                                            <MdCloudUpload
+                                                size={24} 
+                                                onClick={() => setAvatarFile(null)} 
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </FileDropper>
                     </label>
                     <label>
                         Avatar Preview:
-                        <div className={classes.user_avatar_container}>
-                            <div className={classes.user_avatar}>
-                                <img
-                                    src={avatarUrl}
-                                    alt="User Avatar"
-                                    className={classes.user_avatar_img}
-                                />
-                            </div>
-                        </div>
+                        
                     </label>
                     <button type="submit" className={classes.button}>
                         Save Changes
