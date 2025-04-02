@@ -15,12 +15,6 @@ const Login: React.FC = () => {
     // make sure email and password are not null
     if (email && password) {
       // send a request to the server to login
-      console.log(
-        "Logging in with email: ",
-        email,
-        " and password: ",
-        password
-      );
 
       ApiClient.getInstance()
         .login(email, password)
