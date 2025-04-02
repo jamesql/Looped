@@ -119,6 +119,14 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, setClose,
                     </label>
                     <button type="submit">Save Changes</button>
                 </form>
+
+                <button onClick={
+                    async () => {
+                        Cookies.remove('refresh_token');
+                        Cookies.remove('access_token');
+                        window.location.href = "/login";
+                    }
+                }>Sign Out</button>
             </div>
         </div>
     );
