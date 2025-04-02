@@ -1,5 +1,5 @@
 .modal {
-    display: block;
+    display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -10,9 +10,19 @@
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    font-family: "Open Sans", sans-serif;
+}
+
+.modal_header {
+    display:flex;
+    justify-content: space-between;
 }
 
 .modal_content {
+    max-height: 500px;
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -21,6 +31,7 @@
     max-width: 500px;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
 }
 
 .close {
@@ -45,14 +56,168 @@
 .modal input[type="text"] {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 0; /* Remove default margin */
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.label {
+    display: flex;
+    flex-direction: column; /* Stack input and error vertically */
+    gap: 4px; /* Add consistent spacing between input and error */
+    margin-bottom: 10px; /* Add spacing between fields */
 }
 
 .skills {
     display: flex;
     flex-direction: row;
     gap: 10px;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 10px;
+    transition: background-color 0.2s, transform 0.2s;
+    color: var(--color-full-white)
+}
+
+.button:hover {
+    background-color: var(--color-bright-cyan-darker);
+}
+
+.button:active {
+    background-color: var(--color-bright-cyan); /* Replace with a darker shade */
+}
+
+  
+.custom_file_upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.skill_tag {
+    background-color: var(--color-bright-cyan);
+    color: var(--color-full-white);
+    padding: 5px 10px;
+    border-radius: 5px;
+    
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.skill_input_bar {
+    display:flex;
+    gap: 5px; 
+    align-items: center;
+
+}
+
+
+.skill_input_bar input[type="text"] {
+    width: 80%;
+}
+
+.skill_input_bar_button {
+    width: 20%;
+    height: 40px;
+}
+
+.user_avatar_container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;;
+    width:100%;
+}
+
+.user_avatar {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+    flex-shrink: 0;
+    overflow: hidden; /* Ensure the image respects the rounded corners */
+}
+
+.user_avatar:hover {
+    border-radius: 25%;
+}
+
+.user_avatar_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image fits properly */
+    position: relative; /* Ensure it stays below the overlay */
+    z-index: 1;
+}
+
+.user_avatar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, border-radius 0.2s ease-in-out;
+    z-index: 2; /* Ensure it layers above the image */
+    border-radius: inherit; /* Match the parent border radius */
+    pointer-events: none; /* Prevent interaction issues */
+}
+
+.user_avatar:hover::after {
+    opacity: 1;
+}
+
+.overlay_icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    border-radius: 50%;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.2s, opacity 0.2s;
+    z-index: 3; /* Ensure it stays above the overlay */
+}
+
+.user_avatar:hover .overlay_icon {
+    visibility: visible;
+    opacity: 1;
+}
+
+.error {
+    color: red;
+    font-size: 0.8rem;
+    margin: 0; /* Remove extra margin */
+    padding: 0; /* Ensure no extra padding is applied */
+    display: block;
+    line-height: 1.2; /* Adjust line height for better alignment */
 }
