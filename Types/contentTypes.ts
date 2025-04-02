@@ -14,4 +14,5 @@ export interface R2File {
 export interface ContentCreateResponse{
     url : string;
     r2file : R2File;
+    contentType : string; //sometimes gets overriden so we use this one
 }

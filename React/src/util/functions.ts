@@ -65,7 +65,7 @@ export const uploadCdnFile = async (
   const uploadResponse = await fetch(presignedUrl, {
     method: "PUT",
     headers: {
-      "Content-Type": file.type,
+      "Content-Type": resp.contentType,
     },
     body: file,
   });
@@ -90,21 +90,21 @@ export const getCdnFileUrl = async (file: R2File): Promise<string> => {
     }
   }
 
-  try {
     const token = Cookies.get("access_token") ?? "";
-    const fileResp = await ApiClient.getInstance().getFileById(token, file.id);
-
-    if (fileResp.status === 200) {
-      const url = fileResp.data.url;
-      // Cache the URL with the current timestamp
-      fileUrlCache.set(file.id, { url, timestamp: Date.now() });
-      return url;
+    try{
+      const fileResp = await ApiClient.getInstance().getFileById(token, file.id);
+      if (fileResp.status === 200) {
+        const url = fileResp.data.url;
+        // Cache the URL with the current timestamp
+        fileUrlCache.set(file.id, { url, timestamp: Date.now() });
+        return url;
+      }
+    } catch (error) {
+      console.error("Blacklisted URL given.");
     }
-  } catch (error) {
-    console.error("Error fetching file URL:", error);
-  }
+    
 
-  return "";
+    return "about:blank";
 };
 
 export const getCdnFileUrlSync = (file: R2File): string | undefined => {
