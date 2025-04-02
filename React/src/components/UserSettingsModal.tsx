@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "../styles/usersettingsmodal.module.css";
 import { User } from "../../../Types/userTypes";
 import ApiClient from "@/util/api";
 import Cookies from "js-cookie";
-import { uploadCdnFile } from "@/util/functions";
+import { getCdnFileUrl, uploadCdnFile } from "@/util/functions";
 import { MdClose } from "react-icons/md";
+import FileDropper from "./FileDropper";
 
 interface UserSettingsModalProps {
     isOpen: boolean;
@@ -21,19 +22,30 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [lastName, setLastName] = useState(user?.lastName || "");
     const [location, setLocation] = useState(user?.location || "");
     const [status, setStatus] = useState(user?.status || "");
-    const [avatarId, setAvatarId] = useState(user?.avatarId || "");
+    const [avatarFile, setAvatarFile] = useState(user?.avatar || null);
     const [skills, setSkills] = useState(user?.skills || []);
+    const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
+
+    useEffect(() => {
+        if (avatarFile) {
+          getCdnFileUrl(avatarFile).then((url) => {
+            setAvatarUrl(url);
+          });
+        } else {
+            setAvatarUrl("/logo_main.jpg");
+        }
+      }, [avatarFile]);
 
     if (!user) return null;
 
-    const userAvatarFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const files = event.target.files;
+    
+        
+     
+    const userAvatarFileChangeNew = async (files: FileList) => {
         if (files && files.length > 0) {
             const file = files[0];
             const cdnResp = await uploadCdnFile(file);
-            setAvatarId(cdnResp.r2file.id);
+            setAvatarFile(cdnResp.r2file);
         }
     };
 
@@ -54,7 +66,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             status,
             token,
             skills,
-            avatarId
+            avatarFile?.id
         );
         setClose(false);
     };
@@ -167,7 +179,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                                 input.value = "";
                                             }
                                         }}
-                                        className={classes.button}
+                                        className={[classes.button, classes.skill_input_bar_button].join(" ")}
                                     >
                                         Add Skill
                                     </button>
@@ -176,13 +188,20 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                         </div>
                     </label>
                     <label>
-                        Avatar URL:
-                        <input
-                            type="file"
-                            name="profileImage"
-                            onChange={userAvatarFileChange}
-                            className={classes.custom_file_upload}
-                        />
+                        Avatar:
+                        <FileDropper onFilesDropped={userAvatarFileChangeNew} accept=".png,.jpg,.jpeg,.gif"></FileDropper>
+                    </label>
+                    <label>
+                        Avatar Preview:
+                        <div className={classes.user_avatar_container}>
+                            <div className={classes.user_avatar}>
+                                <img
+                                    src={avatarUrl}
+                                    alt="User Avatar"
+                                    className={classes.user_avatar_img}
+                                />
+                            </div>
+                        </div>
                     </label>
                     <button type="submit" className={classes.button}>
                         Save Changes
