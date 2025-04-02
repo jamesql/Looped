@@ -190,8 +190,8 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     </label>
                     <label>
                         Avatar:
-                        <FileDropper onFilesDropped={userAvatarFileChangeNew} accept=".png,.jpg,.jpeg,.gif">
-                            <div className={classes.user_avatar_container}>
+                        <div className={classes.user_avatar_container}>
+                            <FileDropper onFilesDropped={userAvatarFileChangeNew} accept=".png,.jpg,.jpeg,.gif">
                                 <div 
                                     className={classes.user_avatar} 
                                     onMouseEnter={() => setImgHover(true)} 
@@ -211,12 +211,8 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </FileDropper>
-                    </label>
-                    <label>
-                        Avatar Preview:
-                        
+                            </FileDropper>
+                        </div>
                     </label>
                     <button type="submit" className={classes.button}>
                         Save Changes
