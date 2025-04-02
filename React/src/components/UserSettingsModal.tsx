@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { z } from "zod";
 import classes from "../styles/usersettingsmodal.module.css";
 import { User } from "../../../Types/userTypes";
 import ApiClient from "@/util/api";
@@ -6,6 +7,25 @@ import Cookies from "js-cookie";
 import { getCdnFileUrl, uploadCdnFile } from "@/util/functions";
 import { MdClose, MdCloudUpload } from "react-icons/md";
 import FileDropper from "./FileDropper";
+
+const userSchema = z.object({
+    firstName: z
+        .string()
+        .min(1, "First name is required.")
+        .max(50, "First name cannot exceed 50 characters."),
+    lastName: z
+        .string()
+        .min(1, "Last name is required.")
+        .max(50, "Last name cannot exceed 50 characters."),
+    location: z
+        .string()
+        .min(1, "Location is required.")
+        .max(100, "Location cannot exceed 100 characters."),
+    status: z
+        .string()
+        .min(1, "Status is required.")
+        .max(200, "Status cannot exceed 200 characters."),
+});
 
 interface UserSettingsModalProps {
     isOpen: boolean;
@@ -26,22 +46,39 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [skills, setSkills] = useState(user?.skills || []);
     const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
     const [imgHover, setImgHover] = useState<boolean>(false);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         if (avatarFile) {
-          getCdnFileUrl(avatarFile).then((url) => {
-            setAvatarUrl(url);
-          });
+            getCdnFileUrl(avatarFile).then((url) => {
+                setAvatarUrl(url);
+            });
         } else {
             setAvatarUrl("/logo_main.jpg");
         }
-      }, [avatarFile]);
+    }, [avatarFile]);
 
     if (!user) return null;
 
-    
-        
-     
+    const validateForm = () => {
+        const formData = { firstName, lastName, location, status };
+        try {
+            userSchema.parse(formData);
+            return {};
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const newErrors: { [key: string]: string } = {};
+                error.errors.forEach((err) => {
+                    if (err.path[0]) {
+                        newErrors[err.path[0] as string] = err.message;
+                    }
+                });
+                return newErrors;
+            }
+            return {};
+        }
+    };
+
     const userAvatarFileChangeNew = async (files: FileList) => {
         if (files && files.length > 0) {
             const file = files[0];
@@ -52,6 +89,13 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        setErrors({}); // Clear errors if validation passes
+
         // get token
         const token = Cookies.get("access_token");
 
@@ -79,50 +123,75 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             <div className={classes.modal_content}>
                 <div className={classes.modal_header}>
                     <h2>User Settings</h2>
-                    <span
-                        className={classes.close}
-                        onClick={() => setClose(false)}
-                    >
-                        &times;
-                    </span>
+                    <div className={classes.close}>
+                        <MdClose onClick={() => setClose(false)}></MdClose>
+                    </div>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <label>
-                        First Name:
-                        <input
-                            type="text"
-                            name="firstName"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                        />
-                    </label>
-                    <label>
-                        Last Name:
-                        <input
-                            type="text"
-                            name="lastName"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                        />
-                    </label>
-                    <label>
-                        Location:
-                        <input
-                            type="text"
-                            name="location"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                        />
-                    </label>
-                    <label>
-                        Status:
-                        <input
-                            type="text"
-                            name="status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                        />
-                    </label>
+                    <div className={classes.label}>
+                        <label>
+                            First Name:
+                            <input
+                                type="text"
+                                name="firstName"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                        </label>
+                        {errors.firstName && (
+                            <span className={classes.error}>
+                                {errors.firstName}
+                            </span>
+                        )}
+                    </div>
+                    <div className={classes.label}>
+                        <label>
+                            Last Name:
+                            <input
+                                type="text"
+                                name="lastName"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </label>
+                        {errors.lastName && (
+                            <span className={classes.error}>
+                                {errors.lastName}
+                            </span>
+                        )}
+                    </div>
+                    <div className={classes.label}>
+                        <label>
+                            Location:
+                            <input
+                                type="text"
+                                name="location"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                            />
+                        </label>
+                        {errors.location && (
+                            <span className={classes.error}>
+                                {errors.location}
+                            </span>
+                        )}
+                    </div>
+                    <div className={classes.label}>
+                        <label>
+                            Status:
+                            <input
+                                type="text"
+                                name="status"
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                            />
+                        </label>
+                        {errors.status && (
+                            <span className={classes.error}>
+                                {errors.status}
+                            </span>
+                        )}
+                    </div>
                     <label>
                         Skills:
                         <div>
@@ -155,7 +224,10 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                                 e.preventDefault();
                                                 const input =
                                                     e.target as HTMLInputElement;
-                                                if (input && input.value.trim()) {
+                                                if (
+                                                    input &&
+                                                    input.value.trim()
+                                                ) {
                                                     setSkills([
                                                         ...skills,
                                                         input.value.trim(),
@@ -169,9 +241,10 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            const input = document.getElementById(
-                                                "newSkillInput"
-                                            ) as HTMLInputElement;
+                                            const input =
+                                                document.getElementById(
+                                                    "newSkillInput"
+                                                ) as HTMLInputElement;
                                             if (input && input.value.trim()) {
                                                 setSkills([
                                                     ...skills,
@@ -180,7 +253,10 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                                 input.value = "";
                                             }
                                         }}
-                                        className={[classes.button, classes.skill_input_bar_button].join(" ")}
+                                        className={[
+                                            classes.button,
+                                            classes.skill_input_bar_button,
+                                        ].join(" ")}
                                     >
                                         Add Skill
                                     </button>
@@ -191,10 +267,13 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                     <label>
                         Avatar:
                         <div className={classes.user_avatar_container}>
-                            <FileDropper onFilesDropped={userAvatarFileChangeNew} accept=".png,.jpg,.jpeg,.gif">
-                                <div 
-                                    className={classes.user_avatar} 
-                                    onMouseEnter={() => setImgHover(true)} 
+                            <FileDropper
+                                onFilesDropped={userAvatarFileChangeNew}
+                                accept=".png,.jpg,.jpeg,.gif"
+                            >
+                                <div
+                                    className={classes.user_avatar}
+                                    onMouseEnter={() => setImgHover(true)}
                                     onMouseLeave={() => setImgHover(false)}
                                 >
                                     <img
@@ -205,8 +284,10 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                     {imgHover && (
                                         <div className={classes.overlay_icon}>
                                             <MdCloudUpload
-                                                size={24} 
-                                                onClick={() => setAvatarFile(null)} 
+                                                size={24}
+                                                onClick={() =>
+                                                    setAvatarFile(null)
+                                                }
                                             />
                                         </div>
                                     )}

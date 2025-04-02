@@ -56,10 +56,17 @@
 .modal input[type="text"] {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 0; /* Remove default margin */
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+
+.label {
+    display: flex;
+    flex-direction: column; /* Stack input and error vertically */
+    gap: 4px; /* Add consistent spacing between input and error */
+    margin-bottom: 10px; /* Add spacing between fields */
 }
 
 .skills {
@@ -203,4 +210,13 @@
 .user_avatar:hover .overlay_icon {
     visibility: visible;
     opacity: 1;
+}
+
+.error {
+    color: red;
+    font-size: 0.8rem;
+    margin: 0; /* Remove extra margin */
+    padding: 0; /* Ensure no extra padding is applied */
+    display: block;
+    line-height: 1.2; /* Adjust line height for better alignment */
 }
