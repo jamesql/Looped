@@ -22,7 +22,7 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
-import { MdAdd, MdGroupAdd, MdHome } from "react-icons/md";
+import { MdAdd, MdGroupAdd, MdHome, MdLogout, MdSettings } from "react-icons/md";
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";
@@ -897,10 +897,10 @@ const Application: React.FC = () => {
 
                   {checkPermissions(selectedServer, session!.id, session!.roles!, Permissions.ADMIN) && (
                     <button
-                      className={classes.settings_icon}
-                      onClick={() => setServerSettings(true)}
+                    className={classes.chat_bar_button}
+                    onClick={() => setServerSettings(true)}
                     >
-                      <img src="/settings.svg" alt="Settings" />
+                      <MdSettings className={classes.chat_bar_icon}/>
                     </button>
                   )}
                 </div>
@@ -1060,12 +1060,25 @@ const Application: React.FC = () => {
                     <h4>{session?.status}</h4>
                   </div>
                 </div>
-                <button
-                  className={classes.settings_icon}
-                  onClick={() => setUserSettings(true)}
-                >
-                  <img src="/settings.svg" alt="" />
-                </button>
+                <div className={classes.self_buttons}>
+                    <button
+                        onClick={async () => {
+                            Cookies.remove("refresh_token");
+                            Cookies.remove("access_token");
+                            window.location.href = "/login";
+                        }}
+                        className={classes.chat_bar_button}
+                    >
+                        <MdLogout className={classes.chat_bar_icon}/>
+                    </button>
+                    <button
+                      className={classes.chat_bar_button}
+                      onClick={() => setUserSettings(true)}
+                    >
+                      <MdSettings className={classes.chat_bar_icon}/>
+                  </button>
+                </div>
+                
               </div>
             </div>
           </div>
