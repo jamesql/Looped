@@ -138,6 +138,11 @@ export default async (
           switch (opcode) {
             case OPCodes.SERVER_CREATE:
               client.subscriber.sub(`server:${d.server.id}:events`);
+              d.server.channels.forEach((c: Channel) => {
+                client.subscriber.sub(
+                  `server:${d.server.id}:channel:${c.id}:events`
+                );
+              });
               break;
             case OPCodes.SERVER_DELETE:
               client.subscriber.unsubscribe(`server:${d.id}:events`);
