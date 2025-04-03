@@ -32,18 +32,24 @@ const CreareServerModal: React.FC<CreateServerModalProps> = ({ isOpen,  setClose
             <div className={classes.modal_content}>
                 <span className={classes.close} onClick={() => setClose(false)}>&times;</span>
                 <h2>Create Server</h2>
+                <label>
+                    Add Server Name:  
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setServerName(e.target.value)}
                     placeholder="Enter Server Name"
                 />
+                </label>
+                <label>
+                    Add Server Description:
                 <input
                     type="text"
                     value={desc}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Enter Server Description"
                 />
+                </label>
                 <button onClick={(e) => handleJoin(e)}>Create</button>
             </div>
         </div>
