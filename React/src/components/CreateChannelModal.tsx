@@ -37,19 +37,25 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen,  setClo
             <div className={classes.modal_content}>
                 <span className={classes.close} onClick={() => setClose(false)}>&times;</span>
                 <h2>Create Channel</h2>
+                <label>
+                    Enter Channel name:
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setServerName(e.target.value)}
                     placeholder="Enter Channel Name"
                 />
+                </label>
+                <label>
+                    Enter Channel Description
                 <input
                     type="text"
                     value={desc}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Enter Channel Description"
                 />
-                <button onClick={(e) => handleCreate(e)}>Create</button>
+                </label>
+                <span className={classes.button} onClick={(e) => handleCreate(e)}>Create</span>
             </div>
         </div>
     );

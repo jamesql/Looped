@@ -32,7 +32,7 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen,  setClose}) =
                 <span className={classes.close} onClick={() => setClose(false)}>&times;</span>
                 <h2>Join Server</h2>
                 <label>
-                    Enter Server conde 
+                    Enter Server code 
                 <input
                     type="text"
                     value={serverId}
