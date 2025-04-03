@@ -31,13 +31,16 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen,  setClose}) =
             <div className={classes.modal_content}>
                 <span className={classes.close} onClick={() => setClose(false)}>&times;</span>
                 <h2>Join Server</h2>
+                <label>
+                    Enter Server conde 
                 <input
                     type="text"
                     value={serverId}
                     onChange={(e) => setServerId(e.target.value)}
                     placeholder="Enter server invite code"
                 />
-                <button onClick={(e) => handleJoin(e)}>Join</button>
+                </label>
+                <span className={classes.button} onClick={(e) => handleJoin(e)}>Join</span>
             </div>
         </div>
     );
