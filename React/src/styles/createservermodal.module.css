@@ -51,3 +51,23 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    background-color: var(--color-midnight-blue);
+    border-radius: 10px;
+    transition: background-color 0.2s, transform 0.2s;
+    color: var(--color-full-white)
+}
+
+.button:hover {
+    background-color: var(--color-bright-cyan-darker);
+}
+
+.button:active {
+    background-color: var(--color-bright-cyan); /* Replace with a darker shade */
+}

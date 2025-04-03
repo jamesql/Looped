@@ -50,7 +50,7 @@ const CreareServerModal: React.FC<CreateServerModalProps> = ({ isOpen,  setClose
                     placeholder="Enter Server Description"
                 />
                 </label>
-                <button onClick={(e) => handleJoin(e)}>Create</button>
+                < span className={classes.button}onClick={(e) => handleJoin(e)}>Create</ span>
             </div>
         </div>
     );
