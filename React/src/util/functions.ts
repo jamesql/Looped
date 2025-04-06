@@ -90,21 +90,20 @@ export const getCdnFileUrl = async (file: R2File): Promise<string> => {
     }
   }
 
-    const token = Cookies.get("access_token") ?? "";
-    try{
-      const fileResp = await ApiClient.getInstance().getFileById(token, file.id);
-      if (fileResp.status === 200) {
-        const url = fileResp.data.url;
-        // Cache the URL with the current timestamp
-        fileUrlCache.set(file.id, { url, timestamp: Date.now() });
-        return url;
-      }
-    } catch (error) {
-      console.error("Blacklisted URL given.");
+  const token = Cookies.get("access_token") ?? "";
+  try {
+    const fileResp = await ApiClient.getInstance().getFileById(token, file.id);
+    if (fileResp.status === 200) {
+      const url = fileResp.data.url;
+      // Cache the URL with the current timestamp
+      fileUrlCache.set(file.id, { url, timestamp: Date.now() });
+      return url;
     }
-    
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
 
-    return "about:blank";
+  return "about:blank";
 };
 
 export const getCdnFileUrlSync = (file: R2File): string | undefined => {

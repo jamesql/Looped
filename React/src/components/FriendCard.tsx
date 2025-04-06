@@ -4,7 +4,6 @@ import classes from "../styles/application.module.css";
 import { getCdnFileUrl } from "@/util/functions";
 import Cookies from "js-cookie";
 import ApiClient from "@/util/api";
-import UserProfileModal from "./UserProfileModal";
 
 interface FriendCardProps {
   user: User;
@@ -97,9 +96,10 @@ const FriendCard: React.FC<FriendCardProps> = ({
       onContextMenu={handleContextMenu} // Handle right-click
       onClick={
         clickFunc
-          ? (e) => clickFunc(user)
+          ? () => clickFunc(user)
           : (e) => {
-              handleProfileCard && handleProfileCard(e, user);
+              if(handleProfileCard)
+                 handleProfileCard(e, user);
             }
       }
     >
@@ -109,7 +109,8 @@ const FriendCard: React.FC<FriendCardProps> = ({
           src={avatarUrl}
           alt=""
           onClick={(e) => {
-            handleProfileCard && handleProfileCard(e, user);
+            if(handleProfileCard)
+              handleProfileCard(e, user);
           }}
         />
       </div>

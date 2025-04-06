@@ -30,10 +30,10 @@ const ServerCard: React.FC<ServerCardProps> = ({ server }) => {
     
       return (
         <>
-        <div className={discoveryClasses.server_card} onClick={(e) => setModalActive(true)}>
-          <img src={bannerUrl} className={discoveryClasses.server_card_banner_img} />
+        <div className={discoveryClasses.server_card} onClick={() => setModalActive(true)}>
+          <img src={bannerUrl} className={discoveryClasses.server_card_banner_img} alt="Banner" />
           <div className={discoveryClasses.server_card_icon_container}>
-            <img src={iconUrl} className={discoveryClasses.server_card_icon} />
+            <img src={iconUrl} className={discoveryClasses.server_card_icon} alt="Icon"/>
           </div>
           <div className={discoveryClasses.server_card_info}>
             <h3>{server.name}</h3>

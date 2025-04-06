@@ -453,7 +453,7 @@
 .message {
     display: flex;
     flex-direction: row;
-    align-items: start;
+    align-items: flex-start;
     gap: .5rem;
     padding: .75rem;
     transition-duration: 0.2s;

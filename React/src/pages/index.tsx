@@ -1,6 +1,4 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Open_Sans } from "next/font/google";
 import classes from "../styles/home.module.css";
 
 export default function Home() {
