@@ -45,7 +45,7 @@ const Signup: React.FC = () => {
     return (
         <div className={classes.container}>   
         <nav className={classes.nav}>
-        <img className={classes.nav_image} src="/logo_transparent.png" />
+        <img className={classes.nav_image} src="/logo_transparent.png" alt="Logo" />
         <ul className={classes.nav_links}>
         <li>
                         <Link href="/">Home</Link>
@@ -109,7 +109,7 @@ const Signup: React.FC = () => {
 };
 
 export const getServerSideProps = async (context: any) => {
-    const { req, res } = context;
+    const { req } = context;
     const cookies = req.headers.cookie || "";
   
     // Check for access_token or refresh_token in cookies

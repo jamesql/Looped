@@ -11,7 +11,7 @@ interface JoinServerModalProps {
 const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen,  setClose}) => {
     const [serverId, setServerId] = React.useState('');
 
-    const handleJoin = async (e: any) => {
+    const handleJoin = async () => {
         console.log(serverId);
 
         await ApiClient.getInstance().joinServer(
@@ -40,7 +40,7 @@ const JoinServerModal: React.FC<JoinServerModalProps> = ({ isOpen,  setClose}) =
                     placeholder="Enter server invite code"
                 />
                 </label>
-                <span className={classes.button} onClick={(e) => handleJoin(e)}>Join</span>
+                <span className={classes.button} onClick={() => handleJoin()}>Join</span>
             </div>
         </div>
     );

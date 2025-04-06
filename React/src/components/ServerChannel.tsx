@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Channel, Server } from "../../../Types/serverTypes";
+import { Channel } from "../../../Types/serverTypes";
 import Cookies from "js-cookie";
 import ApiClient from "@/util/api";
 import classes from "../styles/application.module.css";

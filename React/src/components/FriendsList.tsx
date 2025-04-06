@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { User } from "../../../Types/userTypes";
 import FriendCard from "./FriendCard";
-import UserProfileModal from "./UserProfileModal";
 
 interface FriendsListProps {
   friends: User[];
@@ -21,6 +20,7 @@ const FriendsList: React.FC<FriendsListProps> = ({
     <>
       {friends.map((friend) => (
         <FriendCard
+          key={friend.id}
           user={friend}
           clickFunc={clickFunc}
           active={activeUser?.id == friend.id}

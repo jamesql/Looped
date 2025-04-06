@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { User } from "../../../Types/userTypes";
-import UserProfileModal from "./UserProfileModal";
 import UserCard from "./UserCard";
 import { Server } from "../../../Types/serverTypes";
 import classes from "../styles/application.module.css";
@@ -21,6 +20,7 @@ const MembersList: React.FC<MembersListProps> = ({
       <ul className={classes.members_list}>
         {selectedServer?.members?.map((member) => (
           <UserCard
+            key={member.id}
             user={member}
             isAdmin={session?.id === selectedServer?.ownerId}
             isSelf={session?.id === member.id} // Check if the user is the same as the session user

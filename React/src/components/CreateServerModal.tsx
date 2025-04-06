@@ -12,7 +12,7 @@ const CreareServerModal: React.FC<CreateServerModalProps> = ({ isOpen,  setClose
     const [name, setServerName] = React.useState('');
     const [desc, setDescription] = React.useState('');
 
-    const handleJoin = async (e: any) => {
+    const handleJoin = async () => {
 
         await ApiClient.getInstance().createServer(
             name, 
@@ -50,7 +50,7 @@ const CreareServerModal: React.FC<CreateServerModalProps> = ({ isOpen,  setClose
                     placeholder="Enter Server Description"
                 />
                 </label>
-                < span className={classes.button}onClick={(e) => handleJoin(e)}>Create</ span>
+                < span className={classes.button}onClick={() => handleJoin()}>Create</ span>
             </div>
         </div>
     );

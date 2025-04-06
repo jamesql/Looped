@@ -13,9 +13,8 @@ interface CreateChannelModalProps {
 const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen,  setClose, server}) => {
     const [name, setServerName] = React.useState('');
     const [desc, setDescription] = React.useState('');
-    const [type, setType] = React.useState('');
 
-    const handleCreate = async (e: any) => {
+    const handleCreate = async () => {
 
         await ApiClient.getInstance().createChannel(
             server.id,
@@ -55,7 +54,7 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen,  setClo
                     placeholder="Enter Channel Description"
                 />
                 </label>
-                <span className={classes.button} onClick={(e) => handleCreate(e)}>Create</span>
+                <span className={classes.button} onClick={() => handleCreate()}>Create</span>
             </div>
         </div>
     );

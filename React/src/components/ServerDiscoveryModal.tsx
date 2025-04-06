@@ -1,7 +1,7 @@
 import classes from "../styles/serverdiscoverymodal.module.css";
 import { Server } from "../../../Types/serverTypes";
 import { getCdnFileUrl } from "@/util/functions";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import ApiClient from "@/util/api";
 import Cookie from "js-cookie";
 import { MdClose } from "react-icons/md";
@@ -19,11 +19,14 @@ const ServerDiscoveryModal: React.FC<ServerDiscoveryModalProps> = ({
 }) => {
     const modalRef = useRef<HTMLDivElement>(null);
 
-    const handleOutsideClick = (event: MouseEvent) => {
-        if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-            setClose(false);
-        }
-    };
+    const handleOutsideClick = useCallback(
+        (event: MouseEvent) => {
+            if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+                setClose(false);
+            }
+        },
+        [setClose]
+    );
 
     useEffect(() => {
         if (isOpen) {
@@ -32,7 +35,7 @@ const ServerDiscoveryModal: React.FC<ServerDiscoveryModalProps> = ({
         return () => {
             document.removeEventListener("mousedown", handleOutsideClick);
         };
-    }, [isOpen]);
+    }, [isOpen, handleOutsideClick]);
 
     const [bannerUrl, setBannerUrl] = useState<string>("/logo_main.jpg");
     const [iconUrl, setIconUrl] = useState<string>("/logo_main.jpg");
@@ -65,7 +68,7 @@ const ServerDiscoveryModal: React.FC<ServerDiscoveryModalProps> = ({
         <div className={classes.server_discovery_modal}>
             <div className={classes.server_discovery_modal_content} ref={modalRef}>
                 <div className={classes.banner_container}>
-                    <img src={bannerUrl} className={classes.banner_img} />
+                    <img src={bannerUrl} className={classes.banner_img} alt="Banner Image" />
                     <button className={classes.close_button} onClick={() => setClose(false)}>
                         <MdClose/>
                     </button>
@@ -74,7 +77,7 @@ const ServerDiscoveryModal: React.FC<ServerDiscoveryModalProps> = ({
                 <div className={classes.server_info}>
                     <div className={classes.info_first_row}>
                         <div className={classes.server_main_info_container}>
-                            <img src={iconUrl} className={classes.icon} />
+                            <img src={iconUrl} className={classes.icon} alt="Icon" />
                             <div>
                                 <h3>{server.name}</h3>
                                 <a href={server.website}>{server.website}</a>

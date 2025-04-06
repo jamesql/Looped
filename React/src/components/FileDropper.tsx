@@ -35,9 +35,6 @@ const FileDropper: React.FC<FileDropperProps> = ({ onFilesDropped, accept, child
         }
     };
 
-    const handleCustomContent = (content: string) => {
-        console.log("Custom content:", content);
-    };
     if(children)
         return <> 
             <div onDrop={handleDrop}

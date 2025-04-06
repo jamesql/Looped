@@ -80,7 +80,7 @@ const Login: React.FC = () => {
             Login
           </button>
           <p className={classes.pClearFix}>
-            Don't have an account?
+            Don&apos;t have an account?
             <Link href="/signup">Sign Up</Link>
           </p>
         </form>
@@ -90,7 +90,7 @@ const Login: React.FC = () => {
 };
 
 export const getServerSideProps = async (context: any) => {
-  const { req, res } = context;
+  const { req } = context;
   const cookies = req.headers.cookie || "";
 
   // Check for access_token or refresh_token in cookies

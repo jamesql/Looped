@@ -143,7 +143,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, isAdmin, isSelf, isFriend, in
       className={classes.member_card}
       onContextMenu={handleContextMenu} // Handle right-click
       onClick={(e)=>{
-        handleProfileCard && handleProfileCard(e, user); // Call the function if provided
+        if(handleProfileCard)
+          handleProfileCard(e, user); // Call the function if provided
       }}
     >
       <div className={classes.member_image}>

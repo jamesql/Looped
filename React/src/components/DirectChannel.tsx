@@ -1,10 +1,6 @@
-import { DirectChannel as DChannel, User } from '../../../Types/userTypes';
+import { User } from '../../../Types/userTypes';
 import React, { useState, useRef } from "react";
-import { Channel, Server } from "../../../Types/serverTypes";
-import Cookies from "js-cookie";
-import ApiClient from "@/util/api";
 import classes from "../styles/application.module.css";
-import MessageComponent from "./MessageComponent";
 import { MdAttachFile, MdSend } from "react-icons/md";
 import { uploadCdnFile } from "@/util/functions";
 
@@ -13,7 +9,7 @@ interface DirectChannelProps {
     friend : User;
 }
 
-const DirectChannel: React.FC<DirectChannelProps> = ({ friend }) => {
+const DirectChannel: React.FC<DirectChannelProps> = ({ }) => {
     const [currentMessage, setCurrentMessage] = useState("");
     const fileInput = useRef<HTMLInputElement>(null);
   
