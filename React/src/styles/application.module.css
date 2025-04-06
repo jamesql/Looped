@@ -643,11 +643,28 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 15px;
     background-color: var(--color-midnight-blue);
     /* Top only grey border outline */
     border-top: 1px solid var(--color-bright-cyan);
+}
+
+@media (max-width: 1000px) {
+    .profile_card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.self_buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    gap: 2px;
+    justify-content: flex-end; /* Corrected value */
+    align-items: center;
 }
 
 .member_card {
@@ -775,11 +792,3 @@
   background-color: rgba(0, 0, 0, 0.9);
 }
 
-.self_buttons {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    justify-content: flex-end; /* Corrected value */
-    align-items: center;
-}

@@ -1054,10 +1054,10 @@ const Application: React.FC = () => {
                     />
                   </div>
                   <div className={classes.member_info}>
-                    <h3>
+                    <h5>
                       {session?.firstName} {session?.lastName}
-                    </h3>
-                    <h4>{session?.status}</h4>
+                    </h5>
+                    <h6>{session?.status}</h6>
                   </div>
                 </div>
                 <div className={classes.self_buttons}>
