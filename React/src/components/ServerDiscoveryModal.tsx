@@ -10,12 +10,14 @@ interface ServerDiscoveryModalProps {
     isOpen: boolean;
     setClose: (arg0: boolean) => void;
     server: Server;
+    showJoinServerButton?: boolean;
 }
 
 const ServerDiscoveryModal: React.FC<ServerDiscoveryModalProps> = ({
     isOpen,
     setClose,
     server,
+    showJoinServerButton
 }) => {
     const modalRef = useRef<HTMLDivElement>(null);
 
@@ -83,9 +85,11 @@ const ServerDiscoveryModal: React.FC<ServerDiscoveryModalProps> = ({
                                 <a href={server.website}>{server.website}</a>
                             </div>
                         </div>
-                        <button className={classes.join_server} onClick={handleJoinServer}>
-                            Join Server
-                        </button>
+                        { showJoinServerButton && 
+                            <button className={classes.join_server} onClick={handleJoinServer}>
+                                Join Server
+                            </button>
+                        }
                     </div>
                     {server.description}
                     <h4>Open Jobs</h4>

@@ -22,12 +22,13 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
-import { MdAdd, MdGroupAdd, MdHome, MdLogout, MdSettings } from "react-icons/md";
+import { MdAdd, MdGroupAdd, MdHome, MdInfo, MdInfoOutline, MdList, MdLogout, MdSettings } from "react-icons/md";
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";
 import MembersList from "@/components/MembersList";
 import UserProfileModal from "@/components/UserProfileModal";
+import ServerDiscoveryModal from "@/components/ServerDiscoveryModal";
 
 const Application: React.FC = () => {
   // data states
@@ -45,6 +46,7 @@ const Application: React.FC = () => {
   const [joiningServer, setJoiningServer] = useState(false);
   const [userSettings, setUserSettings] = useState(false);
   const [friendRequestPanelActive, setFriendRequestPanelActive] = useState(false);
+  const [serverInfoModal, setServerInfoModal] = useState(false);
 
   const [hoveredIconCaption, setHoveredIconCaption] = useState<string | null>(null);
   const [tooltipX, setTooltipX] = useState(0)
@@ -874,15 +876,23 @@ const Application: React.FC = () => {
               ) : (
                 <div className={classes.server_card}>
                   <ServerInfo selectedServer={selectedServer} />
+                  <div className={classes.self_buttons}>
+                    {checkPermissions(selectedServer, session!.id, session!.roles!, Permissions.ADMIN) && (
+                      <button
+                      className={classes.chat_bar_button}
+                      onClick={() => setServerSettings(true)}
+                      >
+                        <MdSettings className={classes.chat_bar_icon}/>
+                      </button>
+                    )}
 
-                  {checkPermissions(selectedServer, session!.id, session!.roles!, Permissions.ADMIN) && (
                     <button
                     className={classes.chat_bar_button}
-                    onClick={() => setServerSettings(true)}
+                    onClick={() => setServerInfoModal(true)}
                     >
-                      <MdSettings className={classes.chat_bar_icon}/>
+                      <MdInfoOutline className={classes.chat_bar_icon}/>
                     </button>
-                  )}
+                  </div>
                 </div>
               )}
 
@@ -1019,6 +1029,14 @@ const Application: React.FC = () => {
                 <ServerChannel
                   selectedChannel={selectedChannel}
                   handleProfileCard={handleProfileCard}
+                />
+              )}
+
+              {serverInfoModal && selectedServer && (
+                <ServerDiscoveryModal
+                  server={selectedServer}
+                  isOpen={serverInfoModal}
+                  setClose={(arg0: boolean) => (setServerInfoModal(arg0))}
                 />
               )}
             </div>

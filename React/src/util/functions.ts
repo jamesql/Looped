@@ -100,7 +100,12 @@ export const getCdnFileUrl = async (file: R2File): Promise<string> => {
       return url;
     }
   } catch (error) {
-    console.error("An error occurred:", error);
+    if (error instanceof Error) {
+      console.error("An error occurred:", error.message);
+    } else {
+      console.error("An unknown error occurred:", error);
+    }
+    return "/404";
   }
 
   return "about:blank";

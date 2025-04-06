@@ -90,7 +90,7 @@
     background-color: var(--color-midnight-blue);
     color:white;
     padding:10px;
-    border-radius: 10%;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.2s;
 }
