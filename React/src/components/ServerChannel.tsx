@@ -9,13 +9,11 @@ import { uploadCdnFile } from "@/util/functions";
 import { User } from "../../../Types/userTypes";
 
 interface ServerChannelProps {
-  selectedServer: Server;
   selectedChannel: Channel;
   handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
 const ServerChannel: React.FC<ServerChannelProps> = ({
-  selectedServer,
   selectedChannel,
   handleProfileCard
 }) => {
@@ -66,7 +64,7 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
     <>
       <div className={classes.messages}>
         {[...(selectedChannel?.messages || [])].reverse().map((message) => (
-          <MessageComponent message={message} handleProfileCard={handleProfileCard} />
+          <MessageComponent key={message.id} message={message} handleProfileCard={handleProfileCard} />
         ))}
       </div>
 
