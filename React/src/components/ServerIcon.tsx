@@ -13,6 +13,7 @@ interface ServerIconProps {
     str: string
   ) => void;
   handleMouseLeave: () => void;
+  key : string;
 }
 
 const ServerIcon: React.FC<ServerIconProps> = ({

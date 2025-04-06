@@ -20,7 +20,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     const [serverTags, setServerTags] = React.useState(server.tags || []);
     const [serverPrivate, setServerPrivate] = React.useState(server.private);
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async () => {
         console.log(serverName);
 
         const token = Cookies.get("access_token") || "";
@@ -42,7 +42,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
         setClose(false);
     };
 
-    const handleGenInvite = async (e: any) => {
+    const handleGenInvite = async () => {
         console.log("Generating invite code...");
         const token = Cookies.get("access_token") || "";
 
@@ -169,10 +169,10 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                         onChange={(e) => setServerPrivate(e.target.checked)}
                     />
                 </label>
-                <button onClick={(e) => handleGenInvite(e)}>Generate Invite Code</button>
+                <button onClick={() => handleGenInvite()}>Generate Invite Code</button>
 
 
-                <button onClick={(e) => handleSubmit(e)}>Submit</button>
+                <button onClick={() => handleSubmit()}>Submit</button>
             </div>
         </div>
     );

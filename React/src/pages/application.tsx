@@ -138,7 +138,7 @@ const Application: React.FC = () => {
 
   /** WebSocket Handlers  */
   const helloHandler: OpCodeHandler = async (
-    data: any,
+    data,
     client: WebSocketClient
   ) => {
     console.log("Received data:", data);
@@ -178,15 +178,13 @@ const Application: React.FC = () => {
   };
 
   const readyHandler: OpCodeHandler = async (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Ready data:", data);
   };
 
   const createServerHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Create server data:", data);
 
@@ -206,8 +204,7 @@ const Application: React.FC = () => {
   };
 
   const createChannelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Create channel data:", data);
 
@@ -255,8 +252,7 @@ const Application: React.FC = () => {
   };
 
   const createMessageHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Create message data:", data);
 
@@ -334,8 +330,7 @@ const Application: React.FC = () => {
   };
 
   const editServerHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Edit server data:", data);
 
@@ -375,8 +370,7 @@ const Application: React.FC = () => {
   };
 
   const editChannelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Edit channel data:", data);
 
@@ -428,36 +422,31 @@ const Application: React.FC = () => {
   };
 
   const editMessageHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Edit message data:", data);
   };
 
   const deleteServerHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Delete server data:", data);
   };
 
   const deleteChannelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Delete channel data:", data);
   };
 
   const deleteMessageHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Delete message data:", data);
   };
 
   const serverMemberAddHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Server member add data:", data);
 
@@ -507,8 +496,7 @@ const Application: React.FC = () => {
   };
 
   const serverMemberUpdateHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Server member update data:", data);
 
@@ -571,8 +559,7 @@ const Application: React.FC = () => {
   };
 
   const serverMemberDelHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Server member delete data:", data);
 
@@ -622,8 +609,7 @@ const Application: React.FC = () => {
 
   /** Friend Handlers */
   const friendRequestSentHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Friend request sent data:", data);
 
@@ -640,8 +626,7 @@ const Application: React.FC = () => {
     });
   }
   const friendRequestReceivedHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Friend request received data:", data);
 
@@ -662,8 +647,7 @@ const Application: React.FC = () => {
     ); // Update the session with the new friend request
   }
   const friendRequestAcceptedHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Friend request accepted data:", data);
 
@@ -701,8 +685,7 @@ const Application: React.FC = () => {
 
   }
   const friendRequestDeclinedHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Friend request declined data:", data);
 
@@ -737,13 +720,12 @@ const Application: React.FC = () => {
   }
 
   const friendRemoveHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
+    data
   ) => {
     console.log("Friend removed data:", data);
 
     let user: User = data.user;
-    let friend: User = data.friend;
+    const friend: User = data.friend;
     user = user ? user : friend;
 
     // remove user as a friend
@@ -761,9 +743,7 @@ const Application: React.FC = () => {
   }
 
   const userUpdateHandler: OpCodeHandler = (
-    data: any,
-    client: WebSocketClient
-  ) => {
+    data) => {
     console.log("User update data:", data);
 
     const updatedUser: User = data.user;
@@ -789,10 +769,10 @@ const Application: React.FC = () => {
     ); // Update the session with the new user data
   }
 
-  const roleCreateHandler: OpCodeHandler = (
+  /*const roleCreateHandler: OpCodeHandler = (
     data: any,
     client: WebSocketClient
-  ) => {};
+  ) => {};*/ // Uncomment once in use TODO
   /** End Websocket Handlers  */
 
   listeners.set(OPCodes.HELLO, [helloHandler]);
@@ -935,6 +915,7 @@ const Application: React.FC = () => {
                   {selectedServer?.channels
                     ? selectedServer.channels.map((channel) => (
                         <div
+                          key={channel.id}
                           className={[
                             classes.channel,
                             selectedChannel?.id === channel.id
@@ -995,6 +976,7 @@ const Application: React.FC = () => {
 
                     {session?.servers?.map((server) => (
                         <ServerIcon 
+                          key={server.id}
                           server={server}
                           setSelectedServer={setSelectedServer}
                           setSelectedChannel={setSelectedChannel}
@@ -1035,7 +1017,6 @@ const Application: React.FC = () => {
               {/** Server Channel */}
               {selectedServer && selectedChannel && (
                 <ServerChannel
-                  selectedServer={selectedServer}
                   selectedChannel={selectedChannel}
                   handleProfileCard={handleProfileCard}
                 />
