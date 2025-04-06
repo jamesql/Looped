@@ -33,12 +33,12 @@ model User {
 
   messages Message[]
 
-  portfolios Portfolio[]
+  portfolioCdnImages R2File[] @relation("PortfolioImages") // Unique relation name for portfolio images
 
   bannedFrom Server[]
 
   applications Job[]
-  R2File       R2File[]
+  R2File       R2File[] @relation("UserFiles") // Unique relation name for user files
 
   roles Role[] @relation("UserRoles")
 
@@ -132,19 +132,6 @@ model Role {
   channel Channel[]
 }
 
-model Portfolio {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  userId      String
-
-  user User @relation(fields: [userId], references: [id])
-
-  files R2File[] // one to many relation
-}
-
 model Job {
   id          String   @id @default(cuid())
   title       String
@@ -164,23 +151,23 @@ model Job {
 
 model R2File {
   id             String   @id @default(cuid())
-  fileName       String // original name of the uploaded file
-  contentType    String // MIME type like 'image/png' or 'application/pdf'
+  fileName       String   // Original name of the uploaded file
+  contentType    String   // MIME type like 'image/png' or 'application/pdf'
   createdAt      DateTime @default(now())
-  fileSize       Int @default(0)
+  fileSize       Int      @default(0)
 
   userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation("UserFiles", fields: [userId], references: [id]) // Matches the "UserFiles" relation
+
+  portfolioOwnerId String?
+  portfolioOwner   User?   @relation("PortfolioImages", fields: [portfolioOwnerId], references: [id]) // Matches the "PortfolioImages" relation
 
   message  Message? @relation(fields: [messageId], references: [id])
   messageId String? @unique
 
   iconOf   Server? @relation("IconFile")
   bannerOf Server? @relation("BannerFile")
-  avatarOf User? @relation("AvatarFile")
-
-  portfolioId String?
-  portfolioOf Portfolio? @relation(fields: [portfolioId], references: [id])
+  avatarOf User?   @relation("AvatarFile")
 }
 
 model DirectChannel {
