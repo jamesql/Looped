@@ -1,5 +1,5 @@
 import classes from "../styles/application.module.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Message, Server } from "../../../Types/serverTypes";
 import { MdDownload } from "react-icons/md";
 import prettyBytes from "pretty-bytes";
@@ -27,12 +27,15 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
     message,
     handleProfileCard,
     session,
-    selectedServer
+    selectedServer,
 }) => {
     const [fileUrl, setFileUrl] = useState<string>();
     const [authorAvatarUrl, setAuthorAvatarUrl] =
         useState<string>("/logo_main.jpg");
     const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
+    const [userDropdownVisible, setUserDropdownVisible] = useState(false);
+    const [msgDropdownVisible, setMsgDropdownVisible] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
 
     const truncateFileName = (
         fileName: string,
@@ -60,6 +63,30 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
         };
         fetchAvatarUrl();
     }, [message.author?.avatar]);
+
+    useEffect(() => {
+        if (userDropdownVisible) {
+            document.addEventListener("click", handleClickOutside);
+        } else {
+            document.removeEventListener("click", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [userDropdownVisible]);
+
+    useEffect(() => {
+        if (msgDropdownVisible) {
+            document.addEventListener("click", handleClickOutside);
+        } else {
+            document.removeEventListener("click", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [msgDropdownVisible]);
 
     const handleImageClick = () => {
         setIsImageZoomed(true);
@@ -130,10 +157,6 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
         );
     };
 
-    const [userDropdownVisible, setUserDropdownVisible] = useState(false);
-    const [msgDropdownVisible, setMsgDropdownVisible] = useState(false);
-    const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
-
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent the default right-click menu
         e.stopPropagation();
@@ -158,60 +181,39 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
     };
 
     const handleMessageContextMenu = (e: React.MouseEvent) => {
-      e.preventDefault(); // Prevent the default right-click menu
-      e.stopPropagation();
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      const dropdownWidth = 150; // Approximate width of the dropdown
-      const dropdownHeight = 100; // Approximate height of the dropdown
+        e.preventDefault(); // Prevent the default right-click menu
+        e.stopPropagation();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const dropdownWidth = 150; // Approximate width of the dropdown
+        const dropdownHeight = 100; // Approximate height of the dropdown
 
-      let x = e.pageX;
-      let y = e.pageY;
+        let x = e.pageX;
+        let y = e.pageY;
 
-      if (x + dropdownWidth > viewportWidth) {
-          x = viewportWidth - dropdownWidth - 10; // Add some padding
-      }
-      if (y + dropdownHeight > viewportHeight) {
-          y = viewportHeight - dropdownHeight - 10; // Add some padding
-      }
+        if (x + dropdownWidth > viewportWidth) {
+            x = viewportWidth - dropdownWidth - 10; // Add some padding
+        }
+        if (y + dropdownHeight > viewportHeight) {
+            y = viewportHeight - dropdownHeight - 10; // Add some padding
+        }
 
-      setDropdownPosition({ x, y });
-      setMsgDropdownVisible(true);
-      setUserDropdownVisible(false);
-  };
+        setDropdownPosition({ x, y });
+        setMsgDropdownVisible(true);
+        setUserDropdownVisible(false);
+    };
 
     const handleClickOutside = () => {
         setUserDropdownVisible(false);
         setMsgDropdownVisible(false);
     };
 
-    useEffect(() => {
-        if (userDropdownVisible) {
-            document.addEventListener("click", handleClickOutside);
-        } else {
-            document.removeEventListener("click", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, [userDropdownVisible]);
-
-    useEffect(() => {
-        if (msgDropdownVisible) {
-            document.addEventListener("click", handleClickOutside);
-        } else {
-            document.removeEventListener("click", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, [msgDropdownVisible]);
-
     return (
         <>
-            <div className={classes.message} onContextMenu={handleMessageContextMenu}>
+            <div
+                className={classes.message}
+                onContextMenu={handleMessageContextMenu}
+            >
                 <img
                     className={classes.squircle}
                     src={authorAvatarUrl}

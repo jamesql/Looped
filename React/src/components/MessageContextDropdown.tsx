@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { User } from "../../../Types/userTypes";
 import { Message, Server } from "../../../Types/serverTypes";
 import { Permissions } from "../../../Types/permissionsTypes";

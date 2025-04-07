@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from "../styles/friendsmodal.module.css"
 import { Server } from '../../../Types/serverTypes';
 import ApiClient from '@/util/api';
 import Cookies from 'js-cookie';
-import { uploadCdnFile } from '@/util/functions';
+import { getCdnFileUrl, uploadCdnFile } from '@/util/functions';
+import FileDropper from './FileDropper';
+import { MdClose, MdCloudUpload } from 'react-icons/md';
 
 interface ServerSettingsModalProps {
     isOpen: boolean;
@@ -14,11 +16,15 @@ interface ServerSettingsModalProps {
 const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setClose, server}) => {
     const [serverName, setServerName] = React.useState(server.name);
     const [serverDesc, setServerDesc] = React.useState(server.description || "");
-    const [serverIconId, setServerIconId] = React.useState(server.iconId || "");
-    const [serverBannerId, setServerBannerId] = React.useState(server.bannerId || "");
     const [serverWebsite, setServerWebsite] = React.useState(server.website || "");
     const [serverTags, setServerTags] = React.useState(server.tags || []);
     const [serverPrivate, setServerPrivate] = React.useState(server.private);
+    const [serverBanner, setServerBanner] = useState(server.banner || null);
+    const [serverIcon, setServerIcon] = useState(server.icon || null);
+    const [iconUrl, setIconUrl] = useState<string>("/logo_main.jpg");
+    const [bannerUrl, setBannerUrl] = useState<string>("/logo_main.jpg");
+    const [iconImgHover, setIconImgHover] = useState<boolean>(false);
+    const [bannerImgHover, setBannerImgHover] = useState<boolean>(false);
 
     const handleSubmit = async () => {
         console.log(serverName);
@@ -31,8 +37,8 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
             serverWebsite,
             serverTags,
             token,
-            serverIconId,
-            serverBannerId,
+            serverIcon ? serverIcon.id : "",
+            serverBanner ? serverBanner.id : "",
             serverPrivate
         ).then((response) => {
             console.log(response);
@@ -57,26 +63,44 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     };
 
     const serverIconFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        files: FileList
       ) => {
-        const files = event.target.files;
         if (files && files.length > 0) {
             const file = files[0];
             const cdnResp = await uploadCdnFile(file);
-            setServerIconId(cdnResp.r2file.id);
+            setServerIcon(cdnResp.r2file);
         }
       };
     
     const serverBannerFileChange = async (
-        event: React.ChangeEvent<HTMLInputElement>
+        files: FileList
       ) => {
-        const files = event.target.files;
         if (files && files.length > 0) {
             const file = files[0];
             const cdnResp = await uploadCdnFile(file);
-            setServerBannerId(cdnResp.r2file.id);
+            setServerBanner(cdnResp.r2file);
         }
       };
+
+    useEffect(() => {
+            if (serverBanner) {
+                getCdnFileUrl(serverBanner).then((url) => {
+                    setBannerUrl(url);
+                });
+            } else {
+                setBannerUrl("/logo_main.jpg");
+            }
+        }, [serverBanner]);
+    
+    useEffect(() => {
+            if (serverIcon) {
+                getCdnFileUrl(serverIcon).then((url) => {
+                    setIconUrl(url);
+                });
+            } else {
+                setIconUrl("/logo_main.jpg");
+            }
+        }, [serverIcon]);
 
 
     if (!isOpen) return null;
@@ -84,8 +108,12 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
     return (
         <div className={classes.modal}>
             <div className={classes.modal_content}>
-                <span className={classes.close} onClick={() => setClose(false)}>&times;</span>
-                <h2>Edit Server Settings</h2>
+            <div className={classes.modal_header}>
+                    <h2>Server Settings</h2>
+                    <div className={classes.close}>
+                        <MdClose onClick={() => setClose(false)}></MdClose>
+                    </div>
+                </div>
                 <label>
                     Server Name:
                     <input
@@ -104,20 +132,61 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                         placeholder={server.description}
                     />
                 </label>
-                <label>
+                <div>
                     Server Icon:
-                    <input
-                        type="file"
-                        onChange={serverIconFileChange}
-                     ></input>
-                </label>
-                <label>
+                    <div className={classes.upload_container}>
+                        <FileDropper
+                            onFilesDropped={serverIconFileChange}
+                            accept=".png,.jpg,.jpeg,.gif"
+                        >
+                            <div
+                                className={classes.server_icon}
+                                onMouseEnter={() => setIconImgHover(true)}
+                                onMouseLeave={() => setIconImgHover(false)}
+                            >
+                                <img
+                                    src={iconUrl}
+                                    alt="Server Bammer"
+                                    className={classes.server_icon_img}
+                                />
+                                {iconImgHover && (
+                                    <div className={classes.overlay_icon}>
+                                        <MdCloudUpload
+                                            size={24}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </FileDropper>
+                    </div>
+
                     Server Banner:
-                    <input
-                        type="file"
-                        onChange={serverBannerFileChange}
-                    />
-                </label>
+                    <div className={classes.upload_container}>
+                        <FileDropper
+                            onFilesDropped={serverBannerFileChange}
+                            accept=".png,.jpg,.jpeg,.gif"
+                        >
+                            <div
+                                className={classes.server_banner}
+                                onMouseEnter={() => setBannerImgHover(true)}
+                                onMouseLeave={() => setBannerImgHover(false)}
+                            >
+                                <img
+                                    src={bannerUrl}
+                                    alt="Server Banner"
+                                    className={classes.server_icon_img}
+                                />
+                                {bannerImgHover && (
+                                    <div className={classes.overlay_banner}>
+                                        <MdCloudUpload
+                                            size={24}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </FileDropper>
+                    </div>
+                </div>
                 <label>
                     Server Website:
                     <input
@@ -130,34 +199,72 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                 <label>
                         Tags:
                         <div>
-                            <div className={classes.tags}>
-                            {serverTags.map((tag, index) => (
-                                <div key={index} className={classes.tag}>
-                                    {tag}
-                                    <button type="button" onClick={() => setServerTags(serverTags.filter((_, i) => i !== index))}>
-                                        &times;
-                                    </button>
-                                </div>
-                            ))}
+                            <div className={classes.skills}>
+                                {serverTags.map((tag, index) => (
+                                    <div
+                                        key={index}
+                                        className={classes.skill_tag}
+                                        onClick={() =>
+                                            setServerTags(
+                                                serverTags.filter(
+                                                    (_, i) => i !== index
+                                                )
+                                            )
+                                        }
+                                    >
+                                        {tag}
+                                        <MdClose />
+                                    </div>
+                                ))}
                             </div>
                             <div>
-                                <input
-                                    type="text"
-                                    placeholder="Enter a tag"
-                                    id="newTagInput"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const input = document.getElementById('newTagInput') as HTMLInputElement;
-                                        if (input && input.value.trim()) {
-                                            setServerTags([...serverTags, input.value.trim()]);
-                                            input.value = '';
-                                        }
-                                    }}
-                                >
-                                    Add Tag
-                                </button>
+                                <div className={classes.skill_input_bar}>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter a tag"
+                                        id="newSkillInput"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                const input =
+                                                    e.target as HTMLInputElement;
+                                                if (
+                                                    input &&
+                                                    input.value.trim()
+                                                ) {
+                                                    setServerTags([
+                                                        ...serverTags,
+                                                        input.value.trim(),
+                                                    ]);
+                                                    input.value = "";
+                                                }
+                                            }
+                                        }}
+                                        className={classes.skill_input}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const input =
+                                                document.getElementById(
+                                                    "newSkillInput"
+                                                ) as HTMLInputElement;
+                                            if (input && input.value.trim()) {
+                                                setServerTags([
+                                                    ...serverTags,
+                                                    input.value.trim(),
+                                                ]);
+                                                input.value = "";
+                                            }
+                                        }}
+                                        className={[
+                                            classes.button,
+                                            classes.skill_input_bar_button,
+                                        ].join(" ")}
+                                    >
+                                        Add Tag
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </label>
@@ -169,10 +276,8 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                         onChange={(e) => setServerPrivate(e.target.checked)}
                     />
                 </label>
-                <button onClick={() => handleGenInvite()}>Generate Invite Code</button>
-
-
-                <button onClick={() => handleSubmit()}>Submit</button>
+                <button onClick={() => handleGenInvite()} className={classes.button}>Generate Invite Code</button>
+                <button onClick={() => handleSubmit()} className={classes.button}>Submit</button>
             </div>
         </div>
     );
