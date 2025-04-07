@@ -22,7 +22,7 @@ import CreareServerModal from "@/components/CreateServerModal";
 import JoinServerModal from "@/components/JoinServerModal";
 import ServerSettingsModal from "@/components/ServerSettingsModal";
 import UserSettingsModal from "@/components/UserSettingsModal";
-import { MdAdd, MdGroupAdd, MdHome, MdInfo, MdInfoOutline, MdList, MdLogout, MdSettings } from "react-icons/md";
+import { MdAdd, MdGroupAdd, MdHome, MdInfoOutline, MdLogout, MdSettings } from "react-icons/md";
 import { createPortal } from "react-dom";
 import FriendRequestsList from "@/components/FriendRequestsList";
 import RequestsIconNumbered from "@/components/RequestsIconNumbered";

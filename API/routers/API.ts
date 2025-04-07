@@ -9,7 +9,6 @@ router.use("/channel", require("./apiRoutes/ChannelRoutes"));
 router.use("/message", require("./apiRoutes/MessageRoutes"));
 router.use("/role", require("./apiRoutes/RoleRoutes"));
 router.use("/server", require("./apiRoutes/ServerRoutes"));
-router.use("/portfolio", require("./apiRoutes/PortfolioRoutes"));
 router.use("/job", require("./apiRoutes/JobRoutes"));
 router.use("/content", require("./apiRoutes/ContentRoutes"));
 router.use("/direct", require("./apiRoutes/DirectRoutes"));

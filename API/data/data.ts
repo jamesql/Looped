@@ -45,7 +45,8 @@ export async function MapRMapToPMap<R, P>(
 
 export class UserDatapacks {
     public static readonly ALL_USER_DATA: RelationMap<User> = {
-        avatar:true,
+        avatar: true,
+        portfolioCdnImages: true,
         friendRequestsSent: {
             select: {
                 id: true,
@@ -58,6 +59,7 @@ export class UserDatapacks {
                 email: true, // Include email
                 password: false, // Exclude password for security
                 skills: true,
+                portfolioCdnImages: true,
             }
         },
         friendRequestsReceived: {
@@ -72,6 +74,7 @@ export class UserDatapacks {
                 email: true, // Include email
                 password: false, // Exclude password for security
                 skills: true,
+                portfolioCdnImages: true,
             }
         },
         friends: {
@@ -86,6 +89,7 @@ export class UserDatapacks {
                 email: true, // Include email
                 password: false, // Exclude password for security
                 skills: true,
+                portfolioCdnImages: true,
             }
         },
         servers: {
@@ -105,6 +109,7 @@ export class UserDatapacks {
                             email: true,
                             password: false,
                             skills: true,
+                            portfolioCdnImages: true,
                         }
                     },
                     file: {
@@ -131,6 +136,7 @@ export class UserDatapacks {
                     roles: true,
                     password: false,
                     skills: true,
+                    portfolioCdnImages: true,
                 }
             },
             owner: {
@@ -145,6 +151,7 @@ export class UserDatapacks {
                     email: true,
                     password: false,
                     skills: true,
+                    portfolioCdnImages: true,
                 }
             },
         },
@@ -168,7 +175,8 @@ export class ServerDatapacks {
                         location: true,
                         birthday: true,
                         email: true,
-                        password: false
+                        password: false,
+                        portfolioCdnImages: true,
                     }
                 },
                 file: {
@@ -193,7 +201,8 @@ export class ServerDatapacks {
                 location: true,
                 birthday: true,
                 email: true,
-                password: false
+                password: false,
+                portfolioCdnImages: true,
             }
         },
         roles: true,
@@ -207,7 +216,8 @@ export class ServerDatapacks {
                 location: true,
                 birthday: true,
                 email: true,
-                password: false
+                password: false,
+                portfolioCdnImages: true,
             }
         },
         icon: true,
