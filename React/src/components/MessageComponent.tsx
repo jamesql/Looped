@@ -29,7 +29,6 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
     session,
     selectedServer
 }) => {
-  console.log(message);
     const [fileUrl, setFileUrl] = useState<string>();
     const [authorAvatarUrl, setAuthorAvatarUrl] =
         useState<string>("/logo_main.jpg");
