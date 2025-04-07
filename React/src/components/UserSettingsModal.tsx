@@ -44,17 +44,19 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [location, setLocation] = useState(user?.location || "");
     const [status, setStatus] = useState(user?.status || "");
     const [avatarFile, setAvatarFile] = useState(user?.avatar || null);
-    
+
     const [portfolioCdnImages, setPortfolioCdnImages] = useState<R2File[]>(
         user?.portfolioCdnImages || []
     );
 
-    const [portfolioCount, setPortfolioCount] = useState(Math.min(portfolioCdnImages.length, 4));
-    const addPortfolioFile = (item : R2File) => {
+    const [portfolioCount, setPortfolioCount] = useState(
+        Math.min(portfolioCdnImages.length, 4)
+    );
+    const addPortfolioFile = (item: R2File) => {
         setPortfolioCdnImages([...portfolioCdnImages, item]);
     };
 
-    const setPortfolioFile = (index: number, item : R2File) => {
+    const setPortfolioFile = (index: number, item: R2File) => {
         const newPortfolioCdnImages = [...portfolioCdnImages];
         newPortfolioCdnImages[index] = item;
         setPortfolioCdnImages(newPortfolioCdnImages);
@@ -64,7 +66,12 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
     const [imgHover, setImgHover] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    const [portfolioUrls, setportfolioUrls] = useState<string[]>(["/logo_main.jpg", "/logo_main.jpg", "/logo_main.jpg", "/logo_main.jpg"]);
+    const [portfolioUrls, setportfolioUrls] = useState<string[]>([
+        "/logo_main.jpg",
+        "/logo_main.jpg",
+        "/logo_main.jpg",
+        "/logo_main.jpg",
+    ]);
     useEffect(() => {
         if (avatarFile) {
             getCdnFileUrl(avatarFile).then((url) => {
@@ -299,39 +306,42 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                             </div>
                         </div>
                     </label>
-                        Avatar:
-                        <div className={classes.user_avatar_container}>
-                            <FileDropper
-                                onFilesDropped={userAvatarFileChangeNew}
-                                accept=".png,.jpg,.jpeg,.gif"
+                    Avatar:
+                    <div className={classes.user_avatar_container}>
+                        <FileDropper
+                            onFilesDropped={userAvatarFileChangeNew}
+                            accept=".png,.jpg,.jpeg,.gif"
+                        >
+                            <div
+                                className={classes.user_avatar}
+                                onMouseEnter={() => setImgHover(true)}
+                                onMouseLeave={() => setImgHover(false)}
                             >
+                                <img
+                                    src={avatarUrl}
+                                    alt="User Avatar"
+                                    className={classes.user_avatar_img}
+                                />
+                                {imgHover && (
+                                    <div className={classes.overlay_icon}>
+                                        <MdCloudUpload
+                                            size={24}
+                                            onClick={() => setAvatarFile(null)}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </FileDropper>
+                    </div>
+                    Portfolio Images:
+                    <div className={classes.image_grid_container}>
+                        {portfolioUrls
+                            .slice(0, portfolioCount)
+                            .map((url, index) => (
                                 <div
-                                    className={classes.user_avatar}
-                                    onMouseEnter={() => setImgHover(true)}
-                                    onMouseLeave={() => setImgHover(false)}
+                                    key={index}
+                                    className={classes.user_portfolio_element}
                                 >
-                                    <img
-                                        src={avatarUrl}
-                                        alt="User Avatar"
-                                        className={classes.user_avatar_img}
-                                    />
-                                    {imgHover && (
-                                        <div className={classes.overlay_icon}>
-                                            <MdCloudUpload
-                                                size={24}
-                                                onClick={() =>
-                                                    setAvatarFile(null)
-                                                }
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </FileDropper>
-                        </div>
-                        Portfolio Images:
-                        <div className={classes.image_grid_container}>
-                            {portfolioUrls.slice(0, portfolioCount).map((url, index) => (
-                                <div key={index} className={classes.user_portfolio_element}>
                                     <img
                                         src={url}
                                         alt="Portfolio Image"
@@ -342,15 +352,23 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                             onFilesDropped={async (files) => {
                                                 if (files && files.length > 0) {
                                                     const file = files[0];
-                                                    const cdnResp = await uploadCdnFile(file);
-                                                    setPortfolioFile(index, cdnResp.r2file);
+                                                    const cdnResp =
+                                                        await uploadCdnFile(
+                                                            file
+                                                        );
+                                                    setPortfolioFile(
+                                                        index,
+                                                        cdnResp.r2file
+                                                    );
                                                 }
                                             }}
                                             accept=".png,.jpg,.jpeg,.gif"
                                         >
                                             <button
                                                 className={classes.hover_button}
-                                                onClick={(e) => e.stopPropagation()} // Prevent modal from closing
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                } // Prevent modal from closing
                                                 type="button"
                                             >
                                                 <MdCloudUpload size={20} />
@@ -361,15 +379,26 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                             className={classes.hover_button}
                                             onClick={(e) => {
                                                 e.stopPropagation(); // Prevent modal from closing
-                                                const newPortfolioCdnImages = [...portfolioCdnImages];
-                                                newPortfolioCdnImages.splice(index, 1);
-                                                setPortfolioCdnImages(newPortfolioCdnImages);
-                                                setPortfolioCount(portfolioCount - 1);
-
+                                                const newPortfolioCdnImages = [
+                                                    ...portfolioCdnImages,
+                                                ];
+                                                newPortfolioCdnImages.splice(
+                                                    index,
+                                                    1
+                                                );
+                                                setPortfolioCdnImages(
+                                                    newPortfolioCdnImages
+                                                );
+                                                setPortfolioCount(
+                                                    portfolioCount - 1
+                                                );
 
                                                 setportfolioUrls((prevUrls) => {
-                                                    const newUrls = [...prevUrls];
-                                                    newUrls[index] = "/logo_main.jpg"; // Reset the URL to a default image
+                                                    const newUrls = [
+                                                        ...prevUrls,
+                                                    ];
+                                                    newUrls[index] =
+                                                        "/logo_main.jpg"; // Reset the URL to a default image
                                                     return newUrls;
                                                 });
                                             }}
@@ -379,25 +408,32 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                     </div>
                                 </div>
                             ))}
-                            {portfolioCdnImages.length < 4 && (
-                                <FileDropper
+                        {portfolioCdnImages.length < 4 && (
+                            <FileDropper
                                 onFilesDropped={async (files) => {
-                                    if (portfolioCount < 4 && files && files.length > 0) {
+                                    if (
+                                        portfolioCount < 4 &&
+                                        files &&
+                                        files.length > 0
+                                    ) {
                                         const file = files[0];
-                                        const cdnResp = await uploadCdnFile(file);
+                                        const cdnResp = await uploadCdnFile(
+                                            file
+                                        );
                                         addPortfolioFile(cdnResp.r2file);
-                                        setPortfolioCount(Math.min(portfolioCount + 1, 4));
+                                        setPortfolioCount(
+                                            Math.min(portfolioCount + 1, 4)
+                                        );
                                     }
                                 }}
                                 accept=".png,.jpg,.jpeg,.gif"
                             >
                                 <div className={classes.user_upload_element}>
-                                        <span>Upload</span> 
+                                    <span>Upload</span>
                                 </div>
                             </FileDropper>
-                            )}
-                        </div>
-
+                        )}
+                    </div>
                     <button type="submit" className={classes.button}>
                         Save Changes
                     </button>
