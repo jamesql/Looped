@@ -83,6 +83,7 @@ router.post("/edit", [
     body("location").isString().isLength({ min: 1 }),
     body("status").isString().isLength({ min: 1 }),
     body("skills").isArray(),
+    body("portfolioImageIds").isArray().optional(),
     body("avatarId").isString().isLength({ min: 0 }).optional(),
 ], async (req: Request, res: Response) => {
     const errors = validationResult(req);

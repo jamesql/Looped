@@ -5,8 +5,9 @@ import { User } from "../../../Types/userTypes";
 import ApiClient from "@/util/api";
 import Cookies from "js-cookie";
 import { getCdnFileUrl, uploadCdnFile } from "@/util/functions";
-import { MdClose, MdCloudUpload } from "react-icons/md";
+import { MdClose, MdCloud, MdCloudUpload } from "react-icons/md";
 import FileDropper from "./FileDropper";
+import { R2File } from "../../../Types/contentTypes";
 
 const userSchema = z.object({
     firstName: z
@@ -43,11 +44,24 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [location, setLocation] = useState(user?.location || "");
     const [status, setStatus] = useState(user?.status || "");
     const [avatarFile, setAvatarFile] = useState(user?.avatar || null);
+    const [portfolioCdnImages, setPortfolioCdnImages] = useState<R2File[]>(
+        user?.portfolioCdnImages || []
+    );
+    const addPortfolioFile = (item : R2File) => {
+        setPortfolioCdnImages([...portfolioCdnImages, item]);
+    };
+
+    const setPortfolioFile = (index: number, item : R2File) => {
+        const newPortfolioCdnImages = [...portfolioCdnImages];
+        newPortfolioCdnImages[index] = item;
+        setPortfolioCdnImages(newPortfolioCdnImages);
+    };
+
     const [skills, setSkills] = useState(user?.skills || []);
     const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
     const [imgHover, setImgHover] = useState<boolean>(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
+    const [portfolioUrls, setportfolioUrls] = useState<string[]>(["/logo_main.jpg", "/logo_main.jpg", "/logo_main.jpg", "/logo_main.jpg"]);
     useEffect(() => {
         if (avatarFile) {
             getCdnFileUrl(avatarFile).then((url) => {
@@ -57,6 +71,17 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             setAvatarUrl("/logo_main.jpg");
         }
     }, [avatarFile]);
+
+    useEffect(() => {
+        portfolioCdnImages.forEach((item, index) => {
+            if(item)
+                getCdnFileUrl(item).then((url) => { 
+                    const newPortfolioUrls = [...portfolioUrls];
+                    newPortfolioUrls[index] = url;
+                    setportfolioUrls(newPortfolioUrls);
+                });
+            });
+    }, [portfolioCdnImages]);
 
     if (!user) return null;
 
@@ -264,7 +289,6 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                             </div>
                         </div>
                     </label>
-                    <label>
                         Avatar:
                         <div className={classes.user_avatar_container}>
                             <FileDropper
@@ -294,7 +318,64 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                 </div>
                             </FileDropper>
                         </div>
-                    </label>
+                        Portfolio Images:
+                        <div className={classes.image_grid_container}>
+                            {portfolioUrls.slice(0, Math.min(portfolioCdnImages.length, 4)).map((url, index) => (
+                                <div key={index} className={classes.user_portfolio_element}>
+                                    <img
+                                        src={url}
+                                        alt="Portfolio Image"
+                                        className={classes.user_portfolio_image}
+                                    />
+                                    <div className={classes.hover_overlay}>
+                                        <FileDropper
+                                            onFilesDropped={async (files) => {
+                                                if (files && files.length > 0) {
+                                                    const file = files[0];
+                                                    const cdnResp = await uploadCdnFile(file);
+                                                }
+                                            }}
+                                            accept=".png,.jpg,.jpeg,.gif"
+                                        >
+                                            <button
+                                                className={classes.hover_button}
+                                                onClick={(e) => e.stopPropagation()} // Prevent modal from closing
+                                            >
+                                                <MdCloudUpload size={20} />
+                                            </button>
+                                        </FileDropper>
+                                        <button
+                                            className={classes.hover_button}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent modal from closing
+                                                const newPortfolioCdnImages = [...portfolioCdnImages];
+                                                newPortfolioCdnImages.splice(index, 1);
+                                                setPortfolioCdnImages(newPortfolioCdnImages);
+                                            }}
+                                        >
+                                            <MdClose size={20} />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {portfolioCdnImages.length < 4 && (
+                                <FileDropper
+                                onFilesDropped={async (files) => {
+                                    if (files && files.length > 0) {
+                                        const file = files[0];
+                                        const cdnResp = await uploadCdnFile(file);
+                                        addPortfolioFile(cdnResp.r2file);
+                                    }
+                                }}
+                                accept=".png,.jpg,.jpeg,.gif"
+                            >
+                                <div className={classes.user_upload_element}>
+                                        <span>Upload</span> 
+                                </div>
+                            </FileDropper>
+                            )}
+                        </div>
+
                     <button type="submit" className={classes.button}>
                         Save Changes
                     </button>

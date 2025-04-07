@@ -69,6 +69,7 @@ class ApiClient {
           },
         });
         console.log("Token has been refreshed.");
+        Cookies.set("access_token", response.data.accessToken, { expires: 1 });
         return response.data.accessToken;
       } catch (error) {
         console.error("Error refreshing token:", error);

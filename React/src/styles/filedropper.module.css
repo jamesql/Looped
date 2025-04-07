@@ -4,6 +4,8 @@
     padding: 20px;
     text-align: center;
     cursor: pointer;
+    display:flex;
+    justify-content: center;
 }
 
 .file_dropper_content {

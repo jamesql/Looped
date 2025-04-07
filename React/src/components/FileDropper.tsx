@@ -67,6 +67,7 @@ const FileDropper: React.FC<FileDropperProps> = ({ onFilesDropped, accept, child
                 style={{ display: 'none' }}
                 accept={accept || ''} // Ensure the accept prop is passed correctly
                 onChange={handleFileInputChange}
+                onClick={(e => e.stopPropagation())} // Prevent the click event from bubbling up to the parent div
             />
         </div>
     );

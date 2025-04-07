@@ -27,7 +27,7 @@ export interface User {
     birthday?: Date;
     roles?: Role[];
     applications?: Job[];
-
+    portfolioCdnImages?: R2File[]; // Array of portfolio image IDs
     skills: string[];
 }
 
