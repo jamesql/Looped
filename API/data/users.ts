@@ -41,7 +41,7 @@ class UserService {
   }
   
 
-  async updateUserById(id: string, data: Partial<User>): Promise<User> {
+  async updateUserById(id: string, data: Partial<User>, imageIds: string[]): Promise<User> {
     const updateData: Prisma.UserUpdateInput = {};
   
     if (data.firstName) updateData.firstName = data.firstName;
@@ -50,6 +50,11 @@ class UserService {
     if (data.status) updateData.status = data.status;
     if (data.skills) updateData.skills = data.skills;
     if (data.birthday) updateData.birthday = data.birthday;
+    if (imageIds) {
+      updateData.portfolioCdnImages = {
+        set: imageIds.map((id) => ({ id })), // Add new images
+      };
+    }
     
   
     if (data.avatarId !== undefined) {

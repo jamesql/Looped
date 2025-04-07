@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {jwtDecode} from 'jwt-decode';
 import Cookies from "js-cookie"
+import { R2File } from '../../../Types/contentTypes';
 
 class ApiClient {
   private static instance: ApiClient;
@@ -121,6 +122,7 @@ class ApiClient {
     status: string,
     token: string,
     skills: string[],
+    images: string[],
     avatarId?: string
   ): Promise<AxiosResponse> {
     await this.addAuthHeader(token);
@@ -132,6 +134,7 @@ class ApiClient {
       status: status,
       avatarId: avatarId,
       skills: skills,
+      images: images
     });
   }
 

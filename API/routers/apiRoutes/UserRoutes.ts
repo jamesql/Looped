@@ -83,9 +83,12 @@ router.post("/edit", [
     body("location").isString().isLength({ min: 1 }),
     body("status").isString().isLength({ min: 1 }),
     body("skills").isArray(),
-    body("portfolioImageIds").isArray().optional(),
+    body("skills.*").isString().isLength({ min: 1 }),
+    body("images").isArray().isLength({ min:0 }),
+    body("images.*").isString().isLength({ min: 1 }),
     body("avatarId").isString().isLength({ min: 0 }).optional(),
 ], async (req: Request, res: Response) => {
+    console.log(req.body.images);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });
@@ -112,8 +115,8 @@ router.post("/edit", [
         location: req.body.location,
         status: req.body.status,
         avatarId: req.body.avatarId? req.body.avatarId : undefined,
-        skills: req.body.skills,
-    });
+        skills: req.body.skills
+    }, req.body.images);
 
     const newUser = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
 

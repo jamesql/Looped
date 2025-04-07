@@ -225,11 +225,10 @@
 .image_grid_container {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* Always 2 columns */
-    grid-template-rows: repeat(2, 1fr); /* Always 2 rows */
     gap: 10px;
     width: 100%;
     height: auto; /* Adjust height automatically */
-    max-height: 500px;
+    justify-content: start; /* Align items to the start */
 }
 
 .user_portfolio_element {

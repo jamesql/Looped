@@ -5,7 +5,7 @@ import { User } from "../../../Types/userTypes";
 import ApiClient from "@/util/api";
 import Cookies from "js-cookie";
 import { getCdnFileUrl, uploadCdnFile } from "@/util/functions";
-import { MdClose, MdCloud, MdCloudUpload } from "react-icons/md";
+import { MdClose, MdCloudUpload } from "react-icons/md";
 import FileDropper from "./FileDropper";
 import { R2File } from "../../../Types/contentTypes";
 
@@ -44,9 +44,12 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     const [location, setLocation] = useState(user?.location || "");
     const [status, setStatus] = useState(user?.status || "");
     const [avatarFile, setAvatarFile] = useState(user?.avatar || null);
+    
     const [portfolioCdnImages, setPortfolioCdnImages] = useState<R2File[]>(
         user?.portfolioCdnImages || []
     );
+
+    const [portfolioCount, setPortfolioCount] = useState(Math.min(portfolioCdnImages.length, 4));
     const addPortfolioFile = (item : R2File) => {
         setPortfolioCdnImages([...portfolioCdnImages, item]);
     };
@@ -73,14 +76,20 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
     }, [avatarFile]);
 
     useEffect(() => {
-        portfolioCdnImages.forEach((item, index) => {
-            if(item)
-                getCdnFileUrl(item).then((url) => { 
-                    const newPortfolioUrls = [...portfolioUrls];
-                    newPortfolioUrls[index] = url;
-                    setportfolioUrls(newPortfolioUrls);
-                });
-            });
+        const updatePortfolioUrls = async () => {
+            try {
+                const urls = await Promise.all(
+                    portfolioCdnImages.map((item) =>
+                        item ? getCdnFileUrl(item) : "/logo_main.jpg"
+                    )
+                );
+                setportfolioUrls(urls);
+            } catch (error) {
+                console.error("Error fetching portfolio image URLs:", error);
+            }
+        };
+
+        updatePortfolioUrls();
     }, [portfolioCdnImages]);
 
     if (!user) return null;
@@ -136,6 +145,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
             status,
             token,
             skills,
+            portfolioCdnImages.map((file) => file.id),
             avatarFile?.id
         );
         setClose(false);
@@ -320,7 +330,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                         </div>
                         Portfolio Images:
                         <div className={classes.image_grid_container}>
-                            {portfolioUrls.slice(0, Math.min(portfolioCdnImages.length, 4)).map((url, index) => (
+                            {portfolioUrls.slice(0, portfolioCount).map((url, index) => (
                                 <div key={index} className={classes.user_portfolio_element}>
                                     <img
                                         src={url}
@@ -333,6 +343,7 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                                 if (files && files.length > 0) {
                                                     const file = files[0];
                                                     const cdnResp = await uploadCdnFile(file);
+                                                    setPortfolioFile(index, cdnResp.r2file);
                                                 }
                                             }}
                                             accept=".png,.jpg,.jpeg,.gif"
@@ -340,17 +351,27 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                                             <button
                                                 className={classes.hover_button}
                                                 onClick={(e) => e.stopPropagation()} // Prevent modal from closing
+                                                type="button"
                                             >
                                                 <MdCloudUpload size={20} />
                                             </button>
                                         </FileDropper>
                                         <button
+                                            type="button"
                                             className={classes.hover_button}
                                             onClick={(e) => {
                                                 e.stopPropagation(); // Prevent modal from closing
                                                 const newPortfolioCdnImages = [...portfolioCdnImages];
                                                 newPortfolioCdnImages.splice(index, 1);
                                                 setPortfolioCdnImages(newPortfolioCdnImages);
+                                                setPortfolioCount(portfolioCount - 1);
+
+
+                                                setportfolioUrls((prevUrls) => {
+                                                    const newUrls = [...prevUrls];
+                                                    newUrls[index] = "/logo_main.jpg"; // Reset the URL to a default image
+                                                    return newUrls;
+                                                });
                                             }}
                                         >
                                             <MdClose size={20} />
@@ -361,10 +382,11 @@ const UserSettingsModal: React.FC<UserSettingsModalProps> = ({
                             {portfolioCdnImages.length < 4 && (
                                 <FileDropper
                                 onFilesDropped={async (files) => {
-                                    if (files && files.length > 0) {
+                                    if (portfolioCount < 4 && files && files.length > 0) {
                                         const file = files[0];
                                         const cdnResp = await uploadCdnFile(file);
                                         addPortfolioFile(cdnResp.r2file);
+                                        setPortfolioCount(Math.min(portfolioCount + 1, 4));
                                     }
                                 }}
                                 accept=".png,.jpg,.jpeg,.gif"
