@@ -7,6 +7,7 @@ import { getCdnFileUrl } from "@/util/functions";
 import { User } from "../../../Types/userTypes";
 import { createPortal } from "react-dom";
 import UserContextDropdown from "./UserContextDropdown";
+import MessageContextDropdown from "./MessageContextDropdown";
 
 interface MessageComponentProps {
     message: Message;
@@ -130,12 +131,13 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
         );
     };
 
-    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [userDropdownVisible, setUserDropdownVisible] = useState(false);
+    const [msgDropdownVisible, setMsgDropdownVisible] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent the default right-click menu
-
+        e.stopPropagation();
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const dropdownWidth = 150; // Approximate width of the dropdown
@@ -152,15 +154,40 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
         }
 
         setDropdownPosition({ x, y });
-        setDropdownVisible(true);
+        setUserDropdownVisible(true);
+        setMsgDropdownVisible(false);
     };
 
+    const handleMessageContextMenu = (e: React.MouseEvent) => {
+      e.preventDefault(); // Prevent the default right-click menu
+      e.stopPropagation();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const dropdownWidth = 150; // Approximate width of the dropdown
+      const dropdownHeight = 100; // Approximate height of the dropdown
+
+      let x = e.pageX;
+      let y = e.pageY;
+
+      if (x + dropdownWidth > viewportWidth) {
+          x = viewportWidth - dropdownWidth - 10; // Add some padding
+      }
+      if (y + dropdownHeight > viewportHeight) {
+          y = viewportHeight - dropdownHeight - 10; // Add some padding
+      }
+
+      setDropdownPosition({ x, y });
+      setMsgDropdownVisible(true);
+      setUserDropdownVisible(false);
+  };
+
     const handleClickOutside = () => {
-        setDropdownVisible(false);
+        setUserDropdownVisible(false);
+        setMsgDropdownVisible(false);
     };
 
     useEffect(() => {
-        if (dropdownVisible) {
+        if (userDropdownVisible) {
             document.addEventListener("click", handleClickOutside);
         } else {
             document.removeEventListener("click", handleClickOutside);
@@ -169,11 +196,23 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
         return () => {
             document.removeEventListener("click", handleClickOutside);
         };
-    }, [dropdownVisible]);
+    }, [userDropdownVisible]);
+
+    useEffect(() => {
+        if (msgDropdownVisible) {
+            document.addEventListener("click", handleClickOutside);
+        } else {
+            document.removeEventListener("click", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [msgDropdownVisible]);
 
     return (
         <>
-            <div className={classes.message}>
+            <div className={classes.message} onContextMenu={handleMessageContextMenu}>
                 <img
                     className={classes.squircle}
                     src={authorAvatarUrl}
@@ -214,7 +253,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
                     document.body
                 )}
             {/* Custom Dropdown */}
-            {dropdownVisible && selectedServer && (
+            {userDropdownVisible && selectedServer && (
                 <UserContextDropdown
                     user={message.author}
                     server={selectedServer}
@@ -222,9 +261,21 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
                     dropdownX={dropdownPosition.x}
                     dropdownY={dropdownPosition.y}
                     setDropdownVisible={function (visible: boolean): void {
-                        setDropdownVisible(visible);
+                        setUserDropdownVisible(visible);
                     }}
                 ></UserContextDropdown>
+            )}
+            {msgDropdownVisible && selectedServer && (
+                <MessageContextDropdown
+                    message={message}
+                    server={selectedServer}
+                    session={session}
+                    dropdownX={dropdownPosition.x}
+                    dropdownY={dropdownPosition.y}
+                    setDropdownVisible={function (visible: boolean): void {
+                        setMsgDropdownVisible(visible);
+                    }}
+                ></MessageContextDropdown>
             )}
         </>
     );
