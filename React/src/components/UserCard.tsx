@@ -2,26 +2,20 @@ import { User } from "../../../Types/userTypes";
 import React, { useState, useEffect } from "react";
 import classes from "../styles/application.module.css";
 import { getCdnFileUrl } from "@/util/functions";
-import ApiClient from "@/util/api";
-import Cookies from "js-cookie";
+import UserContextDropdown from "./UserContextDropdown";
+import { Server } from "../../../Types/serverTypes";
 
 interface UserCardProps {
     user: User;
-    isAdmin: boolean;
-    isSelf: boolean;
-    isFriend: boolean;
-    incomingRequest: boolean;
-    outgoingRequest: boolean;
+    session: User | null | undefined;
+    selectedServer: Server | null;
     handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
 const UserCard: React.FC<UserCardProps> = ({
     user,
-    isAdmin,
-    isSelf,
-    isFriend,
-    incomingRequest,
-    outgoingRequest,
+    selectedServer,
+    session,
     handleProfileCard,
 }) => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -53,95 +47,6 @@ const UserCard: React.FC<UserCardProps> = ({
         setDropdownVisible(false);
     };
 
-    const handleAddFriend = async () => {
-        // Function to send a friend request
-        const access_token = Cookies.get("access_token");
-        if (!access_token) {
-            console.error("No access token found");
-            return;
-        }
-        try {
-            await ApiClient.getInstance().sendFriendRequest(
-                user.id,
-                access_token
-            );
-            setDropdownVisible(false); // Close the dropdown after sending the request
-            console.log(
-                "Friend request sent to",
-                user.firstName,
-                user.lastName
-            );
-        } catch (error) {
-            // Handle error
-            console.error("Failed to send friend request:", error);
-        }
-    };
-
-    const handleRemoveFriend = async () => {
-        // Function to remove a friend
-        const access_token = Cookies.get("access_token");
-        if (!access_token) {
-            console.error("No access token found");
-            return;
-        }
-        try {
-            await ApiClient.getInstance().removeFriend(user.id, access_token);
-            setDropdownVisible(false); // Close the dropdown after removing the friend
-            console.log("Friend removed:", user.firstName, user.lastName);
-        } catch (error) {
-            // Handle error
-            console.error("Failed to remove friend:", error);
-        }
-    };
-
-    const handleAccept = async () => {
-        // Function to accept a friend request
-        const access_token = Cookies.get("access_token");
-        if (!access_token) {
-            console.error("No access token found");
-            return;
-        }
-        try {
-            await ApiClient.getInstance().acceptFriendRequest(
-                user.id,
-                access_token
-            );
-            setDropdownVisible(false); // Close the dropdown after accepting the request
-            console.log(
-                "Friend request accepted from",
-                user.firstName,
-                user.lastName
-            );
-        } catch (error) {
-            // Handle error
-            console.error("Failed to accept friend request:", error);
-        }
-    };
-
-    const handleDecline = async () => {
-        // Function to decline a friend request
-        const access_token = Cookies.get("access_token");
-        if (!access_token) {
-            console.error("No access token found");
-            return;
-        }
-        try {
-            await ApiClient.getInstance().declineFriendRequest(
-                user.id,
-                access_token
-            );
-            setDropdownVisible(false); // Close the dropdown after declining the request
-            console.log(
-                "Friend request declined from",
-                user.firstName,
-                user.lastName
-            );
-        } catch (error) {
-            // Handle error
-            console.error("Failed to decline friend request:", error);
-        }
-    };
-
     useEffect(() => {
         if (dropdownVisible) {
             document.addEventListener("click", handleClickOutside);
@@ -170,7 +75,8 @@ const UserCard: React.FC<UserCardProps> = ({
             className={classes.member_card}
             onContextMenu={handleContextMenu} // Handle right-click
             onClick={(e) => {
-                if (handleProfileCard) handleProfileCard(e, user); // Call the function if provided
+                if (handleProfileCard && !dropdownVisible) 
+                    handleProfileCard(e, user); // Call the function if provided
             }}
         >
             <div className={classes.member_image}>
@@ -184,60 +90,17 @@ const UserCard: React.FC<UserCardProps> = ({
             </div>
 
             {/* Custom Dropdown */}
-            {dropdownVisible && (
-                <ul
-                    className={classes.custom_dropdown}
-                    style={{
-                        top: dropdownPosition.y,
-                        left: dropdownPosition.x,
+            {dropdownVisible && selectedServer && (
+                <UserContextDropdown
+                    user={user}
+                    server={selectedServer}
+                    session={session}
+                    dropdownX={dropdownPosition.x}
+                    dropdownY={dropdownPosition.y}
+                    setDropdownVisible={function (visible: boolean): void {
+                        setDropdownVisible(visible);
                     }}
-                >
-                    <li onClick={() => console.log("View Profile")}>
-                        View Profile
-                    </li>
-
-                    {/** Friend Request Buttons  */}
-                    {!isSelf && isFriend && (
-                        <li onClick={() => handleRemoveFriend()}>
-                            Remove Friend
-                        </li>
-                    )}
-                    {!isSelf && incomingRequest && (
-                        <li onClick={() => handleAccept()}>Accept Request</li>
-                    )}
-                    {!isSelf && incomingRequest && (
-                        <li onClick={() => handleDecline()}>Deny Request</li>
-                    )}
-                    {!isSelf &&
-                        !isFriend &&
-                        !incomingRequest &&
-                        !outgoingRequest && (
-                            <li onClick={() => handleAddFriend()}>
-                                Add Friend
-                            </li>
-                        )}
-
-                    {/** Moderation tools  */}
-                    {!isSelf && (
-                        <li
-                            onClick={() =>
-                                console.log({
-                                    incoming_request: incomingRequest,
-                                    outgoing_request: outgoingRequest,
-                                    is_friend: isFriend,
-                                })
-                            }
-                        >
-                            Report
-                        </li>
-                    )}
-                    {isAdmin && !isSelf && (
-                        <li onClick={() => console.log("Ban")}>Ban</li>
-                    )}
-                    {isAdmin && !isSelf && (
-                        <li onClick={() => console.log("Kick")}>Kick</li>
-                    )}
-                </ul>
+                ></UserContextDropdown>
             )}
         </li>
     );

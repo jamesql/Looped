@@ -1027,8 +1027,10 @@ const Application: React.FC = () => {
               {/** Server Channel */}
               {selectedServer && selectedChannel && (
                 <ServerChannel
+                  session={session}
                   selectedChannel={selectedChannel}
                   handleProfileCard={handleProfileCard}
+                  selectedServer={selectedServer}
                 />
               )}
 

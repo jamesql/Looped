@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { Channel } from "../../../Types/serverTypes";
+import { Channel, Server } from "../../../Types/serverTypes";
 import Cookies from "js-cookie";
 import ApiClient from "@/util/api";
 import classes from "../styles/application.module.css";
@@ -10,12 +10,16 @@ import { User } from "../../../Types/userTypes";
 
 interface ServerChannelProps {
   selectedChannel: Channel;
+  session: User | null | undefined; // Session user for context
+  selectedServer?: Server; // Optional prop for selected server
   handleProfileCard?: (e: React.MouseEvent, u: User) => void; // Optional prop for handling profile card click
 }
 
 const ServerChannel: React.FC<ServerChannelProps> = ({
   selectedChannel,
-  handleProfileCard
+  handleProfileCard,
+  session,
+  selectedServer
 }) => {
   const [currentMessage, setCurrentMessage] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
@@ -64,7 +68,7 @@ const ServerChannel: React.FC<ServerChannelProps> = ({
     <>
       <div className={classes.messages}>
         {[...(selectedChannel?.messages || [])].reverse().map((message) => (
-          <MessageComponent key={message.id} message={message} handleProfileCard={handleProfileCard} />
+          <MessageComponent key={message.id} message={message} handleProfileCard={handleProfileCard} session={session} selectedServer={selectedServer}/>
         ))}
       </div>
 
