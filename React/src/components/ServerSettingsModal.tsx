@@ -6,7 +6,6 @@ import Cookies from 'js-cookie';
 import { getCdnFileUrl, uploadCdnFile } from '@/util/functions';
 import FileDropper from './FileDropper';
 import { MdClose, MdCloudUpload } from 'react-icons/md';
-import { R2File } from '../../../Types/contentTypes';
 
 interface ServerSettingsModalProps {
     isOpen: boolean;
