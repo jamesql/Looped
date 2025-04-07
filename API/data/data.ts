@@ -45,7 +45,7 @@ export async function MapRMapToPMap<R, P>(
 
 export class UserDatapacks {
     public static readonly ALL_USER_DATA: RelationMap<User> = {
-        avatar:true,
+        avatar: true,
         portfolioCdnImages: true,
         friendRequestsSent: {
             select: {
@@ -59,6 +59,7 @@ export class UserDatapacks {
                 email: true, // Include email
                 password: false, // Exclude password for security
                 skills: true,
+                portfolioCdnImages: true,
             }
         },
         friendRequestsReceived: {
@@ -73,6 +74,7 @@ export class UserDatapacks {
                 email: true, // Include email
                 password: false, // Exclude password for security
                 skills: true,
+                portfolioCdnImages: true,
             }
         },
         friends: {
@@ -87,6 +89,7 @@ export class UserDatapacks {
                 email: true, // Include email
                 password: false, // Exclude password for security
                 skills: true,
+                portfolioCdnImages: true,
             }
         },
         servers: {

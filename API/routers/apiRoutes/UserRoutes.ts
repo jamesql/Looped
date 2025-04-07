@@ -88,7 +88,6 @@ router.post("/edit", [
     body("images.*").isString().isLength({ min: 1 }),
     body("avatarId").isString().isLength({ min: 0 }).optional(),
 ], async (req: Request, res: Response) => {
-    console.log(req.body.images);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(400).json({ errors: errors.array() });

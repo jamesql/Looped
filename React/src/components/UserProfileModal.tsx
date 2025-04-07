@@ -4,6 +4,7 @@ import modalClasses from "../styles/userprofilemodal.module.css";
 import classes from "../styles/application.module.css";
 import { getCdnFileUrl } from "@/util/functions";
 import { MdClose, MdMessage, MdPersonAdd } from "react-icons/md";
+import { createPortal } from "react-dom";
 
 interface UserProfileModalProps {
     user: User | null;
@@ -13,6 +14,10 @@ interface UserProfileModalProps {
 
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
     const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
+
+      const [zoomUrl, setZoomUrl] = useState<string>('');
+      const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
+    
     useEffect(() => {
         if (user?.avatar) {
             getCdnFileUrl(user?.avatar).then((url) => {
@@ -55,6 +60,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
             <div
                 className={modalClasses.user_profile_card}
                 style={{ top: y, left: x }}
+                onClick={(e) => e.stopPropagation()}
             >
                 <div className={modalClasses.user_main_info}>
                     <img className={classes.squircle} src={avatarUrl} alt="" />
@@ -87,6 +93,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
                                     src={url}
                                     alt="Portfolio Image"
                                     className={modalClasses.portfolio_image}
+                                    onClick={() => { 
+                                        setZoomUrl(url);
+                                        setIsImageZoomed(true);
+                                    }
+                                    }
                                 />
                             ))}
                         </div>
@@ -108,6 +119,25 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
                     </>
                 )}
             </div>
+
+            {isImageZoomed &&
+            createPortal(
+              <div
+                className={classes.image_zoom_overlay}
+                onClick={(e)=>{
+                  e.stopPropagation()
+                  setIsImageZoomed(false)
+                }}
+              >
+                <img
+                  className={classes.image_zoom}
+                  src={zoomUrl}
+                  alt="Zoomed"
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>,
+              document.body
+            )}
         </>
     );
 };
