@@ -3,21 +3,37 @@ import { User } from "../../../Types/userTypes";
 import modalClasses from "../styles/userprofilemodal.module.css";
 import classes from "../styles/application.module.css";
 import { getCdnFileUrl } from "@/util/functions";
-import { MdClose, MdMessage, MdPersonAdd } from "react-icons/md";
+import {
+    MdMessage,
+    MdPersonAdd,
+    MdClose,
+    MdCheck,
+    MdPersonRemove,
+} from "react-icons/md";
 import { createPortal } from "react-dom";
+import ApiClient from "@/util/api";
+import Cookies from "js-cookie";
 
 interface UserProfileModalProps {
     user: User | null;
     x: number;
     y: number;
+    session?: User | null | undefined;
+    handleSetDirectMessage: (user: User) => void; // Optional prop for handling direct message click
 }
 
-const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
+const UserProfileModal: React.FC<UserProfileModalProps> = ({
+    user,
+    x,
+    y,
+    session,
+    handleSetDirectMessage,
+}) => {
     const [avatarUrl, setAvatarUrl] = useState<string>("/logo_main.jpg");
 
-      const [zoomUrl, setZoomUrl] = useState<string>('');
-      const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
-    
+    const [zoomUrl, setZoomUrl] = useState<string>("");
+    const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
+
     useEffect(() => {
         if (user?.avatar) {
             getCdnFileUrl(user?.avatar).then((url) => {
@@ -54,7 +70,99 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
         updatePortfolioUrls();
     }, [user?.portfolioCdnImages]);
 
+    const handleAddFriend = async (user: User) => {
+        // Function to send a friend request
+        const access_token = Cookies.get("access_token");
+        if (!access_token) {
+            console.error("No access token found");
+            return;
+        }
+        try {
+            await ApiClient.getInstance().sendFriendRequest(
+                user.id,
+                access_token
+            );
+            console.log(
+                "Friend request sent to",
+                user.firstName,
+                user.lastName
+            );
+        } catch (error) {
+            // Handle error
+            console.error("Failed to send friend request:", error);
+        }
+    };
+
+    const handleRemoveFriend = async (user: User) => {
+        // Function to remove a friend
+        const access_token = Cookies.get("access_token");
+        if (!access_token) {
+            console.error("No access token found");
+            return;
+        }
+        try {
+            await ApiClient.getInstance().removeFriend(user.id, access_token);
+            console.log("Friend removed:", user.firstName, user.lastName);
+        } catch (error) {
+            // Handle error
+            console.error("Failed to remove friend:", error);
+        }
+    };
+
+    const handleAccept = async (user: User) => {
+        // Function to accept a friend request
+        const access_token = Cookies.get("access_token");
+        if (!access_token) {
+            console.error("No access token found");
+            return;
+        }
+        try {
+            await ApiClient.getInstance().acceptFriendRequest(
+                user.id,
+                access_token
+            );
+            console.log(
+                "Friend request accepted from",
+                user.firstName,
+                user.lastName
+            );
+        } catch (error) {
+            // Handle error
+            console.error("Failed to accept friend request:", error);
+        }
+    };
+
+    const handleDecline = async (user: User) => {
+        // Function to decline a friend request
+        const access_token = Cookies.get("access_token");
+        if (!access_token) {
+            console.error("No access token found");
+            return;
+        }
+        try {
+            await ApiClient.getInstance().declineFriendRequest(
+                user.id,
+                access_token
+            );
+        } catch (error) {
+            // Handle error
+            console.error("Failed to decline friend request:", error);
+        }
+    };
+
     const skills = user?.skills || [];
+    const isSelf = session?.id === user?.id; // Check if the user is the same as the session user
+    const isFriend = session?.friends
+        ? session?.friends.some((u) => u.id === user?.id)
+        : false;
+    const incomingRequest = session?.friendRequestsReceived
+        ? session?.friendRequestsReceived.some(
+              (request) => request.id === user?.id
+          )
+        : false; // Check if the user has sent a friend request to this member
+    const outgoingRequest = session?.friendRequestsSent
+        ? session?.friendRequestsSent.some((request) => request.id === user?.id)
+        : false; // Check if this member has sent a friend request to the user
     return (
         <>
             <div
@@ -73,15 +181,61 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
                 </div>
 
                 <div className={modalClasses.action_button_row}>
-                    <button className={modalClasses.icon_button}>
-                        <MdPersonAdd className={modalClasses.icon} />
-                    </button>
-                    <button className={modalClasses.icon_button}>
-                        <MdMessage className={modalClasses.icon} />
-                    </button>
-                    <button className={modalClasses.icon_button}>
-                        <MdClose className={modalClasses.icon} />
-                    </button>
+                    {/* Add Friend Button */}
+                    {!outgoingRequest &&
+                        !isFriend &&
+                        !isSelf &&
+                        !incomingRequest && (
+                            <button
+                                className={modalClasses.icon_button}
+                                onClick={() => handleAddFriend(user!)}
+                            >
+                                <MdPersonAdd className={modalClasses.icon} />
+                            </button>
+                        )}
+
+                    {/* Remove Friend Button */}
+                    {!isSelf && isFriend && (
+                        <button
+                            className={modalClasses.icon_button}
+                            onClick={() => handleRemoveFriend(user!)}
+                        >
+                            <MdPersonRemove className={modalClasses.icon} />
+                        </button>
+                    )}
+
+                    {/* Accept Friend Request Button */}
+                    {!isSelf && incomingRequest && (
+                        <button
+                            className={modalClasses.icon_button}
+                            onClick={() => handleAccept(user!)}
+                        >
+                            <MdCheck className={modalClasses.icon} />
+                        </button>
+                    )}
+
+                    {/* Decline Friend Request Button */}
+                    {!isSelf && incomingRequest && (
+                        <button
+                            className={modalClasses.icon_button}
+                            onClick={() => handleDecline(user!)}
+                        >
+                            <MdClose className={modalClasses.icon} />
+                        </button>
+                    )}
+
+                    {/* Message Friend Button */}
+                    {!isSelf && isFriend && (
+                        <button
+                            className={modalClasses.icon_button}
+                            onClick={() => {
+                                // Add logic to open a chat or message modal
+                                handleSetDirectMessage(user!);
+                            }}
+                        >
+                            <MdMessage className={modalClasses.icon} />
+                        </button>
+                    )}
                 </div>
                 {portfolioUrls.length !== 0 && (
                     <>
@@ -93,11 +247,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
                                     src={url}
                                     alt="Portfolio Image"
                                     className={modalClasses.portfolio_image}
-                                    onClick={() => { 
+                                    onClick={() => {
                                         setZoomUrl(url);
                                         setIsImageZoomed(true);
-                                    }
-                                    }
+                                    }}
                                 />
                             ))}
                         </div>
@@ -121,23 +274,23 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ user, x, y }) => {
             </div>
 
             {isImageZoomed &&
-            createPortal(
-              <div
-                className={classes.image_zoom_overlay}
-                onClick={(e)=>{
-                  e.stopPropagation()
-                  setIsImageZoomed(false)
-                }}
-              >
-                <img
-                  className={classes.image_zoom}
-                  src={zoomUrl}
-                  alt="Zoomed"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>,
-              document.body
-            )}
+                createPortal(
+                    <div
+                        className={classes.image_zoom_overlay}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsImageZoomed(false);
+                        }}
+                    >
+                        <img
+                            className={classes.image_zoom}
+                            src={zoomUrl}
+                            alt="Zoomed"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </div>,
+                    document.body
+                )}
         </>
     );
 };

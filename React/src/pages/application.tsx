@@ -859,6 +859,15 @@ const Application: React.FC = () => {
                 user={cardUser}
                 x={cardPosition.x}
                 y={cardPosition.y}
+                session={session}
+                handleSetDirectMessage={
+                  (friend: User) => {
+                    setSelectedFriend(friend);
+                    setSelectedServer(null);
+                    setSelectedChannel(null);
+                    setCardVisible(false);
+                  }
+                }
               ></UserProfileModal>
             )}
 
