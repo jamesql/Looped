@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import {jwtDecode} from 'jwt-decode';
 import Cookies from "js-cookie"
-import { R2File } from '../../../Types/contentTypes';
 
 class ApiClient {
   private static instance: ApiClient;
