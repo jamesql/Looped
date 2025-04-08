@@ -501,6 +501,72 @@ router.post("/kick", [
     return;
 });
 
+router.post("/leave", [
+    header("Authorization").isString().isLength({ min: 1 }),
+    body("serverId").isString().isLength({ min: 1 }),
+], async (req: Request, res: Response): Promise<void> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+    }
+
+    // Validate access token
+    const token = req.header("Authorization");
+    const result = await validateToken(token);
+    if (!result || !result.valid) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
+
+    // Get user
+    const user = await UserService.getUserById(result.userId, UserDatapacks.USER_PUBLIC_DATA);
+
+    // Ensure user exists
+    if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+    }
+
+    // Get server
+    const server = await ServerService.getServerById(req.body.serverId, ServerDatapacks.SERVER_PUBLIC_DATA);
+
+    // Ensure server exists
+    if (!server) {
+        res.status(404).json({ error: "Server not found" });
+        return;
+    }
+
+    // Ensure the user is not the owner of the server
+    if (server.ownerId === user.id) {
+        res.status(403).json({ error: "Server owners cannot leave their own server. Please delete the server instead." });
+        return;
+    }
+
+    // Remove user from the server
+    await ServerService.removeMember(server.id, user.id);
+
+    // Notify other server members about the user leaving
+    redisInstance.publish(`server:${server.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_MEMBER_DEL,
+        d: {
+            user: user,
+            server: server,
+        },
+    }));
+
+    // Notify the user about leaving the server
+    redisInstance.publish(`user:${user.id}:events`, JSON.stringify({
+        op: OPCodes.SERVER_DELETE,
+        d: {
+            server: server,
+        },
+    }));
+
+    // Return success response
+    res.status(200).json({ success: true });
+});
+
 router.get("/get-discovery-servers", [
     header("Authorization").isString().isLength({ min: 1 }),
 ], async (req: Request, res: Response): Promise<void> => {

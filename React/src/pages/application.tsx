@@ -112,7 +112,24 @@ const Application: React.FC = () => {
     setHoveredIconCaption(null);
   }
 
+  const handleServerLeaveAction = (server: Server) => {
+    setSession((prevSession) => {
+      if (prevSession) {
+        const updatedServers = prevSession.servers!.filter((s) => s.id !== server.id);
+        return {
+          ...prevSession,
+          servers: updatedServers,
+        };
+      }
+      return prevSession;
+    });
 
+    // If the server being left is the currently selected server, reset the selection
+    if (selectedServer?.id === server.id) {
+      setSelectedServer(null);
+      setSelectedChannel(null);
+    }
+  }
 
   // create the map of listeners
   const listeners = new Map<number, OpCodeHandler[]>();
@@ -829,6 +846,7 @@ const Application: React.FC = () => {
           isOpen={true}
           setClose={setServerSettings}
           server={selectedServer!}
+          onServerDeleteCallback={handleServerLeaveAction}
         />
       )}
 
@@ -1003,6 +1021,8 @@ const Application: React.FC = () => {
                           handleMouseLeave={handleMouseLeave}
                           handleDockMouseEnter={handleDockMouseEnter}
                           selectedChannel={selectedChannel}
+                          handleServerLeave={handleServerLeaveAction}
+                          session={session}
                         />
                     ))}
                 </div>

@@ -713,6 +713,7 @@
     padding: 0.5rem 0;
     z-index: 1000;
     min-width: 150px;
+    font-family: "Open Sans", sans-serif;
 }
 
 .custom_dropdown li {

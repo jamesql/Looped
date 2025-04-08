@@ -208,6 +208,16 @@ class ApiClient {
     });
   }
 
+  public async leaveServer(
+    serverId: string,
+    token: string
+  ): Promise<AxiosResponse> {
+    await this.addAuthHeader(token);
+    return this.axiosInstance.post("/api/server/leave", {
+      serverId: serverId,
+    });
+  }
+
   // create channel post request
   public async createChannel(
     serverId: string,
