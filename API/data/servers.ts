@@ -66,8 +66,23 @@ class ServerService {
   
   
   async deleteServerById(id: string): Promise<_Server> {
+    // Delete related messages first to avoid foreign key constraint violations
+    await prisma.message.deleteMany({
+        where: {
+            channel: {
+                serverId: id,
+            },
+        },
+    });
+
+    // Delete related channels
+    await prisma.channel.deleteMany({
+        where: { serverId: id },
+    });
+
+    // Delete the server
     return await prisma.server.delete({
-      where: { id },
+        where: { id },
     });
   }
 

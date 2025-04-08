@@ -10,10 +10,11 @@ import { MdClose, MdCloudUpload } from 'react-icons/md';
 interface ServerSettingsModalProps {
     isOpen: boolean;
     setClose: (arg0: boolean) => void;
-    server: Server
+    server: Server;
+    onServerDeleteCallback?: (server: Server) => void; // Optional prop for handling server leave
 }
 
-const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setClose, server}) => {
+const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setClose, server, onServerDeleteCallback}) => {
     const [serverName, setServerName] = React.useState(server.name);
     const [serverDesc, setServerDesc] = React.useState(server.description || "");
     const [serverWebsite, setServerWebsite] = React.useState(server.website || "");
@@ -60,6 +61,22 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
         navigator.clipboard.writeText(inviteCode);
 
         alert(`Invite Code: ${inviteCode}, copied to clipboard!`);
+    };
+
+    const onServerDelete = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this server?");
+        if (!confirmDelete) return;
+
+        const token = Cookies.get("access_token") || "";
+        try {
+            await ApiClient.getInstance().deleteServer(server.id, token);
+            setClose(false);
+            if(onServerDeleteCallback)
+                onServerDeleteCallback(server); // Call the callback function if provided
+        } catch (error) {
+            console.error("Error deleting server:", error);
+            alert("Failed to delete the server. Please try again.");
+        }
     };
 
     const serverIconFileChange = async (
@@ -277,6 +294,7 @@ const ServerSettingsModal: React.FC<ServerSettingsModalProps> = ({ isOpen,  setC
                     />
                 </label>
                 <button onClick={() => handleGenInvite()} className={classes.button}>Generate Invite Code</button>
+                <button onClick={() => onServerDelete()} className={classes.button}>Delete Server</button>
                 <button onClick={() => handleSubmit()} className={classes.button}>Submit</button>
             </div>
         </div>
