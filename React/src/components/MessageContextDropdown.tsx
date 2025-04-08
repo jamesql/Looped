@@ -4,7 +4,8 @@ import { Message, Server } from "../../../Types/serverTypes";
 import { Permissions } from "../../../Types/permissionsTypes";
 import classes from "../styles/application.module.css";
 import { checkPermissions } from "@/util/functions";
-
+import ApiClient from "@/util/api";
+import Cookies from "js-cookie";
 interface MessageContextDropdownProps {
         message: Message;
         server: Server | null | undefined;
@@ -12,7 +13,7 @@ interface MessageContextDropdownProps {
         dropdownX: number;
         dropdownY: number;
         setDropdownVisible: (visible: boolean) => void;
-    
+        setEditMode: (mode: boolean) => void;
 }
 
 const MessageContextDropdown: React.FC<MessageContextDropdownProps> = ({
@@ -21,7 +22,8 @@ const MessageContextDropdown: React.FC<MessageContextDropdownProps> = ({
     server,
     dropdownX,
     dropdownY,
-    setDropdownVisible
+    setDropdownVisible,
+    setEditMode
 }) => {
     const isSelf = session?.id === message.authorId; // Check if the user is the same as the session user
     const isAdmin = server ? checkPermissions(
@@ -31,13 +33,17 @@ const MessageContextDropdown: React.FC<MessageContextDropdownProps> = ({
                           Permissions.ADMIN
                         ) : false;
     const handleDeleteMessage = () => {
+        ApiClient.getInstance().deleteMessage(message.id, Cookies.get("access_token") || "").then((response) => {
+            console.log(response);
+        });
         setDropdownVisible(false);
     };
 
     const handleEditMessage = () => {
+        setEditMode(true);
         setDropdownVisible(false);
     };
-    if(isSelf || isAdmin)
+    
         return (
             <ul
                 className={classes.custom_dropdown}
@@ -46,8 +52,8 @@ const MessageContextDropdown: React.FC<MessageContextDropdownProps> = ({
                     left: dropdownX,
                 }}
             >
-                <li onClick={() => handleDeleteMessage()}>Delete Message</li>
-                <li onClick={() => handleEditMessage()}>Edit Message</li>
+                {(isSelf || isAdmin) && <li onClick={() => handleDeleteMessage()}>Delete Message</li>}
+                {isSelf && <li onClick={() => handleEditMessage()}>Edit Message</li>}
             </ul>
         );
 };
