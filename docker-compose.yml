@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  types:
+    build:
+      context: ./Types               # Build context for the Types service
+    working_dir: /Types             # Set working directory in the container
+    volumes:
+      - ./Types:/Types               # Mount the Types directory to the container's /Types
+  util:
+    build:
+      context: ./Util                # Build context for the Util service
+    working_dir: /Util               # Set working directory in the container
+    volumes:
+      - ./Util:/Util                 # Mount the Util directory to the container's /Util
+  api:
+    build:
+      context: ./API                # Build context for the API service
+    working_dir: /API                # Set working directory in the container
+    volumes:
+      - ./API:/API                   # Mount the API directory to the container's /API
+  socket:
+    build: 
+      context: ./Socket              # Build context for the Socket service
+    working_dir: /Socket            # Set working directory in the container
+    volumes:
+      - ./Socket:/Socket             # Mount the Socket directory to the container's /Socket
+    
