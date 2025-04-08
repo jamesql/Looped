@@ -1,13 +1,15 @@
 import classes from "../styles/application.module.css";
 import React, { useState, useEffect } from "react";
 import { Message, Server } from "../../../Types/serverTypes";
-import { MdDownload } from "react-icons/md";
+import { MdCheck, MdClose, MdDownload } from "react-icons/md";
 import prettyBytes from "pretty-bytes";
 import { getCdnFileUrl } from "@/util/functions";
 import { User } from "../../../Types/userTypes";
 import { createPortal } from "react-dom";
 import UserContextDropdown from "./UserContextDropdown";
 import MessageContextDropdown from "./MessageContextDropdown";
+import ApiClient from "@/util/api";
+import Cookies from "js-cookie";
 
 interface MessageComponentProps {
     message: Message;
@@ -36,6 +38,8 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
     const [userDropdownVisible, setUserDropdownVisible] = useState(false);
     const [msgDropdownVisible, setMsgDropdownVisible] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedContent, setEditedContent] = useState(message.content);
 
     const truncateFileName = (
         fileName: string,
@@ -81,7 +85,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
             document.addEventListener("click", handleClickOutside);
         } else {
             document.removeEventListener("click", handleClickOutside);
-        }
+        };
 
         return () => {
             document.removeEventListener("click", handleClickOutside);
@@ -208,6 +212,21 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
         setMsgDropdownVisible(false);
     };
 
+    const setEditMode = () => {
+        setIsEditing(true);
+        setEditedContent(message.content);
+    };
+
+    const handleSaveEdit = () => {
+        ApiClient.getInstance().editMessage(message.id, editedContent, Cookies.get("access_token") || "");
+        setIsEditing(false);
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setEditedContent(message.content);
+    };
+
     return (
         <>
             <div
@@ -233,8 +252,36 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
                     </div>
 
                     <div className={classes.message_content}>
-                        <p>{message.content}</p>
-                        {renderFilePreview()}
+                        {isEditing ? (
+                            <div className={classes.edit_mode}>
+                                <textarea
+                                    value={editedContent}
+                                    onChange={(e) =>
+                                        setEditedContent(e.target.value)
+                                    }
+                                    className={classes.edit_textarea}
+                                />
+                                <div className={classes.edit_buttons}>
+                                    <button
+                                        onClick={handleSaveEdit}
+                                        className={classes.edit_button}
+                                    >
+                                        <MdCheck className={classes.edit_button_icon}/>
+                                    </button>
+                                    <button
+                                        onClick={handleCancelEdit}
+                                        className={classes.edit_button}
+                                    >
+                                        <MdClose className={classes.edit_button_icon}/>
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <p>{message.content}</p>
+                                {renderFilePreview()}
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -276,6 +323,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({
                     setDropdownVisible={function (visible: boolean): void {
                         setMsgDropdownVisible(visible);
                     }}
+                    setEditMode={setEditMode}
                 ></MessageContextDropdown>
             )}
         </>

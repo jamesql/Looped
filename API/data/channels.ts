@@ -13,6 +13,13 @@ class ChannelService {
     async getChannelById(id: string): Promise<Channel | null> {
         return await prisma.channel.findUnique({
             where: { id },
+            include: {
+                messages: {
+                    orderBy: {
+                        createdAt: 'asc', // Sort messages by createdAt in ascending order
+                    },
+                },
+            },
         });
     }
 
