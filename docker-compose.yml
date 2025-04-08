@@ -25,4 +25,10 @@ services:
     working_dir: /Socket            # Set working directory in the container
     volumes:
       - ./Socket:/Socket             # Mount the Socket directory to the container's /Socket
+  react:
+    build:
+      context: ./React               # Build context for the React service
+    working_dir: /React              # Set working directory in the container
+    volumes:
+      - ./React:/React               # Mount the React directory to the container's /React
     
