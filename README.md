@@ -162,11 +162,3 @@ This project is licensed under the [MIT License](LICENSE).
 For detailed setup instructions, API references, and developer guides, please visit the [official documentation](https://thejamesash1.gitbook.io/looped).
 
 ---
-
-## Contact
-
-For inquiries or support, reach out to us at:
-📧 Email: [help@looped.it.com]  
-🌐 Website: [looped.it.com](https://looped.it.com)
-
----
